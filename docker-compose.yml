@@ -1,0 +1,24 @@
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: rr-mariadb
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: raterelay
+      MYSQL_USER: raterelay_user
+      MYSQL_PASSWORD: raterelay_password
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - mariadb_init:/docker-entrypoint-initdb.d
+    networks:
+      - raterelay_network
+
+networks:
+  raterelay_network:
+    driver: bridge
+
+volumes:
+  mariadb_data:
+  mariadb_init:

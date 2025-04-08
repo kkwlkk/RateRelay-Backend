@@ -114,3 +114,5 @@ ServiceFabricBackup/
 *.mdf
 *.ldf
 *.ndf
+
+.idea/

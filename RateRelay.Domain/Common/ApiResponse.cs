@@ -102,7 +102,7 @@ public class ErrorResponse
 
     [JsonPropertyName("validationErrors")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<ValidationError> ValidationErrors { get; set; } = new();
+    public List<ValidationError> ValidationErrors { get; set; } = [];
 }
 
 public class ValidationError

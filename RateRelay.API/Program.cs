@@ -2,13 +2,14 @@ using RateRelay.Application.DependencyInjection;
 using RateRelay.Infrastructure.Configuration;
 using RateRelay.Infrastructure.Environment;
 using RateRelay.Infrastructure.Logging;
+using RateRelay.Infrastructure.Services;
 using Serilog;
 
 namespace RateRelay.API;
 
 public static class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var environment = EnvironmentService.ConfigureEnvironment();
         
@@ -20,7 +21,17 @@ public static class Program
         {
             Log.Information("Starting web host in {Environment} environment", environment);
             var host = CreateHostBuilder(args, environment).Build();
-            host.Run();
+
+            using (var scope = host.Services.CreateScope())
+            {
+                var success = await PerformMigrationAsync(scope.ServiceProvider);
+                if (!success)
+                {
+                    throw new InvalidOperationException("Database migration failed");
+                }
+            }
+            
+            await host.RunAsync();
         }
         catch (Exception ex)
         {
@@ -62,4 +73,11 @@ public static class Program
                 config.AddEnvironmentVariables();
                 config.AddCommandLine(args);
             });
+    
+    
+    private static async Task<bool> PerformMigrationAsync(IServiceProvider serviceProvider)
+    {
+        var migrationService = serviceProvider.GetRequiredService<MigrationService>();
+        return await migrationService.UpdateDatabaseAsync();
+    }
 }

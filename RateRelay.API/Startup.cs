@@ -1,3 +1,5 @@
+using Microsoft.OpenApi;
+using Microsoft.OpenApi.Models;
 using RateRelay.API.Middleware;
 using RateRelay.Infrastructure.Logging;
 using Serilog;
@@ -21,7 +23,10 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
 
         services.AddRouting(options => options.LowercaseUrls = true);
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
+        services.AddSwaggerGen(options =>
+        {
+            options.EnableAnnotations();
+        });
         services.AddLogging(configuration);
     }
 
@@ -30,10 +35,10 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
         if (env.IsDevelopment() || env.IsStaging())
         {
             app.UseDeveloperExceptionPage();
-            app.UseSwagger();
+            app.UseSwagger(options => { options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_0; });
             app.UseSwaggerUI();
         }
-        
+
         app.UseSerilogRequestLogging(options =>
         {
             options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
