@@ -9,7 +9,7 @@ namespace RateRelay.Application.MediatR;
 
 public static class MediatRConfiguration
 {
-    public static void ConfigureMediatR(this IServiceCollection services)
+    public static void AddMediatR(this IServiceCollection services)
     {
         var applicationAssembly = Assembly.GetExecutingAssembly();
 

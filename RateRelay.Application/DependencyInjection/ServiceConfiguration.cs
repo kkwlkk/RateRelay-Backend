@@ -12,6 +12,7 @@ public static class ServiceConfiguration
     {
         services.AddLogging(configuration);
         services.AddRateRelayDatabase(configuration);
-        services.ConfigureMediatR();
+        services.AddMediatR();
+        services.AddAutoMapperConfiguration();
     }
 }

@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="14.0.0" />
       <PackageReference Include="FluentValidation" Version="12.0.0-preview1" />
       <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0-preview1" />
       <PackageReference Include="MediatR" Version="12.5.0" />
@@ -22,11 +23,6 @@
     <ItemGroup>
       <ProjectReference Include="..\RateRelay.Domain\RateRelay.Domain.csproj" />
       <ProjectReference Include="..\RateRelay.Infrastructure\RateRelay.Infrastructure.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="DTOs\" />
-      <Folder Include="Features\Commands\" />
     </ItemGroup>
 
     <ItemGroup>
