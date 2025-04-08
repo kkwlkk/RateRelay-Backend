@@ -1,8 +1,9 @@
 using MediatR;
+using RateRelay.Domain.Common;
 
 namespace RateRelay.Application.Features.Queries.Demo;
 
-public class DemoQuery : IRequest<DemoQueryResponse>
+public class DemoQuery : IRequest<ApiResponse<DemoQueryResponse>>
 {
     public string Name { get; set; }
     public int Age { get; set; }
@@ -10,5 +11,5 @@ public class DemoQuery : IRequest<DemoQueryResponse>
 
 public class DemoQueryResponse
 {
-    public string Message { get; set; }
+    public int Age { get; set; }
 }

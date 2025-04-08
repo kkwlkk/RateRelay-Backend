@@ -1,3 +1,4 @@
+using RateRelay.API.Middleware;
 using RateRelay.Infrastructure.Logging;
 using Serilog;
 
@@ -7,11 +8,20 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers();
+        services.AddControllers(options =>
+            {
+                options.EnableEndpointRouting = false;
+                options.ModelValidatorProviders.Clear();
+            })
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.DefaultIgnoreCondition =
+                    System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+            });
 
+        services.AddRouting(options => options.LowercaseUrls = true);
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
-
         services.AddLogging(configuration);
     }
 
@@ -23,9 +33,7 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
             app.UseSwagger();
             app.UseSwaggerUI();
         }
-
-        app.UseHttpsRedirection();
-
+        
         app.UseSerilogRequestLogging(options =>
         {
             options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
@@ -34,13 +42,10 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
                 diagnosticContext.Set("RequestMethod", httpContext.Request.Method);
             };
         });
-        
+        app.UseExceptionHandling();
+        app.UseHttpsRedirection();
         app.UseRouting();
         app.UseAuthorization();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
-        });
+        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
 }

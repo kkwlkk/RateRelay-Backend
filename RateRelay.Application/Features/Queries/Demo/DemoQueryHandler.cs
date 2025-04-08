@@ -1,16 +1,25 @@
 using MediatR;
+using RateRelay.Domain.Common;
 
 namespace RateRelay.Application.Features.Queries.Demo;
 
-public class DemoQueryHandler : IRequestHandler<DemoQuery, DemoQueryResponse>
+public class DemoQueryHandler : IRequestHandler<DemoQuery, ApiResponse<DemoQueryResponse>>
 {
-    public Task<DemoQueryResponse> Handle(DemoQuery request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<DemoQueryResponse>> Handle(DemoQuery request, CancellationToken cancellationToken)
     {
+        if (!IsValid(request))
+            return ApiResponse<DemoQueryResponse>.ErrorResponse("Invalid request", "INVALID_REQUEST");
+
         var response = new DemoQueryResponse
         {
-            Message = $"Hello {request.Name}, you are {request.Age} years old!"
+            Age = request.Age
         };
 
-        return Task.FromResult(response);
+        return ApiResponse<DemoQueryResponse>.SuccessResponse(response);
+    }
+
+    private bool IsValid(DemoQuery request)
+    {
+        return !string.IsNullOrEmpty(request.Name) && request.Age > 0;
     }
 }

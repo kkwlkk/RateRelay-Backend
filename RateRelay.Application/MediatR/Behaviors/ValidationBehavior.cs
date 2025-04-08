@@ -1,5 +1,6 @@
 using FluentValidation;
 using MediatR;
+using ValidationException = RateRelay.Application.Exceptions.ValidationException;
 
 namespace RateRelay.Application.MediatR.Behaviors;
 
@@ -12,11 +13,19 @@ public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TReq
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
+        if (!validators.Any())
+        {
+            return await next(cancellationToken);
+        }
+
         var context = new ValidationContext<TRequest>(request);
-        var failures = validators
-            .Select(v => v.Validate(context))
+
+        var validationResults = await Task.WhenAll(
+            validators.Select(v => v.ValidateAsync(context, cancellationToken)));
+
+        var failures = validationResults
             .SelectMany(result => result.Errors)
-            .Where(f => f != null)
+            .Where(failure => failure != null)
             .ToList();
 
         if (failures.Count != 0)

@@ -15,4 +15,8 @@
       <PackageReference Include="Serilog.Sinks.File" Version="7.0.0-dev-02301" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="DataAccess\" />
+    </ItemGroup>
+
 </Project>
