@@ -35,7 +35,7 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
         if (env.IsDevelopment() || env.IsStaging())
         {
             app.UseDeveloperExceptionPage();
-            app.UseSwagger(options => { options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_0; });
+            app.UseSwagger();
             app.UseSwaggerUI();
         }
 

@@ -49,7 +49,8 @@ public class ApiResponse<T>
             Error = new ErrorResponse
             {
                 Message = message,
-                Code = code
+                Code = code,
+                ValidationErrors = null
             },
             Metadata = null
         };

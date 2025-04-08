@@ -21,7 +21,6 @@ public class RateRelayDbContext(DbContextOptions<RateRelayDbContext> options) : 
         {
             foreach (var entity in entitiesToRegister)
             {
-                Log.Information("Registering entity {EntityName}", entity.Name);
                 modelBuilder.Entity(entity);
             }
         }

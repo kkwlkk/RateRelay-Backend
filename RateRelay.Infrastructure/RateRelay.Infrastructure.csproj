@@ -28,7 +28,6 @@
     <ItemGroup>
       <None Remove="DataAccess\Migrations\2025\001_INITIALIZE_DATABASE.sql" />
       <EmbeddedResource Include="DataAccess\Migrations\2025\001_INITIALIZE_DATABASE.sql" />
-      <None Remove="DataAccess\Migrations\2025\002_POPULATE_ACCOUNT_TABLE.sql" />
     </ItemGroup>
 
 </Project>
