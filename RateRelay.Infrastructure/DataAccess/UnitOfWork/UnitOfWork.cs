@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Data;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using RateRelay.Domain.Entities;
@@ -17,9 +18,33 @@ internal class UnitOfWork(RateRelayDbContext dbContext, ILogger logger) : IUnitO
     private readonly ConcurrentDictionary<Type, object> _repositories = new();
     private IDbContextTransaction? _currentTransaction;
 
-    public IRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseModelEntity
+    public IRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity
     {
         return (IRepository<TEntity>)_repositories.GetOrAdd(typeof(TEntity), _ => new Repository<TEntity>(_dbContext));
+    }
+
+    public TRepository GetExtendedRepository<TRepository>() where TRepository : class
+    {
+        return (TRepository)_repositories.GetOrAdd(typeof(TRepository), _ =>
+        {
+            var repositoryInterfaceType = typeof(TRepository);
+
+            var repositoryType = Assembly.GetExecutingAssembly()
+                .GetTypes()
+                .FirstOrDefault(t =>
+                    !t.IsInterface &&
+                    !t.IsAbstract &&
+                    repositoryInterfaceType.IsAssignableFrom(t));
+
+            if (repositoryType is null)
+            {
+                throw new NotSupportedException(
+                    $"Implementation for repository type {repositoryInterfaceType.Name} was not found");
+            }
+
+            return Activator.CreateInstance(repositoryType, _dbContext) ??
+                   throw new InvalidOperationException($"Failed to create instance of {repositoryType.Name}");
+        });
     }
 
     public async Task BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted,

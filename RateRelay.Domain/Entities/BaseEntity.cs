@@ -6,7 +6,7 @@ namespace RateRelay.Domain.Entities;
 /// <summary>
 /// Base class for all entities, includes common properties for auditing and soft delete.
 /// </summary>
-public abstract class BaseModelEntity
+public abstract class BaseEntity
 {
     [Key]
     public long Id { get; set; }

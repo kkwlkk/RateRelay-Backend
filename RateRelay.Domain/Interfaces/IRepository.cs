@@ -3,7 +3,7 @@ using RateRelay.Domain.Entities;
 
 namespace RateRelay.Domain.Interfaces;
 
-public interface IRepository<T> where T : BaseModelEntity
+public interface IRepository<T> where T : BaseEntity
 {
     Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default);
     Task<T?> GetByIdAsync(long id, CancellationToken cancellationToken = default);

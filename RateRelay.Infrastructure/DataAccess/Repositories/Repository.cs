@@ -7,7 +7,7 @@ using RateRelay.Infrastructure.DataAccess.Context;
 namespace RateRelay.Infrastructure.DataAccess.Repositories;
 
 public class Repository<T>(RateRelayDbContext dbContext) : IRepository<T>
-    where T : BaseModelEntity
+    where T : BaseEntity
 {
     private readonly DbSet<T> _dbSet = dbContext.Set<T>();
 

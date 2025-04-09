@@ -12,7 +12,7 @@ public class RateRelayDbContext(DbContextOptions<RateRelayDbContext> options) : 
     {
         base.OnModelCreating(modelBuilder);
 
-        var baseEntityType = typeof(BaseModelEntity);
+        var baseEntityType = typeof(BaseEntity);
         var entitiesToRegister = Assembly.GetAssembly(baseEntityType)
             ?.GetTypes()
             .Where(t => t is { IsClass: true, IsAbstract: false } && baseEntityType.IsAssignableFrom(t));
@@ -27,7 +27,7 @@ public class RateRelayDbContext(DbContextOptions<RateRelayDbContext> options) : 
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
-            if (!typeof(BaseModelEntity).IsAssignableFrom(entityType.ClrType)) continue;
+            if (!typeof(BaseEntity).IsAssignableFrom(entityType.ClrType)) continue;
             if (entityType.ClrType.GetCustomAttribute<ExcludeFromSoftDeleteAttribute>() is not null) continue;
 
             var method = typeof(RateRelayDbContext).GetMethod(nameof(ApplySoftDeleteFilter),
@@ -40,7 +40,7 @@ public class RateRelayDbContext(DbContextOptions<RateRelayDbContext> options) : 
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        foreach (var entry in ChangeTracker.Entries<BaseModelEntity>())
+        foreach (var entry in ChangeTracker.Entries<BaseEntity>())
         {
             switch (entry.State)
             {
@@ -62,7 +62,7 @@ public class RateRelayDbContext(DbContextOptions<RateRelayDbContext> options) : 
         return await base.SaveChangesAsync(cancellationToken);
     }
 
-    private static void ApplySoftDeleteFilter<TEntity>(ModelBuilder modelBuilder) where TEntity : BaseModelEntity
+    private static void ApplySoftDeleteFilter<TEntity>(ModelBuilder modelBuilder) where TEntity : BaseEntity
     {
         modelBuilder.Entity<TEntity>().HasQueryFilter(e => !e.DateDeletedUtc.HasValue);
     }

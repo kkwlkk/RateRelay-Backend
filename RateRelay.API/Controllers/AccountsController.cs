@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using RateRelay.Application.Features.Queries.Accounts;
+using RateRelay.Application.Features.Accounts.Commands;
+using RateRelay.Application.Features.Accounts.Queries;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace RateRelay.API.Controllers;
@@ -21,6 +22,18 @@ public class AccountsController(IMediator mediator) : BaseController
         };
 
         var result = await mediator.Send(query);
+
+        return Ok(result);
+    }
+    
+    [HttpPost]
+    [SwaggerOperation(
+        Summary = "Create a new account",
+        Description = "Creates a new account with the provided information."
+    )]
+    public async Task<IActionResult> CreateAccount([FromBody] CreateAccountCommand command)
+    {
+        var result = await mediator.Send(command);
 
         return Ok(result);
     }

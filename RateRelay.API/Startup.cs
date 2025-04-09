@@ -15,6 +15,11 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
                 options.EnableEndpointRouting = false;
                 options.ModelValidatorProviders.Clear();
             })
+            .ConfigureApiBehaviorOptions(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+                options.SuppressMapClientErrors = true;
+            })
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.DefaultIgnoreCondition =

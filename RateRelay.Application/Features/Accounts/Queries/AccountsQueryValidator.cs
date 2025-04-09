@@ -1,7 +1,7 @@
 using FluentValidation;
 using RateRelay.Application.Extensions;
 
-namespace RateRelay.Application.Features.Queries.Accounts;
+namespace RateRelay.Application.Features.Accounts.Queries;
 
 public class AccountsQueryValidator : AbstractValidator<AccountsQuery>
 {

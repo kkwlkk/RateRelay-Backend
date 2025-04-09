@@ -5,7 +5,7 @@ using RateRelay.Domain.Common;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Interfaces;
 
-namespace RateRelay.Application.Features.Queries.Accounts;
+namespace RateRelay.Application.Features.Accounts.Queries;
 
 public class AccountsQueryHandler(IUnitOfWorkFactory unitOfWorkFactory, IMapper mapper)
     : IRequestHandler<AccountsQuery, ApiResponse<AccountsQueryResponseDto>>
