@@ -1,5 +1,4 @@
 using RateRelay.Application.DependencyInjection;
-using RateRelay.Infrastructure.Configuration;
 using RateRelay.Infrastructure.Environment;
 using RateRelay.Infrastructure.Logging;
 using RateRelay.Infrastructure.Services;

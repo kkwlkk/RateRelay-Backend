@@ -4,6 +4,6 @@ namespace RateRelay.Domain.Interfaces;
 
 public interface IAccountRepository : IEntityExtendedRepository<AccountEntity>
 {
-    Task<AccountEntity?> GetAccountByUsernameAsync(string username);
-    Task<bool> AccountExistsByUsernameAsync(string username);
+    Task<AccountEntity?> GetByUsernameAsync(string username);
+    Task<bool> ExistsByUsernameAsync(string username);
 }

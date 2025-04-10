@@ -54,8 +54,6 @@ public class RateRelayDbContext(DbContextOptions<RateRelayDbContext> options) : 
                     entry.Entity.DateDeletedUtc = DateTime.UtcNow;
                     entry.State = EntityState.Modified;
                     break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
         }
 

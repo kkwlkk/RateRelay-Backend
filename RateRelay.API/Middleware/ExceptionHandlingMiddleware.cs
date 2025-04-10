@@ -1,4 +1,5 @@
 using System.Text.Json;
+using RateRelay.Application.Helpers;
 using RateRelay.Domain.Common;
 using ValidationException = RateRelay.Application.Exceptions.ValidationException;
 
@@ -12,14 +13,11 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
         {
             await next(context);
         }
-        catch (ValidationException validationException)
-        {
-            // dont log
-            await HandleExceptionAsync(context, validationException);
-        }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An unhandled exception occurred");
+            if (!ExceptionHelper.ShouldSkipLogging(ex))
+                logger.LogError(ex, "An unhandled exception occurred");
+
             await HandleExceptionAsync(context, ex);
         }
     }
@@ -40,6 +38,7 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
         ValidationException => StatusCodes.Status400BadRequest,
         FluentValidation.ValidationException => StatusCodes.Status400BadRequest,
         KeyNotFoundException => StatusCodes.Status404NotFound,
+        UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
         _ => StatusCodes.Status500InternalServerError
     };
 
