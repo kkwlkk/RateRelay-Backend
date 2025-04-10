@@ -20,7 +20,6 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
             })
             .ConfigureApiBehaviorOptions(options =>
             {
-                options.SuppressModelStateInvalidFilter = true;
                 options.SuppressMapClientErrors = true;
                 options.InvalidModelStateResponseFactory = context =>
                 {

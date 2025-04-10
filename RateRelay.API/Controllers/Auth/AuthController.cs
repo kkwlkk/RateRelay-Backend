@@ -17,7 +17,7 @@ public class AuthController(IMediator mediator, IMapper mapper) : BaseController
     [HttpPost("login")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(LoginOutputDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Login([FromBody] [Required] LoginInputDto loginInputDto)
+    public async Task<IActionResult> Login([FromBody] LoginInputDto loginInputDto)
     {
         var command = mapper.Map<LoginCommand>(loginInputDto);
         var response = await mediator.Send(command);
