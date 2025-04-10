@@ -21,7 +21,7 @@ public class AuthController(IMediator mediator, IMapper mapper) : BaseController
     {
         var command = mapper.Map<LoginCommand>(loginInputDto);
         var response = await mediator.Send(command);
-        return Ok(response);
+        return Success(response);
     }
 
     [HttpPost("refresh-token")]
@@ -31,6 +31,6 @@ public class AuthController(IMediator mediator, IMapper mapper) : BaseController
     {
         var command = mapper.Map<RefreshTokenCommand>(refreshTokenInputDto);
         var response = await mediator.Send(command);
-        return Ok(response);
+        return Success(response);
     }
 }
