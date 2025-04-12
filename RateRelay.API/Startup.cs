@@ -54,6 +54,7 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
         services.AddEndpointsApiExplorer();
         services.AddConfiguredSwagger();
         services.AddLogging(configuration);
+        services.AddMemoryCache();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -73,9 +74,10 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
                 diagnosticContext.Set("RequestMethod", httpContext.Request.Method);
             };
         });
-        app.UseExceptionHandling();
-        app.UseHttpsRedirection();
         app.UseRouting();
+        app.UseExceptionHandling();
+        app.UseRateLimiting();
+        app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
