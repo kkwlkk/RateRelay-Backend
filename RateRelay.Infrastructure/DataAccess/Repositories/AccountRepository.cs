@@ -34,4 +34,32 @@ public class AccountRepository(RateRelayDbContext dbContext) : Repository<Accoun
             .Select(rt => rt.Account)
             .FirstOrDefaultAsync();
     }
+
+    public async Task<AccountEntity?> GetByEmailAsync(string email)
+    {
+        return await _dbContext.Set<AccountEntity>()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Email == email);
+    }
+
+    public Task<bool> ExistsByEmailAsync(string email)
+    {
+        return _dbContext.Set<AccountEntity>()
+            .AsNoTracking()
+            .AnyAsync(x => x.Email == email);
+    }
+
+    public Task<bool> ExistsByGoogleIdAsync(string googleId)
+    {
+        return _dbContext.Set<AccountEntity>()
+            .AsNoTracking()
+            .AnyAsync(x => x.GoogleId == googleId);
+    }
+
+    public async Task<AccountEntity?> GetByGoogleIdAsync(string googleId)
+    {
+        return await _dbContext.Set<AccountEntity>()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.GoogleId == googleId);
+    }
 }

@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 namespace RateRelay.Domain.Entities;
 
 [Table("accounts")]
+[Index(nameof(Email), IsUnique = true)]
+[Index(nameof(GoogleId), IsUnique = true)]
 [Index(nameof(Username), IsUnique = true)]
 public class AccountEntity : BaseEntity
 {
@@ -12,8 +14,10 @@ public class AccountEntity : BaseEntity
     public required string Username { get; set; }
 
     [MaxLength(255)]
-    public required string PasswordHash { get; set; }
+    public required string Email { get; set; }
 
+    [MaxLength(255)]
+    public required string GoogleId { get; set; }
     public ulong Permissions { get; set; }
 
     public long? RoleId { get; set; }

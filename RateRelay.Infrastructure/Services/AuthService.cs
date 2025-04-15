@@ -2,9 +2,11 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using BCrypt.Net;
+using Google.Apis.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using RateRelay.Domain.Common;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Enums;
 using RateRelay.Domain.Extensions;
@@ -17,6 +19,7 @@ namespace RateRelay.Infrastructure.Services;
 
 public class AuthService(
     IOptions<JwtOptions> jwtAuthOptions,
+    IOptions<GoogleOAuthOptions> googleAuthOptions,
     RateRelayDbContext dbContext)
     : IAuthService
 {
@@ -133,5 +136,36 @@ public class AuthService(
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomBytes);
         return Convert.ToBase64String(randomBytes);
+    }
+
+    public async Task<GoogleUserInfo> ValidateGoogleTokenAsync(string token)
+    {
+        var clientId = googleAuthOptions.Value.ClientId;
+        var validationSettings = new GoogleJsonWebSignature.ValidationSettings
+        {
+            Audience = [clientId]
+        };
+
+        try
+        {
+            var payload = await GoogleJsonWebSignature.ValidateAsync(token, validationSettings);
+            return new GoogleUserInfo
+            {
+                Email = payload.Email,
+                Name = payload.Name,
+                PictureUrl = payload.Picture,
+                GoogleId = payload.Subject,
+            };
+        }
+        catch (InvalidJwtException ex)
+        {
+            Log.Error(ex, "Invalid OAuth token.");
+            throw new UnauthorizedAccessException("Invalid OAuth token.");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error validating OAuth token.");
+            throw;
+        }
     }
 }

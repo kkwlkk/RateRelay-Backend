@@ -1,6 +1,6 @@
 using AutoMapper;
 using RateRelay.Application.DTOs.Auth.Commands;
-using RateRelay.Application.Features.Auth.Commands.Login;
+using RateRelay.Application.Features.Auth.Commands.Google;
 using RateRelay.Application.Features.Auth.Commands.RefreshToken;
 
 namespace RateRelay.Application.Mapping;
@@ -9,9 +9,9 @@ public class AuthProfile : Profile
 {
     public AuthProfile()
     {
-        CreateMap<LoginCommand, LoginInputDto>()
+        CreateMap<GoogleAuthCommand, GoogleAuthInputDto>()
             .ReverseMap();
-        CreateMap<LoginOutputDto, LoginCommand>()
+        CreateMap<AuthOutputDto, GoogleAuthCommand>()
             .ReverseMap();
         CreateMap<RefreshTokenCommand, RefreshTokenInputDto>()
             .ReverseMap();

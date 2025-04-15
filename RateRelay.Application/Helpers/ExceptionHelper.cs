@@ -1,4 +1,5 @@
 using FluentValidation;
+using Google.Apis.Auth;
 
 namespace RateRelay.Application.Helpers;
 
@@ -8,6 +9,7 @@ public static class ExceptionHelper
     {
         return ex is UnauthorizedAccessException
             or KeyNotFoundException
-            or ValidationException;
+            or ValidationException
+            or InvalidJwtException;
     }
 }

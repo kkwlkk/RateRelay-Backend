@@ -1,3 +1,4 @@
+using RateRelay.Domain.Common;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Enums;
 
@@ -12,4 +13,5 @@ public interface IAuthService
     string HashPassword(string password);
     bool HasPermission(ulong permissions, Permission permission);
     Task<ulong> GetEffectivePermissionsAsync(long accountId);
+    Task<GoogleUserInfo> ValidateGoogleTokenAsync(string token);
 }
