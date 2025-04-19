@@ -29,6 +29,7 @@ public class AuthService(
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Convert.FromBase64String(_jwtAuthOptions.Secret);
+        var securityKey = new SymmetricSecurityKey(key);
 
         var effectivePermissions = await GetEffectivePermissionsAsync(account.Id);
 
@@ -51,8 +52,7 @@ public class AuthService(
             Expires = DateTime.UtcNow.Add(_jwtAuthOptions.Expiration),
             Issuer = _jwtAuthOptions.Issuer,
             Audience = _jwtAuthOptions.Audience,
-            SigningCredentials =
-                new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature),
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
