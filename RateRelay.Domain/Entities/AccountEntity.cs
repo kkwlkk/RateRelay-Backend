@@ -23,5 +23,5 @@ public class AccountEntity : BaseEntity
     public long? RoleId { get; set; }
 
     [ForeignKey("RoleId")]
-    public RoleEntity? Role { get; set; }
+    public virtual RoleEntity? Role { get; set; }
 }

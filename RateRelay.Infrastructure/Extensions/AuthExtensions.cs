@@ -59,5 +59,8 @@ public static class AuthExtensions
     
         services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUserDataResolver, CurrentUserDataResolver>();
+        services.AddScoped<IUserService, UserService>();
     }
 }

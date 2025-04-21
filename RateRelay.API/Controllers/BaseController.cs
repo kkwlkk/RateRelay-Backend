@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RateRelay.Domain.Common;
+using RateRelay.Domain.Entities;
+using RateRelay.Domain.Interfaces;
 
 namespace RateRelay.API.Controllers;
 
