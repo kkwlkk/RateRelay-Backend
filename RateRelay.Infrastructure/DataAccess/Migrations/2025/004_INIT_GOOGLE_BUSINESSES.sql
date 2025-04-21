@@ -2,6 +2,7 @@ CREATE TABLE businesses
 (
     Id              BIGINT PRIMARY KEY AUTO_INCREMENT,
     PlaceId         VARCHAR(255) NOT NULL,
+    Cid             VARCHAR(255) NOT NULL,
     BusinessName    VARCHAR(255) NOT NULL,
     OwnerAccountId  BIGINT       NOT NULL,
     IsVerified      BOOLEAN      NOT NULL DEFAULT 0,
@@ -25,6 +26,6 @@ CREATE TABLE business_verifications
     DateCreatedUtc            DATETIME NOT NULL,
     DateModifiedUtc           DATETIME NULL,
     DateDeletedUtc            DATETIME NULL,
-    CONSTRAINT FK_BusinessVerifications_Businesses FOREIGN KEY (BusinessId) REFERENCES businesses (Id),
+    CONSTRAINT FK_BusinessVerifications_Businesses FOREIGN KEY (BusinessId) REFERENCES businesses (Id) ON DELETE CASCADE,
     INDEX IX_BusinessVerifications_BusinessId (BusinessId)
 );

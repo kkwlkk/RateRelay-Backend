@@ -9,5 +9,6 @@ public enum BusinessVerificationErrorType
     BusinessNotFound,
     VerificationNotFound,
     VerificationExpired,
-    NotOwnedByAccount
+    NotOwnedByAccount,
+    TooManyBusinesses
 }

@@ -10,7 +10,6 @@ namespace RateRelay.Application.Features.Business.Commands.InitiateBusinessVerif
 
 public class InitiateBusinessVerificationCommandHandler(
     CurrentUserContext currentUserContext,
-    IUnitOfWorkFactory unitOfWorkFactory,
     IBusinessVerificationService businessVerificationService,
     IMapper mapper
 ) : IRequestHandler<InitiateBusinessVerificationCommand, BusinessVerificationOutputDto>
@@ -18,9 +17,6 @@ public class InitiateBusinessVerificationCommandHandler(
     public async Task<BusinessVerificationOutputDto> Handle(InitiateBusinessVerificationCommand request,
         CancellationToken cancellationToken)
     {
-        await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
-        var businessRepository = unitOfWork.GetRepository<BusinessEntity>();
-
         var verificationResult = await businessVerificationService.InitiateVerificationAsync(
             request.PlaceId,
             currentUserContext.AccountId

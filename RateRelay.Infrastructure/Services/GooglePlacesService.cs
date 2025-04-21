@@ -24,7 +24,7 @@ public class GooglePlacesService(
 
         try
         {
-            var endpoint = $"details/json?place_id={placeId}&fields=place_id,name,current_opening_hours&key={_apiKey}";
+            var endpoint = $"details/json?place_id={placeId}&fields=place_id,name,current_opening_hours,url&key={_apiKey}";
             var response = await httpClient.GetAsync(endpoint, cancellationToken);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);

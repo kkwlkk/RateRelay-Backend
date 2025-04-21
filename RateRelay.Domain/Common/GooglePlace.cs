@@ -10,8 +10,29 @@ namespace RateRelay.Domain.Common
         [JsonProperty("name")]
         public string Name { get; set; }
 
+        [JsonProperty("url")]
+        public string Url { get; set; }
+
+        [JsonIgnore]
+        public string Cid => ExtractCidFromUrl(Url);
+
         [JsonProperty("current_opening_hours")]
         public OpeningHours CurrentOpeningHours { get; set; }
+
+        private static string ExtractCidFromUrl(string url)
+        {
+            if (string.IsNullOrEmpty(url))
+                return string.Empty;
+
+            const string cidPrefix = "cid=";
+            var cidIndex = url.IndexOf(cidPrefix, StringComparison.Ordinal);
+            if (cidIndex < 0) return string.Empty;
+            var startIndex = cidIndex + cidPrefix.Length;
+            var endIndex = url.IndexOf('&', startIndex);
+
+            return endIndex < 0 ? url[startIndex..] : url.Substring(startIndex, endIndex - startIndex);
+
+        }
     }
 
     public class OpeningHours

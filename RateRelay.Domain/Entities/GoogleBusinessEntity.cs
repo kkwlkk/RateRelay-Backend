@@ -11,6 +11,10 @@ public class BusinessEntity : BaseEntity
     [MaxLength(255)]
     public required string PlaceId { get; set; }
 
+    // Unique content identifier for the business (used to create reliable URLs on Google Maps)
+    [MaxLength(255)]
+    public required string Cid { get; set; }
+
     [MaxLength(255)]
     public required string BusinessName { get; set; }
     

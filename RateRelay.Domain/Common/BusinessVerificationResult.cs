@@ -52,4 +52,8 @@ public class BusinessVerificationResult
     public static BusinessVerificationResult NotOwnedByAccount()
         => new(false, false, null, null, "Business is not owned by the account",
             BusinessVerificationErrorType.NotOwnedByAccount);
+    
+    public static BusinessVerificationResult TooManyBusinesses()
+        => new(false, false, null, null, "Too many businesses for this account",
+            BusinessVerificationErrorType.TooManyBusinesses);
 }
