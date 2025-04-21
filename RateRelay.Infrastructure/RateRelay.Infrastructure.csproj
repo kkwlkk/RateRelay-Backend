@@ -37,6 +37,8 @@
       <EmbeddedResource Include="DataAccess\Migrations\2025\002_ADD_AUTH.sql" />
       <None Remove="DataAccess\Migrations\2025\003_INIT_REFRESH_TOKEN_TABLE.sql" />
       <EmbeddedResource Include="DataAccess\Migrations\2025\003_INIT_REFRESH_TOKEN_TABLE.sql" />
+      <None Remove="DataAccess\Migrations\2025\004_INIT_GOOGLE_BUSINESSES.sql" />
+      <EmbeddedResource Include="DataAccess\Migrations\2025\004_INIT_GOOGLE_BUSINESSES.sql" />
     </ItemGroup>
 
 </Project>
