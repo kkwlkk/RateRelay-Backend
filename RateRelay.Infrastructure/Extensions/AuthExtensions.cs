@@ -62,5 +62,6 @@ public static class AuthExtensions
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserDataResolver, CurrentUserDataResolver>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<CurrentUserContext>();
     }
 }

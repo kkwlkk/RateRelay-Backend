@@ -12,7 +12,8 @@ public class UserService(
     IMapper mapper
 ) : IUserService
 {
-    public async Task<AccountEntity> GetFullAccountByIdAsync(long accountId)
+    public async Task<AccountEntity> GetFullAccountByIdAsync(long accountId,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -21,7 +22,7 @@ public class UserService(
 
             var account = await accountRepository.GetBaseQueryable()
                 .Include(a => a.Role)
-                .FirstOrDefaultAsync(a => a.Id == accountId);
+                .FirstOrDefaultAsync(a => a.Id == accountId, cancellationToken: cancellationToken);
 
             if (account is null)
             {

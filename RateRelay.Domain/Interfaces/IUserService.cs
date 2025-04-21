@@ -4,5 +4,5 @@ namespace RateRelay.Domain.Interfaces;
 
 public interface IUserService
 {
-    Task<AccountEntity> GetFullAccountByIdAsync(long accountId);
+    Task<AccountEntity> GetFullAccountByIdAsync(long accountId, CancellationToken cancellationToken = default);
 }
