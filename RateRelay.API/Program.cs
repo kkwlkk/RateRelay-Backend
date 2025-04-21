@@ -1,4 +1,6 @@
+using Newtonsoft.Json;
 using RateRelay.Application.DependencyInjection;
+using RateRelay.Domain.Interfaces;
 using RateRelay.Infrastructure.Environment;
 using RateRelay.Infrastructure.Logging;
 using RateRelay.Infrastructure.Services;
@@ -11,7 +13,7 @@ public static class Program
     public static async Task Main(string[] args)
     {
         var environment = EnvironmentService.ConfigureEnvironment();
-        
+
         var configuration = LoadConfiguration(args, environment);
 
         Log.Logger = LoggingConfiguration.CreateLoggerConfiguration(configuration).CreateLogger();
@@ -29,7 +31,7 @@ public static class Program
                     throw new InvalidOperationException("Database migration failed");
                 }
             }
-            
+
             await host.RunAsync();
         }
         catch (Exception ex)
@@ -38,10 +40,10 @@ public static class Program
         }
         finally
         {
-            Log.CloseAndFlush();
+            await Log.CloseAndFlushAsync();
         }
     }
-    
+
     private static IConfiguration LoadConfiguration(string[] args, ApplicationEnvironment environment)
     {
         return new ConfigurationBuilder()
@@ -55,10 +57,7 @@ public static class Program
     private static IHostBuilder CreateHostBuilder(string[] args, ApplicationEnvironment environment) =>
         Host.CreateDefaultBuilder(args)
             .UseSerilog()
-            .ConfigureWebHostDefaults(webBuilder => 
-            { 
-                webBuilder.UseStartup<Startup>(); 
-            })
+            .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
             .ConfigureServices((hostContext, services) =>
             {
                 services.AddSingleton(environment);
@@ -72,8 +71,8 @@ public static class Program
                 config.AddEnvironmentVariables();
                 config.AddCommandLine(args);
             });
-    
-    
+
+
     private static async Task<bool> PerformMigrationAsync(IServiceProvider serviceProvider)
     {
         var migrationService = serviceProvider.GetRequiredService<MigrationService>();

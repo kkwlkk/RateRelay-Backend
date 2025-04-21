@@ -15,5 +15,6 @@ public static class ServiceConfiguration
         services.AddRateRelayAuth(configuration);
         services.AddMediatR();
         services.AddAutoMapperConfiguration();
+        services.AddGooglePlacesService(configuration);
     }
 }
