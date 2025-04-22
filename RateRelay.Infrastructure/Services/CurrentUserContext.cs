@@ -1,4 +1,5 @@
 using RateRelay.Domain.Interfaces;
+using RateRelay.Domain.Interfaces.Services;
 
 namespace RateRelay.Infrastructure.Services;
 

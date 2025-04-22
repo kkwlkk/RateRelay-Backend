@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using RateRelay.Domain.Enums;
 using RateRelay.Domain.Interfaces;
+using RateRelay.Domain.Interfaces.Services;
 using RateRelay.Infrastructure.Authorization;
 using RateRelay.Infrastructure.Configuration;
 using RateRelay.Infrastructure.Services;

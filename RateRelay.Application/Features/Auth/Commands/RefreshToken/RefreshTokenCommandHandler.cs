@@ -1,6 +1,8 @@
 using MediatR;
 using RateRelay.Application.DTOs.Auth.Commands;
 using RateRelay.Domain.Interfaces;
+using RateRelay.Domain.Interfaces.DataAccess;
+using RateRelay.Domain.Interfaces.Services;
 using RateRelay.Infrastructure.DataAccess.Repositories;
 
 namespace RateRelay.Application.Features.Auth.Commands.RefreshToken;

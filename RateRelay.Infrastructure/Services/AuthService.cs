@@ -11,6 +11,7 @@ using RateRelay.Domain.Entities;
 using RateRelay.Domain.Enums;
 using RateRelay.Domain.Extensions;
 using RateRelay.Domain.Interfaces;
+using RateRelay.Domain.Interfaces.Services;
 using RateRelay.Infrastructure.Configuration;
 using RateRelay.Infrastructure.DataAccess.Context;
 using Serilog;

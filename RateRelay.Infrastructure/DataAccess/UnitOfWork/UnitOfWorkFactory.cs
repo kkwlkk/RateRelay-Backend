@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using RateRelay.Domain.Interfaces;
+using RateRelay.Domain.Interfaces.DataAccess;
 using RateRelay.Infrastructure.DataAccess.Context;
 using Serilog;
 

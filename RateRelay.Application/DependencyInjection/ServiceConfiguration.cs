@@ -14,6 +14,7 @@ public static class ServiceConfiguration
     {
         services.AddLogging(configuration);
         services.AddRateRelayDatabase(configuration);
+        services.AddRedis(configuration);
         services.AddRateRelayAuth(configuration);
         services.AddMediatR();
         services.AddAutoMapperConfiguration();

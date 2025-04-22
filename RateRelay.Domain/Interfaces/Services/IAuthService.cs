@@ -2,7 +2,7 @@ using RateRelay.Domain.Common;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Enums;
 
-namespace RateRelay.Domain.Interfaces;
+namespace RateRelay.Domain.Interfaces.Services;
 
 public interface IAuthService
 {

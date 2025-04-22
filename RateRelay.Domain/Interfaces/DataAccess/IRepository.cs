@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using RateRelay.Domain.Entities;
 
-namespace RateRelay.Domain.Interfaces;
+namespace RateRelay.Domain.Interfaces.DataAccess;
 
 public interface IRepository<T> where T : BaseEntity
 {

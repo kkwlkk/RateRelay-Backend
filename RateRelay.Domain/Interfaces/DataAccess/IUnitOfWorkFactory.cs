@@ -1,4 +1,4 @@
-namespace RateRelay.Domain.Interfaces;
+namespace RateRelay.Domain.Interfaces.DataAccess;
 
 public interface IUnitOfWorkFactory
 {

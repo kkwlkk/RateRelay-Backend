@@ -4,7 +4,7 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using RateRelay.Domain.Entities;
-using RateRelay.Domain.Interfaces;
+using RateRelay.Domain.Interfaces.DataAccess;
 using RateRelay.Infrastructure.DataAccess.Context;
 using RateRelay.Infrastructure.DataAccess.Repositories;
 using Serilog;

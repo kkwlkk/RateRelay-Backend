@@ -1,8 +1,8 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Interfaces;
+using RateRelay.Domain.Interfaces.DataAccess;
 using Serilog;
 
 namespace RateRelay.Infrastructure.Services;

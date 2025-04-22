@@ -1,8 +1,7 @@
 using System.Data;
-using Microsoft.EntityFrameworkCore.Storage;
 using RateRelay.Domain.Entities;
 
-namespace RateRelay.Domain.Interfaces;
+namespace RateRelay.Domain.Interfaces.DataAccess;
 
 public interface IUnitOfWork : IAsyncDisposable
 {

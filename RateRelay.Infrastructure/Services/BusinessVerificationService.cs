@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Common;
 using RateRelay.Domain.Interfaces;
+using RateRelay.Domain.Interfaces.DataAccess;
+using RateRelay.Domain.Interfaces.Services;
 using RateRelay.Infrastructure.Helpers;
 using Serilog;
 

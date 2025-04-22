@@ -2,6 +2,7 @@ using System.Net.Http.Headers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RateRelay.Domain.Interfaces;
+using RateRelay.Domain.Interfaces.Services;
 using RateRelay.Infrastructure.Configuration;
 using RateRelay.Infrastructure.Services;
 

@@ -1,7 +1,7 @@
 using RateRelay.Domain.Common;
 using RateRelay.Domain.Entities;
 
-namespace RateRelay.Domain.Interfaces;
+namespace RateRelay.Domain.Interfaces.Services;
 
 public interface IBusinessVerificationService
 {

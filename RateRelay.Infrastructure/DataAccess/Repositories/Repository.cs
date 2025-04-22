@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Interfaces;
+using RateRelay.Domain.Interfaces.DataAccess;
 using RateRelay.Infrastructure.DataAccess.Context;
 
 namespace RateRelay.Infrastructure.DataAccess.Repositories;

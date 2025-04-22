@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RateRelay.Domain.Common;
 using RateRelay.Domain.Interfaces;
+using RateRelay.Domain.Interfaces.Services;
 using RateRelay.Infrastructure.Configuration;
 
 namespace RateRelay.Infrastructure.Services;
