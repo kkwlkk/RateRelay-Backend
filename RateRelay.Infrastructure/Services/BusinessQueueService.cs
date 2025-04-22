@@ -45,7 +45,8 @@ public class BusinessQueueService(
                             b.OwnerAccount.Id != accountId &&
                             b.IsVerified &&
                             b.OwnerAccount.PointBalance > PointConstants.MinimumOwnerPointBalanceForBusinessVisibility)
-                .OrderBy(b => b.DateCreatedUtc);
+                .OrderBy(b => b.Priority)
+                .ThenBy(b => b.Id);
 
             if (!await baseQuery.AnyAsync(cancellationToken))
             {

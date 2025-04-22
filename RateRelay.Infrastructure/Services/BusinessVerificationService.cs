@@ -23,7 +23,7 @@ public class BusinessVerificationService(
 
         var existingBusinesses = await businessRepository.FindAsync(b => b.OwnerAccountId == accountId);
         var businessEntities = existingBusinesses.ToList();
-        if (businessEntities.Any())
+        if (businessEntities.Count != 0)
         {
             var userBusiness = businessEntities.First();
 
