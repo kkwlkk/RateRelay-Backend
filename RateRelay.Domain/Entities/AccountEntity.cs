@@ -19,6 +19,8 @@ public class AccountEntity : BaseEntity
     [MaxLength(255)]
     public required string GoogleId { get; set; }
     public ulong Permissions { get; set; }
+    
+    public int PointBalance { get; set; }
 
     public long? RoleId { get; set; }
 

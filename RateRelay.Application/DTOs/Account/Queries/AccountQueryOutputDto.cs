@@ -8,5 +8,6 @@ public class AccountQueryOutputDto
     public string Username { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public ulong Permissions { get; set; }
+    public int PointBalance { get; set; }
     public RoleEntityOutputDto? Role { get; set; }
 }

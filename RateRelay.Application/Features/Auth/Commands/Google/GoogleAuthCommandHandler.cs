@@ -33,6 +33,15 @@ public class GoogleAuthCommandHandler(
             if (existingEmailAccount is not null)
                 throw new InvalidOperationException("Account with this email already exists.");
 
+            if (string.IsNullOrEmpty(googleUserInfo.Name))
+                throw new InvalidOperationException("Google account name is required.");
+
+            if (string.IsNullOrEmpty(googleUserInfo.GoogleId))
+                throw new InvalidOperationException("Google account ID is required.");
+
+            if (string.IsNullOrEmpty(googleUserInfo.Email))
+                throw new InvalidOperationException("Google account email is required.");
+
             account = new AccountEntity
             {
                 GoogleId = googleUserInfo.GoogleId,

@@ -18,6 +18,6 @@ public static class ServiceConfiguration
         services.AddMediatR();
         services.AddAutoMapperConfiguration();
         services.AddGooglePlacesService(configuration);
-        services.AddScoped<IBusinessVerificationService, BusinessVerificationService>();
+        services.AddInfrastructureMiscExtensions();
     }
 }

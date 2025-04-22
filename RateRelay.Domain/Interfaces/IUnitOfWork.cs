@@ -1,4 +1,5 @@
 using System.Data;
+using Microsoft.EntityFrameworkCore.Storage;
 using RateRelay.Domain.Entities;
 
 namespace RateRelay.Domain.Interfaces;

@@ -39,6 +39,8 @@
       <EmbeddedResource Include="DataAccess\Migrations\2025\003_INIT_REFRESH_TOKEN_TABLE.sql" />
       <None Remove="DataAccess\Migrations\2025\004_INIT_GOOGLE_BUSINESSES.sql" />
       <EmbeddedResource Include="DataAccess\Migrations\2025\004_INIT_GOOGLE_BUSINESSES.sql" />
+      <None Remove="DataAccess\Migrations\2025\005_INIT_POINT_SYSTEM.sql" />
+      <EmbeddedResource Include="DataAccess\Migrations\2025\005_INIT_POINT_SYSTEM.sql" />
     </ItemGroup>
 
 </Project>

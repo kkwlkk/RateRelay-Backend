@@ -21,7 +21,7 @@ public class GetAccountQueryHandler(
         {
             throw new KeyNotFoundException("Account not found");
         }
-        
+
         var accountDto = mapper.Map<AccountQueryOutputDto>(account);
         var roleDto = mapper.Map<RoleEntityOutputDto>(account.Role);
         accountDto.Role = roleDto;

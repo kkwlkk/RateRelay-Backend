@@ -18,7 +18,7 @@ public static class DataAccessExtensions
 
         services.AddDbContextFactory<RateRelayDbContext>(options =>
             options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-                builder => { builder.EnableRetryOnFailure(5); }));
+                builder => {  }));
 
         services.AddSingleton<MigrationService>();
         services.AddSingleton<IUnitOfWorkFactory, UnitOfWorkFactory>();
