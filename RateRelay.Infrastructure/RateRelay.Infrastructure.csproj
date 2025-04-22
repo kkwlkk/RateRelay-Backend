@@ -43,6 +43,8 @@
       <EmbeddedResource Include="DataAccess\Migrations\2025\004_INIT_GOOGLE_BUSINESSES.sql" />
       <None Remove="DataAccess\Migrations\2025\005_INIT_POINT_SYSTEM.sql" />
       <EmbeddedResource Include="DataAccess\Migrations\2025\005_INIT_POINT_SYSTEM.sql" />
+      <None Remove="DataAccess\Migrations\2025\006_INIT_BUSINESS_REVIEWS.sql" />
+      <EmbeddedResource Include="DataAccess\Migrations\2025\006_INIT_BUSINESS_REVIEWS.sql" />
     </ItemGroup>
 
 </Project>

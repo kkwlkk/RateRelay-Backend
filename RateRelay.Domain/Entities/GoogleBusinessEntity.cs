@@ -17,13 +17,15 @@ public class BusinessEntity : BaseEntity
 
     [MaxLength(255)]
     public required string BusinessName { get; set; }
-    
+
     public long OwnerAccountId { get; set; }
-    
+
     [ForeignKey("OwnerAccountId")]
     public AccountEntity? OwnerAccount { get; set; }
-    
+
     public bool IsVerified { get; set; }
+
+    public byte Priority { get; set; }
 
     [InverseProperty("Business")]
     public BusinessVerificationEntity? Verification { get; set; }

@@ -43,6 +43,45 @@ public class RedisDistributedLockProvider(IConnectionMultiplexer connectionMulti
         }
     }
 
+    public async Task<bool> TryAcquirePersistentLockAsync(DistributedLockCategory category, string key,
+        TimeSpan lockDuration)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+            throw new ArgumentNullException(nameof(key));
+
+        var database = _connectionMultiplexer.GetDatabase();
+        var lockKey = GetLockKey(category, key);
+
+        try
+        {
+            var acquired = await database.StringSetAsync(lockKey, "1", lockDuration, When.NotExists);
+
+            if (acquired)
+            {
+                _logger.Information("Persistent lock acquired: {Category}:{Key} for {Duration}", category, key,
+                    lockDuration);
+            }
+            else
+            {
+                _logger.Information("Failed to acquire persistent lock: {Category}:{Key} (already locked)", category,
+                    key);
+            }
+
+            return acquired;
+        }
+        catch (RedisConnectionException ex)
+        {
+            _logger.Error(ex, "Redis connection error while acquiring persistent lock: {Category}:{Key}", category,
+                key);
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error acquiring persistent lock: {Category}:{Key}", category, key);
+            throw;
+        }
+    }
+
     public bool IsLockAcquired(DistributedLockCategory category, string key)
     {
         var database = _connectionMultiplexer.GetDatabase();
@@ -80,6 +119,34 @@ public class RedisDistributedLockProvider(IConnectionMultiplexer connectionMulti
         {
             _logger.Error(ex,
                 "An error occurred while trying to force release a lock for category: {LockCategory}, name: {LockName}",
+                category, lockKey);
+
+            throw;
+        }
+    }
+
+    public async Task<TimeSpan?> GetLockTtlAsync(DistributedLockCategory category, string key)
+    {
+        var database = _connectionMultiplexer.GetDatabase();
+        var lockKey = GetLockKey(category, key);
+
+        try
+        {
+            var ttl = await database.KeyTimeToLiveAsync(lockKey);
+            return ttl;
+        }
+        catch (RedisConnectionException ex)
+        {
+            _logger.Error(ex,
+                "Redis connection error occurred while trying to get TTL for lock: {LockCategory}:{LockName}",
+                category, lockKey);
+
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex,
+                "An error occurred while trying to get TTL for lock: {LockCategory}:{LockName}",
                 category, lockKey);
 
             throw;

@@ -11,5 +11,7 @@ public static class InfrastructureMiscExtensions
     {
         services.AddSingleton<IPointService, PointService>();
         services.AddScoped<IBusinessVerificationService, BusinessVerificationService>();
+        services.AddScoped<IReviewService, ReviewService>();
+        services.AddScoped<IBusinessQueueService, BusinessQueueService>();
     }
 }
