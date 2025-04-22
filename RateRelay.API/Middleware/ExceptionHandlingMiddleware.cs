@@ -41,6 +41,7 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
         KeyNotFoundException => StatusCodes.Status404NotFound,
         UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
         NotFoundException => StatusCodes.Status404NotFound,
+        AppException => StatusCodes.Status400BadRequest,
         _ => StatusCodes.Status500InternalServerError
     };
 

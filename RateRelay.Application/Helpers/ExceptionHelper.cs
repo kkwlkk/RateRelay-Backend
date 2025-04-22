@@ -12,6 +12,7 @@ public static class ExceptionHelper
             or KeyNotFoundException
             or ValidationException
             or InvalidJwtException
-            or NotFoundException;
+            or NotFoundException 
+            or AppException;
     }
 }

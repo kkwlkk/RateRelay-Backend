@@ -22,7 +22,7 @@ public class ProcessBusinessVerificationChallengeCommandHandler(
 
         if (!verificationResult.IsSuccess)
         {
-            throw new Exception(verificationResult.ErrorMessage);
+            throw new AppException(verificationResult.ErrorMessage);
         }
 
         if (verificationResult.Verification is null)
