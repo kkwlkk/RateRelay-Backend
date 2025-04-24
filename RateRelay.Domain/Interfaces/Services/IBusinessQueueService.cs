@@ -14,5 +14,10 @@ public interface IBusinessQueueService
     Task<bool> IsBusinessAssignedToUserAsync(long businessId, long accountId,
         CancellationToken cancellationToken = default);
 
-    Task<TimeSpan?> GetAssignedBusinessLockTtlByUserAsync(long accountId, CancellationToken cancellationToken = default);
+    Task<TimeSpan?>
+        GetAssignedBusinessLockTtlByUserAsync(long accountId, CancellationToken cancellationToken = default);
+
+    Task<bool> AssignBusinessToUserAsync(long businessId, long accountId);
+
+    Task<bool> UnassignBusinessFromUserAsync(long businessId, long accountId);
 }

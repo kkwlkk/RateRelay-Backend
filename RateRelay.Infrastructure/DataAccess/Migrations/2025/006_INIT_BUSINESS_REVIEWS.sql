@@ -3,15 +3,15 @@ ALTER TABLE businesses
 
 CREATE TABLE business_reviews
 (
-    Id              bigint      NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    BusinessId      bigint      NOT NULL,
-    ReviewerId      bigint      NOT NULL,
-    Status          varchar(64) NOT NULL,
-    DateAcceptedUtc datetime    NULL,
-    DateRejectedUtc datetime    NULL,
-    DateCreatedUtc  datetime    NOT NULL,
-    DateModifiedUtc datetime    NULL,
-    DateDeletedUtc  datetime    NULL,
+    Id              bigint   NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    BusinessId      bigint   NOT NULL,
+    ReviewerId      bigint   NOT NULL,
+    Status          tinyint  NOT NULL,
+    DateAcceptedUtc datetime NULL,
+    DateRejectedUtc datetime NULL,
+    DateCreatedUtc  datetime NOT NULL,
+    DateModifiedUtc datetime NULL,
+    DateDeletedUtc  datetime NULL,
     CONSTRAINT FK_business_reviews_businesses_BusinessId FOREIGN KEY (BusinessId) REFERENCES businesses (Id),
     CONSTRAINT FK_business_reviews_accounts_AccountId FOREIGN KEY (ReviewerId) REFERENCES accounts (Id)
 );

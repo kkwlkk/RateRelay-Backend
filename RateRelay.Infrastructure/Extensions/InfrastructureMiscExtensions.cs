@@ -13,5 +13,6 @@ public static class InfrastructureMiscExtensions
         services.AddScoped<IBusinessVerificationService, BusinessVerificationService>();
         services.AddScoped<IReviewService, ReviewService>();
         services.AddScoped<IBusinessQueueService, BusinessQueueService>();
+        services.AddScoped<IGoogleMapsService, GoogleMapsService>();
     }
 }

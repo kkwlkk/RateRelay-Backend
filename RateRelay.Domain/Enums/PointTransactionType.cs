@@ -9,6 +9,10 @@ public enum PointTransactionType
     [Display(Name = "Successful Business Verification")]
     [Description("Points earned for verifying a business for the first time")]
     BusinessVerification = 1,
+    
+    [Display(Name = "Successful Business Review")]
+    [Description("Points earned for reviewing a business")]
+    BusinessReview = 2,
 
     // Debit transactions (remove points)
 

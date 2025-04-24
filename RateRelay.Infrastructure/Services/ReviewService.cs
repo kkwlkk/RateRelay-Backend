@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using RateRelay.Domain.Constants;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Enums;
 using RateRelay.Domain.Interfaces;
@@ -7,7 +8,8 @@ using RateRelay.Domain.Interfaces.DataAccess;
 namespace RateRelay.Infrastructure.Services;
 
 public class ReviewService(
-    IUnitOfWorkFactory unitOfWorkFactory
+    IUnitOfWorkFactory unitOfWorkFactory,
+    IPointService pointService
 ) : IReviewService
 {
     public async Task<bool> AddUserReviewAsync(long businessId, long reviewerId, CancellationToken cancellationToken)
@@ -49,8 +51,8 @@ public class ReviewService(
         await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
         var reviewRepository = unitOfWork.GetRepository<BusinessReviewEntity>();
 
-        var review = await reviewRepository
-            .GetByIdAsync(reviewerId, cancellationToken);
+        var review = await reviewRepository.GetBaseQueryable()
+            .FirstOrDefaultAsync(r => r.BusinessId == businessId && r.ReviewerId == reviewerId, cancellationToken);
 
         if (review is null)
         {
@@ -78,6 +80,14 @@ public class ReviewService(
         review.DateAcceptedUtc = DateTime.UtcNow;
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
+        await pointService.AddPointsAsync(
+            reviewerId,
+            PointConstants.BusinessReviewPoints,
+            PointTransactionType.BusinessReview,
+            $"Accepted review for business with ID {businessId}",
+            cancellationToken
+        );
+
         return true;
     }
 
@@ -87,7 +97,8 @@ public class ReviewService(
         var reviewRepository = unitOfWork.GetRepository<BusinessReviewEntity>();
 
         var review = await reviewRepository
-            .GetByIdAsync(reviewerId, cancellationToken);
+            .GetBaseQueryable()
+            .FirstOrDefaultAsync(r => r.BusinessId == businessId && r.ReviewerId == reviewerId, cancellationToken);
 
         if (review is null)
         {
@@ -142,7 +153,7 @@ public class ReviewService(
         return reviews;
     }
 
-    public async Task<BusinessReviewEntity> GetUserReviewByBusinessIdAsync(long businessId, long reviewerId,
+    public async Task<BusinessReviewEntity?> GetUserReviewByBusinessIdAsync(long businessId, long reviewerId,
         CancellationToken cancellationToken)
     {
         await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
@@ -153,7 +164,7 @@ public class ReviewService(
 
         if (review is null)
         {
-            throw new ArgumentException($"Review with ID {reviewerId} not found.");
+            return null;
         }
 
         if (review.BusinessId != businessId)
@@ -165,7 +176,7 @@ public class ReviewService(
         return review;
     }
 
-    public async Task<BusinessReviewEntity> GetBusinessReviewByUserIdAsync(long businessId, long reviewerId,
+    public async Task<BusinessReviewEntity?> GetBusinessReviewByUserIdAsync(long businessId, long reviewerId,
         CancellationToken cancellationToken)
     {
         await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
@@ -176,7 +187,7 @@ public class ReviewService(
 
         if (review is null)
         {
-            throw new ArgumentException($"Review with ID {reviewerId} not found.");
+            return null;
         }
 
         if (review.BusinessId != businessId)

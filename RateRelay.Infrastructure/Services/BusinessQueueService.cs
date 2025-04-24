@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RateRelay.Domain.Constants;
 using RateRelay.Domain.Entities;
+using RateRelay.Domain.Enums;
 using RateRelay.Domain.Enums.Redis;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.DataAccess;
@@ -27,15 +28,31 @@ public class BusinessQueueService(
         try
         {
             var existingAssignment = await GetUserAssignedBusinessAsync(accountId, cancellationToken);
-            if (existingAssignment != null)
+
+            if (existingAssignment is not null)
             {
-                logger.Information("User {AccountId} already has business {BusinessId} assigned",
-                    accountId, existingAssignment.Id);
-                return existingAssignment;
+                if (ApplicationEnvironment.Current().IsDevelopment)
+                {
+                    logger.Debug("User {AccountId} already has business {BusinessId} assigned. Unassigning it.",
+                        accountId, existingAssignment.Id);
+                }
+
+                await UnassignBusinessFromUserAsync(
+                    existingAssignment.Id,
+                    accountId
+                );
             }
 
             await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
             var businessRepository = unitOfWork.GetRepository<BusinessEntity>();
+            var businessReviewRepository = unitOfWork.GetRepository<BusinessReviewEntity>();
+
+            var businessesWithUserReviews = await businessReviewRepository
+                .GetBaseQueryable()
+                .Where(b => b.ReviewerId == accountId && (b.Status == BusinessReviewStatus.Pending ||
+                                                          b.Status == BusinessReviewStatus.Accepted))
+                .Select(b => b.BusinessId)
+                .ToListAsync(cancellationToken);
 
             const int pageSize = 25;
 
@@ -44,7 +61,9 @@ public class BusinessQueueService(
                 .Where(b => b.OwnerAccount != null &&
                             b.OwnerAccount.Id != accountId &&
                             b.IsVerified &&
-                            b.OwnerAccount.PointBalance > PointConstants.MinimumOwnerPointBalanceForBusinessVisibility)
+                            b.OwnerAccount.PointBalance >
+                            PointConstants.MinimumOwnerPointBalanceForBusinessVisibility &&
+                            !businessesWithUserReviews.Contains(b.Id))
                 .OrderBy(b => b.Priority)
                 .ThenBy(b => b.Id);
 
@@ -185,7 +204,7 @@ public class BusinessQueueService(
         return ttl;
     }
 
-    private async Task<bool> AssignBusinessToUserAsync(
+    public async Task<bool> AssignBusinessToUserAsync(
         long businessId,
         long accountId)
     {
@@ -213,14 +232,13 @@ public class BusinessQueueService(
         return true;
     }
 
-    private async Task<bool> UnassignBusinessFromUserAsync(
+    public async Task<bool> UnassignBusinessFromUserAsync(
         long businessId,
         long accountId)
     {
-        var lockAcquired = await distributedLockProvider.TryAcquirePersistentLockAsync(
+        var lockAcquired = await distributedLockProvider.IsLockAcquiredAsync(
             DistributedLockCategory.BusinessQueue,
-            businessId.ToString(),
-            TimeSpan.FromMinutes(BusinessLockTimeoutInMinutes)
+            businessId.ToString()
         );
 
         if (!lockAcquired)
@@ -229,6 +247,11 @@ public class BusinessQueueService(
                 accountId);
             return false;
         }
+
+        await distributedLockProvider.ForceReleaseLockAsync(
+            DistributedLockCategory.BusinessQueue,
+            businessId.ToString()
+        );
 
         await redisCacheProvider.RemoveAsync(
             CacheEntryCategory.QueuedBusinessUserLink,

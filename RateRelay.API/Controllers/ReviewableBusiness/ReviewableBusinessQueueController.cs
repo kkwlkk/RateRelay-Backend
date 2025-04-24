@@ -1,0 +1,48 @@
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using RateRelay.API.Attributes.RateLimiting;
+using RateRelay.Application.DTOs.ReviewableBusiness.Commands;
+using RateRelay.Application.DTOs.ReviewableBusiness.Queries;
+using RateRelay.Application.Features.ReviewableBusiness.Commands.SubmitBusinessReview;
+using RateRelay.Application.Features.ReviewableBusiness.Queries.GetNextBusinessForReview;
+using RateRelay.Application.Features.ReviewableBusiness.Queries.GetTimeLeftForBusinessReview;
+
+namespace RateRelay.API.Controllers.Business;
+
+[ApiController]
+[Area("Account")]
+[Route("api/reviewable-businesses")]
+[Authorize]
+public class ReviewableBusinessQueueController(
+    IMediator mediator
+) : BaseController
+{
+    [HttpGet("next")]
+    [ProducesResponseType(typeof(GetNextBusinessForReviewOutputDto), StatusCodes.Status200OK)]
+    [RateLimit(3, 60)]
+    public async Task<IActionResult> GetNextReviewableBusinessAsync()
+    {
+        var query = new GetNextBusinessForReviewQuery();
+        var response = await mediator.Send(query);
+        return Success(response);
+    }
+
+    [HttpGet("time-left")]
+    [ProducesResponseType(typeof(GetTimeLeftForBusinessReviewOutputDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetTimeLeftForBusinessReviewAsync()
+    {
+        var query = new GetTimeLeftForBusinessReviewQuery();
+        var response = await mediator.Send(query);
+        return Success(response);
+    }
+    
+    [HttpPost("submit")]
+    [ProducesResponseType(typeof(SubmitBusinessReviewOutputDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> SubmitBusinessReviewAsync()
+    {
+        var command = new SubmitBusinessReviewCommand();
+        var response = await mediator.Send(command);
+        return Success(response);
+    }
+}
