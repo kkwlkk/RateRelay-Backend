@@ -32,6 +32,7 @@ public class AccountRepository(RateRelayDbContext dbContext) : Repository<Accoun
         return await _dbContext.Set<RefreshTokenEntity>()
             .AsNoTracking()
             .Where(rt => rt.Token == refreshToken && rt.ExpirationDate > DateTime.UtcNow)
+            .Include(rt => rt.Account)
             .Select(rt => rt.Account)
             .FirstOrDefaultAsync();
     }

@@ -1,4 +1,4 @@
-namespace RateRelay.Application.Exceptions;
+namespace RateRelay.Domain.Exceptions;
 
 public class AppException : Exception
 {

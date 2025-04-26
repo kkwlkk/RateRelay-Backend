@@ -1,5 +1,6 @@
 using Google.Apis.Auth;
 using RateRelay.Application.Exceptions;
+using RateRelay.Domain.Exceptions;
 using ValidationException = FluentValidation.ValidationException;
 
 namespace RateRelay.Application.Helpers;
@@ -12,7 +13,8 @@ public static class ExceptionHelper
             or KeyNotFoundException
             or ValidationException
             or InvalidJwtException
-            or NotFoundException 
-            or AppException;
+            or NotFoundException
+            or AppException
+            or InvalidOperationException;
     }
 }

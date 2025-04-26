@@ -1,6 +1,7 @@
 using MediatR;
 using RateRelay.Application.DTOs.ReviewableBusiness.Queries;
 using RateRelay.Application.Exceptions;
+using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Infrastructure.Services;
 

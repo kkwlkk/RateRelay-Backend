@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using RateRelay.Domain.Enums;
 
 namespace RateRelay.Domain.Entities;
 
@@ -26,4 +27,13 @@ public class AccountEntity : BaseEntity
 
     [ForeignKey("RoleId")]
     public virtual RoleEntity? Role { get; set; }
+    
+    public AccountOnboardingStep OnboardingStep { get; set; } = AccountOnboardingStep.NotStarted;
+    
+    public DateTime? OnboardingLastUpdatedUtc { get; set; }
+    
+    [NotMapped]
+    public bool HasCompletedOnboarding => OnboardingStep == AccountOnboardingStep.Completed;
+    
+    
 }

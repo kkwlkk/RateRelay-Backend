@@ -3,6 +3,7 @@ using MediatR;
 using RateRelay.Application.DTOs.Business.BusinessVerification.Commands;
 using RateRelay.Application.Exceptions;
 using RateRelay.Domain.Entities;
+using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.Services;
 using RateRelay.Infrastructure.Services;

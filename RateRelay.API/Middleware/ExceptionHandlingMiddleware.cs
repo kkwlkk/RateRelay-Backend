@@ -2,6 +2,7 @@ using System.Text.Json;
 using RateRelay.Application.Exceptions;
 using RateRelay.Application.Helpers;
 using RateRelay.Domain.Common;
+using RateRelay.Domain.Exceptions;
 using ValidationException = RateRelay.Application.Exceptions.ValidationException;
 
 namespace RateRelay.API.Middleware;
@@ -42,6 +43,8 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
         UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
         NotFoundException => StatusCodes.Status404NotFound,
         AppException => StatusCodes.Status400BadRequest,
+        InvalidOperationException => StatusCodes.Status400BadRequest,
+        AppOkException => StatusCodes.Status200OK,
         _ => StatusCodes.Status500InternalServerError
     };
 

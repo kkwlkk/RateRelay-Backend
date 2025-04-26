@@ -2,6 +2,7 @@ using AutoMapper;
 using MediatR;
 using RateRelay.Application.DTOs.ReviewableBusiness.Commands;
 using RateRelay.Application.Exceptions;
+using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Infrastructure.Services;
 
