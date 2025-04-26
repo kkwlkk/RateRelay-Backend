@@ -41,7 +41,6 @@ public class GetOnboardingStatusQueryHandler(
     {
         return step switch
         {
-            AccountOnboardingStep.NotStarted => "Not Started",
             AccountOnboardingStep.Welcome => "Welcome",
             AccountOnboardingStep.ProfileSetup => "Profile Setup",
             AccountOnboardingStep.BusinessVerification => "Business Verification",
@@ -60,7 +59,6 @@ public class GetOnboardingStatusQueryHandler(
         {
             switch (step)
             {
-                case AccountOnboardingStep.NotStarted:
                 case AccountOnboardingStep.Completed when currentStep != AccountOnboardingStep.Completed:
                     continue;
             }
@@ -83,7 +81,7 @@ public class GetOnboardingStatusQueryHandler(
         
         foreach (AccountOnboardingStep step in Enum.GetValues(typeof(AccountOnboardingStep)))
         {
-            if (step == AccountOnboardingStep.NotStarted)
+            if (step == AccountOnboardingStep.Welcome)
                 continue;
                 
             if ((int)step > currentStepValue)
