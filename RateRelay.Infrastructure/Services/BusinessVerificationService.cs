@@ -249,7 +249,7 @@ public class BusinessVerificationService(
         var random = RandomHelper.Random;
         var openingHour = random.Next(0, 24);
         var openingMinute = random.Next(0, 60);
-        var closingHour = random.Next(openingHour + 1, 25);
+        var closingHour = random.Next(0, 24);
         var closingMinute = random.Next(0, 60);
 
         var openingTime = new TimeSpan(openingHour, openingMinute, 0);

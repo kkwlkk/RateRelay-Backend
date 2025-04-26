@@ -1,5 +1,5 @@
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using RateRelay.Application.Exceptions;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.DataAccess;
@@ -8,8 +8,7 @@ using Serilog;
 namespace RateRelay.Infrastructure.Services;
 
 public class UserService(
-    IUnitOfWorkFactory unitOfWorkFactory,
-    IMapper mapper
+    IUnitOfWorkFactory unitOfWorkFactory
 ) : IUserService
 {
     public async Task<AccountEntity> GetFullAccountByIdAsync(long accountId,
@@ -26,15 +25,15 @@ public class UserService(
 
             if (account is null)
             {
-                throw new Exception($"Account with ID {accountId} not found.");
+                throw new AppException($"Account with ID {accountId} not found.");
             }
 
             return account;
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Error retrieving account with ID {AccountId}", accountId);
-            throw;
+            Log.Error(ex, "Error occurred while retrieving account with ID {AccountId}", accountId);
+            throw new AppException("An error occurred while retrieving the account.");
         }
     }
 }

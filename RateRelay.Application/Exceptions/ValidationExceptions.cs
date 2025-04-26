@@ -1,3 +1,4 @@
+
 using FluentValidation.Results;
 using RateRelay.Application.Extensions;
 using RateRelay.Domain.Common;

@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using RateRelay.API.Extensions;
 using RateRelay.API.Middleware;
 using RateRelay.Domain.Common;
@@ -49,6 +50,16 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             });
+        
+        services.AddCors(options =>
+        {
+            options.AddPolicy("CorsPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            });
+        });
 
         services.AddRouting(options => options.LowercaseUrls = true);
         services.AddEndpointsApiExplorer();
@@ -74,6 +85,7 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
                 diagnosticContext.Set("RequestMethod", httpContext.Request.Method);
             };
         });
+        app.UseCors("CorsPolicy");
         app.UseRouting();
         app.UseExceptionHandling();
         app.UseRateLimiting();
