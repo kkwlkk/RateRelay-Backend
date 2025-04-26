@@ -1,6 +1,5 @@
 using MediatR;
 using RateRelay.Application.DTOs.Auth.Commands;
-using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.DataAccess;
 using RateRelay.Domain.Interfaces.Services;
 using RateRelay.Infrastructure.DataAccess.Repositories;
@@ -21,7 +20,7 @@ public class RefreshTokenCommandHandler(
         var accountRepository = unitOfWork.GetExtendedRepository<AccountRepository>();
 
         var account = await accountRepository.GetByRefreshTokenAsync(request.RefreshToken);
-
+        
         if (account is null)
         {
             throw new UnauthorizedAccessException("Invalid refresh token.");

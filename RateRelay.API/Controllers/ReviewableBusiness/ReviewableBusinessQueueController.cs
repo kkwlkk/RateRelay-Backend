@@ -1,6 +1,6 @@
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RateRelay.API.Attributes.Auth;
 using RateRelay.API.Attributes.RateLimiting;
 using RateRelay.Application.DTOs.ReviewableBusiness.Commands;
 using RateRelay.Application.DTOs.ReviewableBusiness.Queries;
@@ -8,12 +8,12 @@ using RateRelay.Application.Features.ReviewableBusiness.Commands.SubmitBusinessR
 using RateRelay.Application.Features.ReviewableBusiness.Queries.GetNextBusinessForReview;
 using RateRelay.Application.Features.ReviewableBusiness.Queries.GetTimeLeftForBusinessReview;
 
-namespace RateRelay.API.Controllers.Business;
+namespace RateRelay.API.Controllers.ReviewableBusiness;
 
 [ApiController]
 [Area("Account")]
 [Route("api/reviewable-businesses")]
-[Authorize]
+[RequireVerifiedBusiness]
 public class ReviewableBusinessQueueController(
     IMediator mediator
 ) : BaseController

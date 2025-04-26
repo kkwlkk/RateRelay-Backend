@@ -20,12 +20,12 @@ public static class AuthExtensions
     {
         var jwtAuthOptionsSection = configuration.GetSection(JwtOptions.SectionName);
         var jwtOptions = jwtAuthOptionsSection.Get<JwtOptions>();
-        
+
         if (jwtOptions == null)
         {
             throw new ArgumentNullException(nameof(jwtOptions), "JWT Auth options are not configured.");
         }
-        
+
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -52,17 +52,21 @@ public static class AuthExtensions
         {
             if (permission == Permission.None)
                 continue;
-                
+
             var policyName = $"{PermissionPolicyPrefix}{permission}";
-            authBuilder.AddPolicy(policyName, policy => 
+            authBuilder.AddPolicy(policyName, policy =>
                 policy.Requirements.Add(new PermissionRequirement(permission)));
         }
-    
+
+        authBuilder.AddPolicy("RequireVerifiedBusiness", policy =>
+            policy.Requirements.Add(new VerifiedBusinessRequirement()));
+
         services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserDataResolver, CurrentUserDataResolver>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<CurrentUserContext>();
+        services.AddScoped<IAuthorizationHandler, VerifiedBusinessAuthorizationHandler>();
     }
 }

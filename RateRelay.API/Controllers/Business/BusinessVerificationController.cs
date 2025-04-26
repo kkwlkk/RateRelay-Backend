@@ -2,6 +2,7 @@ using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RateRelay.API.Attributes.Auth;
 using RateRelay.API.Attributes.RateLimiting;
 using RateRelay.Application.DTOs.Business.BusinessVerification.Commands;
 using RateRelay.Application.DTOs.Business.BusinessVerification.Queries;
