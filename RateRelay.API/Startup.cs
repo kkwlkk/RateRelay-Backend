@@ -50,7 +50,7 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             });
-        
+
         services.AddCors(options =>
         {
             options.AddPolicy("CorsPolicy", builder =>
@@ -66,6 +66,12 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
         services.AddConfiguredSwagger();
         services.AddLogging(configuration);
         services.AddMemoryCache();
+        services.AddHsts(options =>
+        {
+            options.Preload = true;
+            options.IncludeSubDomains = true;
+            options.MaxAge = TimeSpan.FromDays(60);
+        });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -75,6 +81,10 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
             app.UseSwaggerUI();
+        }
+        else
+        {
+            app.UseHsts();
         }
 
         app.UseSerilogRequestLogging(options =>

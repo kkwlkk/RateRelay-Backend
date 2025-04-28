@@ -57,7 +57,42 @@ public static class Program
     private static IHostBuilder CreateHostBuilder(string[] args, ApplicationEnvironment environment) =>
         Host.CreateDefaultBuilder(args)
             .UseSerilog()
-            .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+                webBuilder.ConfigureKestrel(options =>
+                {
+                    var configuration = LoadConfiguration(args, environment);
+                    var certificateSettings = configuration.GetSection("Certificate");
+
+                    var certificatePath = certificateSettings.GetValue<string>("Path");
+                    var certificatePassword = certificateSettings.GetValue<string>("Password");
+                    var httpPort = configuration.GetValue<int>("Kestrel:HttpPort", 5000);
+                    var httpsPort = configuration.GetValue<int>("Kestrel:HttpsPort", 5001);
+
+                    options.ListenAnyIP(httpPort,
+                        listenOptions =>
+                        {
+                            listenOptions.Protocols =
+                                Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
+                        });
+
+                    if (!string.IsNullOrEmpty(certificatePath) && !string.IsNullOrEmpty(certificatePassword))
+                    {
+                        options.ListenAnyIP(httpsPort, listenOptions =>
+                        {
+                            listenOptions.UseHttps(certificatePath, certificatePassword);
+                            listenOptions.Protocols =
+                                Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
+                        });
+                        Log.Information("HTTPS configured on port {HttpsPort}", httpsPort);
+                    }
+                    else
+                    {
+                        Log.Warning("HTTPS not configured. Certificate path or password is missing.");
+                    }
+                });
+            })
             .ConfigureServices((hostContext, services) =>
             {
                 services.AddSingleton(environment);
