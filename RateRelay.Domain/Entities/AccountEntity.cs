@@ -28,7 +28,7 @@ public class AccountEntity : BaseEntity
     [ForeignKey("RoleId")]
     public virtual RoleEntity? Role { get; set; }
     
-    public AccountOnboardingStep OnboardingStep { get; set; } = AccountOnboardingStep.Welcome;
+    public AccountOnboardingStep OnboardingStep { get; set; } = AccountOnboardingStep.BusinessVerification;
     
     public DateTime? OnboardingLastUpdatedUtc { get; set; }
     
