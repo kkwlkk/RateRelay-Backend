@@ -1,7 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RateRelay.Application.DTOs.Onboarding.Commands.CompleteBusinessVerificationStep;
-using RateRelay.Application.Exceptions;
 using RateRelay.Domain.Common;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Enums;
@@ -9,7 +8,6 @@ using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.DataAccess;
 using RateRelay.Infrastructure.Services;
-using Serilog;
 
 namespace RateRelay.Application.Features.Onboarding.Commands.CompleteBusinessVerificationStep;
 
@@ -36,12 +34,12 @@ public class CompleteBusinessVerificationStepCommandHandler(
         {
             await onboardingService.UpdateStepAsync(
                 currentUserContext.AccountId,
-                AccountOnboardingStep.Completed,
+                AccountOnboardingStep.Welcome,
                 cancellationToken);
 
             return new CompleteBusinessVerificationStepOutputDto
             {
-                NextStep = AccountOnboardingStep.Completed,
+                NextStep = AccountOnboardingStep.Welcome,
             };
         }
 
@@ -63,12 +61,12 @@ public class CompleteBusinessVerificationStepCommandHandler(
 
         await onboardingService.UpdateStepAsync(
             currentUserContext.AccountId,
-            AccountOnboardingStep.Completed,
+            AccountOnboardingStep.Welcome,
             cancellationToken);
 
         return new CompleteBusinessVerificationStepOutputDto
         {
-            NextStep = AccountOnboardingStep.Completed,
+            NextStep = AccountOnboardingStep.Welcome,
         };
     }
 }

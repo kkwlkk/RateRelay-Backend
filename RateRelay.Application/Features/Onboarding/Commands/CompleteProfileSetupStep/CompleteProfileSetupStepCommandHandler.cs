@@ -44,12 +44,12 @@ public class CompleteProfileSetupCommandHandler(
 
         await onboardingService.UpdateStepAsync(
             currentUserContext.AccountId,
-            AccountOnboardingStep.BusinessVerification,
+            AccountOnboardingStep.Completed,
             cancellationToken);
 
         return new CompleteProfileSetupOutputDto
         {
-            NextStep = AccountOnboardingStep.BusinessVerification
+            NextStep = AccountOnboardingStep.Completed,
         };
     }
 }

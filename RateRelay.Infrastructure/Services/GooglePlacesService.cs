@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RateRelay.Domain.Common;
 using RateRelay.Domain.Interfaces;
-using RateRelay.Domain.Interfaces.Services;
 using RateRelay.Infrastructure.Configuration;
 
 namespace RateRelay.Infrastructure.Services;
@@ -25,16 +24,25 @@ public class GooglePlacesService(
 
         try
         {
-            var endpoint = $"details/json?place_id={placeId}&fields=place_id,name,current_opening_hours,url&key={_apiKey}";
+            var endpoint =
+                $"{placeId}?fields=id,displayName,formattedAddress,googleMapsUri,currentOpeningHours&key={_apiKey}";
             var response = await httpClient.GetAsync(endpoint, cancellationToken);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            var apiResponse = JsonConvert.DeserializeObject<GooglePlaceApiResponse>(content);
+            var placeDetails = JsonConvert.DeserializeObject<GooglePlace>(content);
+            if (placeDetails is null)
+            {
+                logger.LogWarning("No place details found for place ID {PlaceId}", placeId);
+                return null;
+            }
 
-            if (apiResponse?.Status == "OK") return apiResponse.Result;
-            logger.LogWarning("Google Places API returned non-OK status: {Status}, Error: {Error}",
-                apiResponse?.Status, apiResponse?.ErrorMessage);
-            return null;
+            if (string.IsNullOrEmpty(placeDetails.PlaceId))
+            {
+                logger.LogWarning("Place ID is empty for place ID {PlaceId}", placeId);
+                return null;
+            }
+
+            return placeDetails;
         }
         catch (HttpRequestException ex)
         {
@@ -51,17 +59,5 @@ public class GooglePlacesService(
             logger.LogError(ex, "Unexpected error getting place details for place ID {PlaceId}", placeId);
             throw;
         }
-    }
-
-    private class GooglePlaceApiResponse
-    {
-        [JsonProperty("status")]
-        public string Status { get; set; }
-
-        [JsonProperty("error_message")]
-        public string ErrorMessage { get; set; }
-
-        [JsonProperty("result")]
-        public GooglePlace Result { get; set; }
     }
 }

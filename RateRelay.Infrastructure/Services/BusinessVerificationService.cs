@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Common;
+using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.DataAccess;
-using RateRelay.Domain.Interfaces.Services;
 using RateRelay.Infrastructure.Helpers;
 using Serilog;
 
@@ -12,6 +12,7 @@ namespace RateRelay.Infrastructure.Services;
 public class BusinessVerificationService(
     IUnitOfWorkFactory unitOfWorkFactory,
     IGooglePlacesService googlePlacesService,
+    IPointService pointService,
     ILogger logger)
     : IBusinessVerificationService
 {
@@ -55,7 +56,7 @@ public class BusinessVerificationService(
         if (place is null)
         {
             logger.Warning("Failed to retrieve place details for place ID {PlaceId}", placeId);
-            return BusinessVerificationResult.InvalidPlaceId();
+            return BusinessVerificationResult.InvalidPlaceId(placeId);
         }
 
         var business = businessWithSamePlaceId;
@@ -65,7 +66,7 @@ public class BusinessVerificationService(
             {
                 PlaceId = placeId,
                 Cid = place.Cid,
-                BusinessName = place.Name,
+                BusinessName = place.DisplayName.Text,
                 OwnerAccountId = accountId,
                 IsVerified = false
             };
@@ -74,7 +75,7 @@ public class BusinessVerificationService(
         }
         else
         {
-            business.BusinessName = place.Name;
+            business.BusinessName = place.DisplayName.Text;
             businessRepository.Update(business);
         }
 
@@ -128,9 +129,15 @@ public class BusinessVerificationService(
         var businessVerificationRepository = unitOfWork.GetRepository<BusinessVerificationEntity>();
 
         var business = await businessRepository.GetBaseQueryable()
-            .Where(b => b.OwnerAccountId == accountId && b.IsVerified == false)
+            .Where(b => b.OwnerAccountId == accountId)
             .Include(b => b.Verification)
             .FirstOrDefaultAsync();
+
+        if (business is not null && business.IsVerified)
+        {
+            logger.Information("Business with account ID {AccountId} is already verified", accountId);
+            return BusinessVerificationResult.AlreadyVerified(business);
+        }
 
         if (business is null)
         {
@@ -214,16 +221,26 @@ public class BusinessVerificationService(
     {
         await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
         var businessRepository = unitOfWork.GetRepository<BusinessEntity>();
-        var businessVerificationRepository = unitOfWork.GetRepository<BusinessVerificationEntity>();
 
         var business = await businessRepository.GetBaseQueryable()
-            .Where(b => b.OwnerAccountId == accountId && b.IsVerified == false)
+            .Where(b => b.OwnerAccountId == accountId)
             .Include(b => b.Verification)
             .FirstOrDefaultAsync();
 
+        if (business is not null && business.IsVerified)
+        {
+            logger.Information("Business with account ID {AccountId} is already verified", accountId);
+            var metadata = new Dictionary<string, object>
+            {
+                { "businessId", business.Id },
+                { "placeId", business.PlaceId }
+            };
+            throw new AppException("Business is already verified", "ERR_ALREADY_VERIFIED", metadata);
+        }
+
         if (business is null)
         {
-            logger.Warning("Business with account ID {AccountId} not found or already verified", accountId);
+            logger.Warning("Business with account ID {AccountId} not found", accountId);
             return null;
         }
 

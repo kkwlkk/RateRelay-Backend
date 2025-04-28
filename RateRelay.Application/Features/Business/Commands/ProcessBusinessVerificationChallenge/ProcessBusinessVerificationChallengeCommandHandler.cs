@@ -4,7 +4,6 @@ using RateRelay.Application.DTOs.Business.BusinessVerification.Commands;
 using RateRelay.Application.Exceptions;
 using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
-using RateRelay.Domain.Interfaces.Services;
 using RateRelay.Infrastructure.Services;
 
 namespace RateRelay.Application.Features.Business.Commands.ProcessBusinessVerificationChallenge;
@@ -13,9 +12,9 @@ public class ProcessBusinessVerificationChallengeCommandHandler(
     CurrentUserContext currentUserContext,
     IBusinessVerificationService businessVerificationService,
     IMapper mapper
-) : IRequestHandler<ProcessBusinessVerificationChallengeCommand, BusinessVerificationOutputDto>
+) : IRequestHandler<ProcessBusinessVerificationChallengeCommand, BusinessVerificationStatusOutputDto>
 {
-    public async Task<BusinessVerificationOutputDto> Handle(ProcessBusinessVerificationChallengeCommand request,
+    public async Task<BusinessVerificationStatusOutputDto> Handle(ProcessBusinessVerificationChallengeCommand request,
         CancellationToken cancellationToken)
     {
         var verificationResult = await businessVerificationService.CheckVerificationStatusAsync(
@@ -24,7 +23,11 @@ public class ProcessBusinessVerificationChallengeCommandHandler(
 
         if (!verificationResult.IsSuccess)
         {
-            throw new AppException(verificationResult.ErrorMessage);
+            throw new AppException(
+                verificationResult.ErrorMessage,
+                verificationResult.ErrorCode,
+                verificationResult.Metadata
+            );
         }
 
         if (verificationResult.Verification is null)
@@ -32,7 +35,9 @@ public class ProcessBusinessVerificationChallengeCommandHandler(
             throw new NotFoundException("Verification not found.");
         }
 
-        var businessVerificationOutputDto = mapper.Map<BusinessVerificationOutputDto>(verificationResult.Verification);
+        var businessVerificationOutputDto =
+            mapper.Map<BusinessVerificationStatusOutputDto>(verificationResult.Verification);
+        businessVerificationOutputDto.IsVerified = verificationResult.IsVerified;
         return businessVerificationOutputDto;
     }
 }

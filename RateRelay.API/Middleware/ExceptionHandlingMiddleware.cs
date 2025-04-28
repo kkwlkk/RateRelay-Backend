@@ -54,6 +54,7 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
         {
             case ValidationException validationException:
                 return ApiResponse<object>.ValidationErrorResponse(validationException.ValidationErrors, statusCode);
+                
             case FluentValidation.ValidationException fluentValidationEx:
             {
                 var validationErrors = fluentValidationEx.Errors.Select(e => new ValidationError
@@ -65,6 +66,14 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
                 });
                 return ApiResponse<object>.ValidationErrorResponse(validationErrors, statusCode);
             }
+            
+            case AppException appException:
+                return ApiResponse<object>.ErrorResponse(
+                    appException.Message, 
+                    appException.ErrorCode, 
+                    appException.Metadata, 
+                    statusCode);
+                
             default:
                 return ApiResponse<object>.ErrorResponse(exception.Message, null, statusCode);
         }

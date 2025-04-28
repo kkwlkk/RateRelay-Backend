@@ -4,19 +4,19 @@ namespace RateRelay.Domain.Common
 {
     public class GooglePlace
     {
-        [JsonProperty("place_id")]
+        [JsonProperty("id")]
         public string PlaceId { get; set; }
 
-        [JsonProperty("name")]
-        public string Name { get; set; }
+        [JsonProperty("displayName")]
+        public DisplayName DisplayName { get; set; }
 
-        [JsonProperty("url")]
+        [JsonProperty("googleMapsUri")]
         public string Url { get; set; }
 
         [JsonIgnore]
         public string Cid => ExtractCidFromUrl(Url);
 
-        [JsonProperty("current_opening_hours")]
+        [JsonProperty("currentOpeningHours")]
         public OpeningHours CurrentOpeningHours { get; set; }
 
         private static string ExtractCidFromUrl(string url)
@@ -31,13 +31,12 @@ namespace RateRelay.Domain.Common
             var endIndex = url.IndexOf('&', startIndex);
 
             return endIndex < 0 ? url[startIndex..] : url.Substring(startIndex, endIndex - startIndex);
-
         }
     }
 
     public class OpeningHours
     {
-        [JsonProperty("open_now")]
+        [JsonProperty("openNow")]
         public bool OpenNow { get; set; }
 
         [JsonProperty("periods")]
@@ -49,8 +48,8 @@ namespace RateRelay.Domain.Common
                 .ToDictionary(
                     g => g.Key,
                     g => new BusinessHours(
-                        TimeSpan.ParseExact(g.First().Open.Time, "hhmm", null),
-                        TimeSpan.ParseExact(g.First().Close.Time, "hhmm", null)
+                        new TimeSpan(g.First().Open.Hour, g.First().Open.Minute, 0),
+                        new TimeSpan(g.First().Close.Hour, g.First().Close.Minute, 0)
                     )
                 );
     }
@@ -69,8 +68,26 @@ namespace RateRelay.Domain.Common
         [JsonProperty("day")]
         public int Day { get; set; }
 
-        [JsonProperty("time")]
-        public string Time { get; set; }
+        [JsonProperty("hour")]
+        public int Hour { get; set; }
+
+        [JsonProperty("minute")]
+        public int Minute { get; set; }
+
+        [JsonProperty("date")]
+        public DateInfo Date { get; set; }
+    }
+
+    public class DateInfo
+    {
+        [JsonProperty("year")]
+        public int Year { get; set; }
+
+        [JsonProperty("month")]
+        public int Month { get; set; }
+
+        [JsonProperty("day")]
+        public int Day { get; set; }
     }
 
     public class BusinessHours(TimeSpan openTime, TimeSpan closeTime)
@@ -87,5 +104,11 @@ namespace RateRelay.Domain.Common
         {
             return $"{time.Hours:D2}:{time.Minutes:D2}";
         }
+    }
+
+    public class DisplayName
+    {
+        public string Text { get; set; }
+        public string LanguageCode { get; set; }
     }
 }
