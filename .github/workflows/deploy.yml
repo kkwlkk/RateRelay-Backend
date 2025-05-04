@@ -54,8 +54,10 @@ jobs:
           sudo systemctl stop raterelay || true
           sudo mkdir -p /opt/raterelay
           sudo rsync -av --delete ./publish/ /opt/raterelay/
-          
+          sudo chown -R www-data:www-data /opt/raterelay
+          sudo chmod -R 755 /opt/raterelay
           sudo tee /etc/systemd/system/raterelay.service << EOF
+
           [Unit]
           Description=RateRelay API
           After=network.target mariadb.service redis.service
