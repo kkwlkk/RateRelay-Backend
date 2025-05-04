@@ -14,10 +14,7 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers(options =>
-            {
-                options.ModelValidatorProviders.Clear();
-            })
+        services.AddControllers(options => { options.ModelValidatorProviders.Clear(); })
             .ConfigureApiBehaviorOptions(options =>
             {
                 options.SuppressMapClientErrors = true;
@@ -86,6 +83,7 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
             app.UseHsts();
         }
 
+        app.UseIpLogging();
         app.UseSerilogRequestLogging(options =>
         {
             options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>

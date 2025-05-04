@@ -6,10 +6,10 @@ public static class LoggingConstants
     {
         { "API", ConsoleColor.DarkBlue },
     };
-        
-    public const string ConsoleOutputTemplate = 
-        "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}";
-            
-    public const string FileOutputTemplate = 
-        "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}";
+
+    public const string ConsoleOutputTemplate =
+        "[{Timestamp:HH:mm:ss} {Level:u3}]{ClientIP} {Message:lj}{NewLine}{Exception}";
+
+    public const string FileOutputTemplate =
+        "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}]{ClientIP} {Message:lj}{NewLine}{Exception}";
 }
