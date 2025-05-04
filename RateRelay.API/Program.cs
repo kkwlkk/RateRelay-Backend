@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using Newtonsoft.Json;
 using RateRelay.Application.DependencyInjection;
 using RateRelay.Domain.Interfaces;
@@ -90,8 +92,22 @@ public static class Program
                             if (!string.IsNullOrEmpty(certificatePath) && !string.IsNullOrEmpty(certificatePassword) &&
                                 File.Exists(certificatePath))
                             {
-                                listenOptions.UseHttps(certificatePath, certificatePassword);
-                                Log.Information("Using custom certificate for HTTPS on port {HttpsPort}", httpsPort);
+                                try
+                                {
+                                    using var cert = new X509Certificate2(certificatePath, certificatePassword);
+                                    listenOptions.UseHttps(certificatePath, certificatePassword);
+                                    Log.Information("Using custom certificate for HTTPS on port {HttpsPort}",
+                                        httpsPort);
+                                }
+                                catch (CryptographicException ex)
+                                {
+                                    Log.Error(ex,
+                                        "Failed to load certificate from {CertificatePath} with the provided password",
+                                        certificatePath);
+                                    throw new InvalidOperationException(
+                                        $"Cannot load certificate from {certificatePath}. Please check the password is correct.",
+                                        ex);
+                                }
                             }
                             else
                             {
@@ -106,6 +122,7 @@ public static class Program
                         catch (Exception ex)
                         {
                             Log.Error(ex, "Error configuring HTTPS");
+                            throw;
                         }
                     });
                 });
@@ -123,7 +140,6 @@ public static class Program
                 config.AddEnvironmentVariables();
                 config.AddCommandLine(args);
             });
-
 
     private static async Task<bool> PerformMigrationAsync(IServiceProvider serviceProvider)
     {
