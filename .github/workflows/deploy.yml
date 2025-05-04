@@ -8,6 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
+    environment: raterelay-api
     
     steps:
       - uses: actions/checkout@v3
@@ -43,6 +44,12 @@ jobs:
           GOOGLE_APIS_APIKEY: ${{ secrets.GOOGLE_APIS_APIKEY }}
           CERTIFICATE_PATH: ${{ secrets.CERTIFICATE_PATH }}
           CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+          KESTREL_HTTP_PORT: ${{ secrets.KESTREL_HTTP_PORT || '5206' }}
+          KESTREL_HTTPS_PORT: ${{ secrets.KESTREL_HTTPS_PORT || '7048' }}
+          APP_LOGGER_LOGS_DIRECTORY: ${{ secrets.APP_LOGGER_LOGS_DIRECTORY || './logs' }}
+          APP_LOGGER_ROLLING_INTERVAL: ${{ secrets.APP_LOGGER_ROLLING_INTERVAL || 'Day' }}
+          APP_LOGGER_ENABLE_CONSOLE_LOGGING: ${{ secrets.APP_LOGGER_ENABLE_CONSOLE_LOGGING || 'true' }}
+          APP_LOGGER_ENABLE_FILE_LOGGING: ${{ secrets.APP_LOGGER_ENABLE_FILE_LOGGING || 'true' }}
         run: |
           sudo systemctl stop raterelay || true
           sudo mkdir -p /opt/raterelay
@@ -59,7 +66,7 @@ jobs:
           Restart=always
           User=www-data
           Environment=ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
-          Environment=ASPNETCORE_URLS=http://+:5206;https://+:7048
+          Environment=ASPNETCORE_URLS=http://+:$KESTREL_HTTP_PORT;https://+:$KESTREL_HTTPS_PORT
           Environment=Database__Password=$DATABASE_PASSWORD
           Environment=Redis__Password=$REDIS_PASSWORD
           Environment=Jwt__Secret=$JWT_SECRET
@@ -67,6 +74,12 @@ jobs:
           Environment=GoogleApis__ApiKey=$GOOGLE_APIS_APIKEY
           Environment=Certificate__Path=$CERTIFICATE_PATH
           Environment=Certificate__Password=$CERTIFICATE_PASSWORD
+          Environment=Kestrel__HttpPort=$KESTREL_HTTP_PORT
+          Environment=Kestrel__HttpsPort=$KESTREL_HTTPS_PORT
+          Environment=AppLogger__LogsDirectory=$APP_LOGGER_LOGS_DIRECTORY
+          Environment=AppLogger__RollingInterval=$APP_LOGGER_ROLLING_INTERVAL
+          Environment=AppLogger__EnableConsoleLogging=$APP_LOGGER_ENABLE_CONSOLE_LOGGING
+          Environment=AppLogger__EnableFileLogging=$APP_LOGGER_ENABLE_FILE_LOGGING
           
           [Install]
           WantedBy=multi-user.target
