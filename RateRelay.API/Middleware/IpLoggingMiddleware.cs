@@ -13,7 +13,7 @@ public class IpLoggingMiddleware(RequestDelegate next, ILogger<IpLoggingMiddlewa
             await next(context);
         }
     }
-    
+
     private static string GetClientIp(HttpContext context)
     {
         if (context.Request.Headers.TryGetValue("X-Forwarded-For", out var forwardedFor))
@@ -21,7 +21,10 @@ public class IpLoggingMiddleware(RequestDelegate next, ILogger<IpLoggingMiddlewa
             return forwardedFor.ToString();
         }
 
-        return context.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+        var remoteIp = context.Connection.RemoteIpAddress;
+
+        if (remoteIp is null) return "Unknown";
+        return remoteIp.IsIPv4MappedToIPv6 ? remoteIp.MapToIPv4().ToString() : remoteIp.ToString();
     }
 }
 
