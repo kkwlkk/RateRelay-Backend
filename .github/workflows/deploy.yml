@@ -64,7 +64,7 @@ jobs:
           WorkingDirectory=/opt/raterelay
           ExecStart=/usr/bin/dotnet /opt/raterelay/RateRelay.API.dll
           Restart=always
-          User=ubuntu
+          User=root
           Environment=ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
           Environment=ASPNETCORE_URLS=http://+:$KESTREL_HTTP_PORT;https://+:$KESTREL_HTTPS_PORT
           Environment=Database__Password=$DATABASE_PASSWORD
@@ -85,6 +85,6 @@ jobs:
           WantedBy=multi-user.target
           EOF
           
-          sudo chown -R ubuntu:ubuntu /opt/raterelay
+          sudo chown -R root:root /opt/raterelay
           sudo systemctl daemon-reload
           sudo systemctl enable --now raterelay
