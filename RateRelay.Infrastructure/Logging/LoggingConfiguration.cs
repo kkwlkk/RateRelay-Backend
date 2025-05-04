@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RateRelay.Infrastructure.Configuration;
 using RateRelay.Infrastructure.Constants;
 using Serilog;
 using Serilog.Events;
@@ -23,9 +24,18 @@ namespace RateRelay.Infrastructure.Logging
 
         public static LoggerConfiguration CreateLoggerConfiguration(IConfiguration configuration)
         {
-            var logsDirectory = configuration["Logging:LogsDirectory"] ?? "./logs";
+            const string sectionName = SerilogLoggingOptions.SectionName;
+            var logsDirectory = configuration[$"{sectionName}:LogDirectory"] ?? "./logs";
+
+            if (!Directory.Exists(logsDirectory))
+            {
+                Directory.CreateDirectory(logsDirectory);
+            }
+
             var rollingInterval = Enum.Parse<RollingInterval>(
-                configuration["Logging:RollingInterval"] ?? "Day");
+                configuration[$"{sectionName}:LogFileRollingInterval"] ?? "Day",
+                true
+            );
 
             return new LoggerConfiguration()
                 .MinimumLevel.Debug()
