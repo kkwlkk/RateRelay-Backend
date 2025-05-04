@@ -1,0 +1,64 @@
+name: Deploy RateRelay Backend
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build and Publish
+        run: |
+          dotnet restore
+          dotnet build --configuration Release --no-restore
+          dotnet publish RateRelay.API/RateRelay.API.csproj -c Release -o ./publish
+
+      - name: Deploy
+        env:
+          ASPNETCORE_ENVIRONMENT: ${{ secrets.ASPNETCORE_ENVIRONMENT || 'Production' }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          GOOGLE_OAUTH_CLIENTID: ${{ secrets.GOOGLE_OAUTH_CLIENTID }}
+          GOOGLE_APIS_APIKEY: ${{ secrets.GOOGLE_APIS_APIKEY }}
+          CERTIFICATE_PATH: ${{ secrets.CERTIFICATE_PATH }}
+          CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+        run: |
+          sudo systemctl stop raterelay || true
+          sudo mkdir -p /opt/raterelay
+          sudo rsync -av --delete ./publish/ /opt/raterelay/
+          
+          sudo tee /etc/systemd/system/raterelay.service << EOF
+          [Unit]
+          Description=RateRelay API
+          After=network.target mariadb.service redis.service
+          
+          [Service]
+          WorkingDirectory=/opt/raterelay
+          ExecStart=/usr/bin/dotnet /opt/raterelay/RateRelay.API.dll
+          Restart=always
+          User=www-data
+          Environment=ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
+          Environment=ASPNETCORE_URLS=http://+:5206;https://+:7048
+          Environment=Database__Password=$DATABASE_PASSWORD
+          Environment=Redis__Password=$REDIS_PASSWORD
+          Environment=Jwt__Secret=$JWT_SECRET
+          Environment=GoogleOAuth__ClientId=$GOOGLE_OAUTH_CLIENTID
+          Environment=GoogleApis__ApiKey=$GOOGLE_APIS_APIKEY
+          Environment=Certificate__Path=$CERTIFICATE_PATH
+          Environment=Certificate__Password=$CERTIFICATE_PASSWORD
+          
+          [Install]
+          WantedBy=multi-user.target
+          EOF
+          
+          sudo systemctl daemon-reload
+          sudo systemctl enable --now raterelay

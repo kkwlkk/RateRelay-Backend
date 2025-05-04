@@ -6,16 +6,17 @@ namespace RateRelay.Infrastructure.Configuration;
 public class JwtOptions
 {
     public const string SectionName = "Jwt";
-    
+
     [Required(ErrorMessage = "Issuer is required")]
-    public string Issuer { get; set; } 
-    
+    public string Issuer { get; set; }
+
     [Required(ErrorMessage = "Audience is required")]
     public string Audience { get; set; }
-    
+
     [Required(ErrorMessage = "Secret is required")]
+    [MinLength(32, ErrorMessage = "Secret must be at least 32 characters long")]
     public string Secret { get; set; }
-    
+
     [Required(ErrorMessage = "Expiration is required")]
     [TimeSpanRange("01:00:00", "7.00:00:00", ErrorMessage = "Expiration must be between 1 hour and 7 days")]
     public TimeSpan Expiration { get; set; }

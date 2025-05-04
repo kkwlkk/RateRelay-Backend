@@ -45,6 +45,21 @@ public class BusinessVerificationService(
 
         // Check if another user is trying to verify this business
         var businessWithSamePlaceId = (await businessRepository.FindAsync(b => b.PlaceId == placeId)).FirstOrDefault();
+
+        if (businessWithSamePlaceId is not null && businessWithSamePlaceId.OwnerAccountId == accountId)
+        {
+            logger.Warning("Business with place ID {PlaceId} is already registered by the same account",
+                placeId);
+            return BusinessVerificationResult.AlreadyVerified(businessWithSamePlaceId);
+        }
+
+        if (businessWithSamePlaceId is not null && businessWithSamePlaceId.IsVerified)
+        {
+            logger.Warning("Business with place ID {PlaceId} is already verified by another account",
+                placeId);
+            return BusinessVerificationResult.AlreadyVerified(businessWithSamePlaceId);
+        }
+
         if (businessWithSamePlaceId is not null && businessWithSamePlaceId.OwnerAccountId != accountId)
         {
             logger.Warning("Business with place ID {PlaceId} is already being verified by another account",
@@ -232,7 +247,6 @@ public class BusinessVerificationService(
             logger.Information("Business with account ID {AccountId} is already verified", accountId);
             var metadata = new Dictionary<string, object>
             {
-                { "businessId", business.Id },
                 { "placeId", business.PlaceId }
             };
             throw new AppException("Business is already verified", "ERR_ALREADY_VERIFIED", metadata);

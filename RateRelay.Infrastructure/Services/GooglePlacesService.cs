@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RateRelay.Domain.Common;
+using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Infrastructure.Configuration;
 
@@ -47,7 +48,9 @@ public class GooglePlacesService(
         catch (HttpRequestException ex)
         {
             logger.LogError(ex, "Error fetching place details for place ID {PlaceId}", placeId);
-            throw;
+            throw new AppException(
+                "Error while trying to fetch place details from Google Places API",
+                "ERR_PLACE_DETAILS_FETCH");
         }
         catch (JsonException ex)
         {

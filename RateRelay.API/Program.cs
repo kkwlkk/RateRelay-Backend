@@ -14,6 +14,11 @@ public static class Program
     {
         var environment = EnvironmentService.ConfigureEnvironment();
 
+        if (!environment.IsProduction)
+        {
+            LoadEnvironmentVariables();
+        }
+
         var configuration = LoadConfiguration(args, environment);
 
         Log.Logger = LoggingConfiguration.CreateLoggerConfiguration(configuration).CreateLogger();
@@ -67,8 +72,9 @@ public static class Program
 
                     var certificatePath = certificateSettings.GetValue<string>("Path");
                     var certificatePassword = certificateSettings.GetValue<string>("Password");
-                    var httpPort = configuration.GetValue<int>("Kestrel:HttpPort", 5000);
-                    var httpsPort = configuration.GetValue<int>("Kestrel:HttpsPort", 5001);
+
+                    var httpPort = configuration.GetValue("Kestrel:HttpPort", 5000);
+                    var httpsPort = configuration.GetValue("Kestrel:HttpsPort", 5001);
 
                     options.ListenAnyIP(httpPort,
                         listenOptions =>
@@ -77,20 +83,31 @@ public static class Program
                                 Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
                         });
 
-                    if (!string.IsNullOrEmpty(certificatePath) && !string.IsNullOrEmpty(certificatePassword))
+                    options.ListenAnyIP(httpsPort, listenOptions =>
                     {
-                        options.ListenAnyIP(httpsPort, listenOptions =>
+                        try
                         {
-                            listenOptions.UseHttps(certificatePath, certificatePassword);
+                            if (!string.IsNullOrEmpty(certificatePath) && !string.IsNullOrEmpty(certificatePassword) &&
+                                File.Exists(certificatePath))
+                            {
+                                listenOptions.UseHttps(certificatePath, certificatePassword);
+                                Log.Information("Using custom certificate for HTTPS on port {HttpsPort}", httpsPort);
+                            }
+                            else
+                            {
+                                listenOptions.UseHttps();
+                                Log.Information("Using development certificate for HTTPS on port {HttpsPort}",
+                                    httpsPort);
+                            }
+
                             listenOptions.Protocols =
                                 Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
-                        });
-                        Log.Information("HTTPS configured on port {HttpsPort}", httpsPort);
-                    }
-                    else
-                    {
-                        Log.Warning("HTTPS not configured. Certificate path or password is missing.");
-                    }
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error(ex, "Error configuring HTTPS");
+                        }
+                    });
                 });
             })
             .ConfigureServices((hostContext, services) =>
@@ -112,5 +129,10 @@ public static class Program
     {
         var migrationService = serviceProvider.GetRequiredService<MigrationService>();
         return await migrationService.UpdateDatabaseAsync();
+    }
+
+    private static void LoadEnvironmentVariables()
+    {
+        DotNetEnv.Env.Load();
     }
 }

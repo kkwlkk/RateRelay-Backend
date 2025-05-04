@@ -37,10 +37,9 @@ public class BusinessVerificationResult
     {
         var metadata = new Dictionary<string, object>
         {
-            { "businessId", business.Id },
             { "placeId", business.PlaceId }
         };
-        
+
         return new(false, true, business, null, "Business is already verified", "ERR_ALREADY_VERIFIED",
             BusinessVerificationErrorType.AlreadyVerified, metadata);
     }
@@ -51,8 +50,8 @@ public class BusinessVerificationResult
         {
             { "placeId", placeId }
         };
-        
-        return new(false, false, null, null, "Invalid Google Place ID", "ERR_INVALID_PLACE_ID", 
+
+        return new(false, false, null, null, "Invalid Google Place ID", "ERR_INVALID_PLACE_ID",
             BusinessVerificationErrorType.InvalidPlaceId, metadata);
     }
 
@@ -60,12 +59,11 @@ public class BusinessVerificationResult
     {
         var metadata = new Dictionary<string, object>
         {
-            { "businessId", business.Id },
             { "placeId", business.PlaceId },
-            { "ownerAccountId", business.OwnerAccountId }
         };
-        
-        return new(false, false, business, null, "Business is already being verified by another account", "ERR_ALREADY_BEING_VERIFIED",
+
+        return new(false, false, business, null, "Business is already being verified by another account",
+            "ERR_ALREADY_BEING_VERIFIED",
             BusinessVerificationErrorType.AlreadyBeingVerified, metadata);
     }
 
@@ -78,13 +76,13 @@ public class BusinessVerificationResult
             BusinessVerificationErrorType.VerificationNotFound);
 
     public static BusinessVerificationResult VerificationExpired()
-        => new(false, false, null, null, "Verification has expired", "ERR_VERIFICATION_EXPIRED", 
+        => new(false, false, null, null, "Verification has expired", "ERR_VERIFICATION_EXPIRED",
             BusinessVerificationErrorType.VerificationExpired);
 
     public static BusinessVerificationResult NotOwnedByAccount()
         => new(false, false, null, null, "Business is not owned by the account", "ERR_NOT_OWNED_BY_ACCOUNT",
             BusinessVerificationErrorType.NotOwnedByAccount);
-    
+
     public static BusinessVerificationResult TooManyBusinesses()
         => new(false, false, null, null, "Too many businesses for this account", "ERR_TOO_MANY_BUSINESSES",
             BusinessVerificationErrorType.TooManyBusinesses);

@@ -117,3 +117,14 @@ ServiceFabricBackup/
 
 .idea/
 .idea
+
+.env
+appsettings.Local.json
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Test.json
+*.local
+*.development.json
+*.production.json
+*.test.json
+*.local.json

@@ -16,7 +16,6 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
     {
         services.AddControllers(options =>
             {
-                options.EnableEndpointRouting = false;
                 options.ModelValidatorProviders.Clear();
             })
             .ConfigureApiBehaviorOptions(options =>

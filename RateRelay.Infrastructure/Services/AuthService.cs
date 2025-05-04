@@ -30,6 +30,12 @@ public class AuthService(
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Convert.FromBase64String(_jwtAuthOptions.Secret);
+
+        if (key.Length < 32)
+        {
+            throw new ArgumentException("Secret Key length must be at least 32 bytes.");
+        }
+
         var securityKey = new SymmetricSecurityKey(key);
 
         var effectivePermissions = await GetEffectivePermissionsAsync(account.Id);
