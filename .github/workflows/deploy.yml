@@ -25,7 +25,7 @@ jobs:
             ./dotnet-install.sh --channel 8.0 --install-dir "$HOME/.dotnet"
             echo "$HOME/.dotnet" >> $GITHUB_PATH
             export PATH="$HOME/.dotnet:$PATH"
-            "$HOME/.dotnet/dotnet" --version
+            "$HOME/.dotnet/dotnet --version
           fi
 
       - name: Build and Publish
@@ -46,7 +46,7 @@ jobs:
           CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
           KESTREL_HTTP_PORT: ${{ secrets.KESTREL_HTTP_PORT || '5206' }}
           KESTREL_HTTPS_PORT: ${{ secrets.KESTREL_HTTPS_PORT || '7048' }}
-          APP_LOGGER_LOGS_DIRECTORY: ${{ secrets.APP_LOGGER_LOGS_DIRECTORY || '/var/log/raterelay' }}
+          APP_LOGGER_LOGS_DIRECTORY: ${{ secrets.APP_LOGGER_LOGS_DIRECTORY || './logs' }}
           APP_LOGGER_ROLLING_INTERVAL: ${{ secrets.APP_LOGGER_ROLLING_INTERVAL || 'Day' }}
           APP_LOGGER_ENABLE_CONSOLE_LOGGING: ${{ secrets.APP_LOGGER_ENABLE_CONSOLE_LOGGING || 'true' }}
           APP_LOGGER_ENABLE_FILE_LOGGING: ${{ secrets.APP_LOGGER_ENABLE_FILE_LOGGING || 'true' }}
@@ -54,10 +54,8 @@ jobs:
           sudo systemctl stop raterelay || true
           sudo mkdir -p /opt/raterelay
           sudo rsync -av --delete ./publish/ /opt/raterelay/
-          sudo chown -R www-data:www-data /opt/raterelay
-          sudo chmod -R 755 /opt/raterelay
+          
           sudo tee /etc/systemd/system/raterelay.service << EOF
-
           [Unit]
           Description=RateRelay API
           After=network.target mariadb.service redis.service
@@ -66,7 +64,7 @@ jobs:
           WorkingDirectory=/opt/raterelay
           ExecStart=/usr/bin/dotnet /opt/raterelay/RateRelay.API.dll
           Restart=always
-          User=www-data
+          User=ubuntu
           Environment=ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
           Environment=ASPNETCORE_URLS=http://+:$KESTREL_HTTP_PORT;https://+:$KESTREL_HTTPS_PORT
           Environment=Database__Password=$DATABASE_PASSWORD
@@ -87,5 +85,6 @@ jobs:
           WantedBy=multi-user.target
           EOF
           
+          sudo chown -R ubuntu:ubuntu /opt/raterelay
           sudo systemctl daemon-reload
           sudo systemctl enable --now raterelay
