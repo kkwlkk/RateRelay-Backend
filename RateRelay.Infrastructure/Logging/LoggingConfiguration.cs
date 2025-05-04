@@ -27,15 +27,16 @@ namespace RateRelay.Infrastructure.Logging
             const string sectionName = SerilogLoggingOptions.SectionName;
             var logsDirectory = configuration[$"{sectionName}:LogDirectory"] ?? "./logs";
 
-            if (!Directory.Exists(logsDirectory))
-            {
-                Directory.CreateDirectory(logsDirectory);
-            }
+            var assemblyLocation = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            if (string.IsNullOrEmpty(assemblyLocation))
+                throw new InvalidOperationException("Could not determine assembly location");
 
-            var rollingInterval = Enum.Parse<RollingInterval>(
-                configuration[$"{sectionName}:LogFileRollingInterval"] ?? "Day",
-                true
-            );
+            logsDirectory = Path.GetFullPath(Path.Combine(assemblyLocation, logsDirectory));
+            Directory.CreateDirectory(logsDirectory);
+
+            var rollingIntervalConfig = configuration[$"{sectionName}:LogFileRollingInterval"] ?? "Day";
+            if (!Enum.TryParse<RollingInterval>(rollingIntervalConfig, true, out var rollingInterval))
+                throw new InvalidOperationException($"Invalid rolling interval: {rollingIntervalConfig}");
 
             return new LoggerConfiguration()
                 .MinimumLevel.Debug()
