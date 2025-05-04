@@ -25,7 +25,7 @@ jobs:
             ./dotnet-install.sh --channel 8.0 --install-dir "$HOME/.dotnet"
             echo "$HOME/.dotnet" >> $GITHUB_PATH
             export PATH="$HOME/.dotnet:$PATH"
-            "$HOME/.dotnet/dotnet --version
+            "$HOME/.dotnet/dotnet" --version
           fi
 
       - name: Build and Publish
