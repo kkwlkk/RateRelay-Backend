@@ -11,9 +11,21 @@ jobs:
     
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0.x'
+
+      - name: Setup .NET
+        run: |
+          if command -v dotnet &> /dev/null; then
+            echo "✓ .NET is already installed"
+            dotnet --version
+          else
+            echo "✗ .NET not found, installing in user directory..."
+            wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
+            chmod +x ./dotnet-install.sh
+            ./dotnet-install.sh --channel 8.0 --install-dir "$HOME/.dotnet"
+            echo "$HOME/.dotnet" >> $GITHUB_PATH
+            export PATH="$HOME/.dotnet:$PATH"
+            "$HOME/.dotnet/dotnet" --version
+          fi
 
       - name: Build and Publish
         run: |
