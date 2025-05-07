@@ -53,7 +53,8 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
             {
                 builder.AllowAnyOrigin()
                     .AllowAnyMethod()
-                    .AllowAnyHeader();
+                    .AllowAnyHeader()
+                    .WithExposedHeaders("X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset");
             });
         });
 

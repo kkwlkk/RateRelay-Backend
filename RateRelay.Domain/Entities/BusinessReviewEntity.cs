@@ -17,6 +17,13 @@ public class BusinessReviewEntity : BaseEntity
     [MaxLength(64)]
     public BusinessReviewStatus Status { get; set; } = BusinessReviewStatus.Pending;
 
+    public BusinessRating Rating { get; set; }
+
+    [MaxLength(512)]
+    public required string Comment { get; set; }
+
+    public bool PostedGoogleReview { get; set; }
+
     public DateTime? DateAcceptedUtc { get; set; }
     public DateTime? DateRejectedUtc { get; set; }
 
@@ -25,10 +32,10 @@ public class BusinessReviewEntity : BaseEntity
 
     [ForeignKey("ReviewerId")]
     public virtual AccountEntity Reviewer { get; set; }
-    
+
     [NotMapped]
     public bool IsAccepted => Status == BusinessReviewStatus.Accepted;
-    
+
     [NotMapped]
     public bool IsRejected => Status == BusinessReviewStatus.Rejected;
 

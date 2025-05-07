@@ -2,5 +2,6 @@ namespace RateRelay.Domain.Enums.Redis;
 
 public enum CacheEntryCategory
 {
-    QueuedBusinessUserLink,
+    QueuedBusinessForUser,
+    SkippedQueuedBusinessByUser,
 }

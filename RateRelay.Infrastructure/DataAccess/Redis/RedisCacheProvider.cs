@@ -93,6 +93,44 @@ public class RedisCacheProvider(IConnectionMultiplexer connectionMultiplexer, IL
         }
     }
 
+    public async Task<IEnumerable<T?>> GetAllAsync<T>(CacheEntryCategory category)
+    {
+        if (string.IsNullOrWhiteSpace(category.ToString()))
+            throw new ArgumentNullException(nameof(category));
+
+        var database = _connectionMultiplexer.GetDatabase();
+
+        try
+        {
+            var server = _connectionMultiplexer.GetServer(_connectionMultiplexer.GetEndPoints()[0]);
+            var keys = server.Keys(pattern: $"cache:{category}:*").Select(k => k.ToString()).ToArray();
+
+            var tasks = keys.Select(k => database.StringGetAsync(k));
+            var results = await Task.WhenAll(tasks);
+
+            return results
+                .Where(r => !r.IsNullOrEmpty)
+                .Select(r => JsonSerializer.Deserialize<T>(r!))
+                .ToList();
+        }
+        catch (RedisConnectionException ex)
+        {
+            _logger.Error(ex,
+                "Redis connection error occured while getting all cache entries with category: {CacheCategory}",
+                category);
+
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex,
+                "An error occured while getting all cache entries with category: {CacheCategory}", category);
+
+            throw;
+        }
+    }
+
+
     public async Task<bool> RemoveAsync(CacheEntryCategory category, string key)
     {
         if (string.IsNullOrWhiteSpace(key))

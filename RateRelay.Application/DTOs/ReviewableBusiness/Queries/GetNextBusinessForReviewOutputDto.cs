@@ -10,5 +10,6 @@ public class GetNextBusinessForReviewOutputDto
 
     public required string BusinessName { get; set; }
     public required string MapUrl { get; set; }
+    public required int InitialReviewTimeInSeconds { get; set; }
     public required int RemainingReviewTimeInSeconds { get; set; }
 }

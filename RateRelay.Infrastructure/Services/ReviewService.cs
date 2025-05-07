@@ -12,7 +12,13 @@ public class ReviewService(
     IPointService pointService
 ) : IReviewService
 {
-    public async Task<bool> AddUserReviewAsync(long businessId, long reviewerId, CancellationToken cancellationToken)
+    public async Task<bool> AddUserReviewAsync(
+        long businessId, 
+        long reviewerId, 
+        BusinessRating rating,
+        string comment,
+        bool postedGoogleReview,
+        CancellationToken cancellationToken)
     {
         await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
         var businessRepository = unitOfWork.GetRepository<BusinessEntity>();
@@ -38,7 +44,11 @@ public class ReviewService(
         var review = new BusinessReviewEntity
         {
             BusinessId = businessId,
-            ReviewerId = reviewerId
+            ReviewerId = reviewerId,
+            Status = BusinessReviewStatus.Pending,
+            Rating = rating,
+            Comment = comment,
+            PostedGoogleReview = postedGoogleReview
         };
 
         await reviewRepository.InsertAsync(review, cancellationToken);

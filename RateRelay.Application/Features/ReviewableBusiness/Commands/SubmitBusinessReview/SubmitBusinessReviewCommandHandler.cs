@@ -36,7 +36,13 @@ public class SubmitBusinessReviewCommandHandler(
         }
 
         var isReviewAdded = await reviewService.AddUserReviewAsync(
-            assignedBusiness.Id, currentUserContext.AccountId, cancellationToken: cancellationToken);
+            assignedBusiness.Id,
+            currentUserContext.AccountId,
+            request.Rating,
+            request.Comment,
+            request.PostedGoogleReview,
+            cancellationToken: cancellationToken
+        );
 
         if (!isReviewAdded)
         {

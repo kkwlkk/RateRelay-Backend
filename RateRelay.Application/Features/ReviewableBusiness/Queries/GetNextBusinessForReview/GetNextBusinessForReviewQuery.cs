@@ -3,4 +3,7 @@ using RateRelay.Application.DTOs.ReviewableBusiness.Queries;
 
 namespace RateRelay.Application.Features.ReviewableBusiness.Queries.GetNextBusinessForReview;
 
-public class GetNextBusinessForReviewQuery : IRequest<GetNextBusinessForReviewOutputDto>;
+public class GetNextBusinessForReviewQuery : IRequest<GetNextBusinessForReviewOutputDto>
+{
+    public bool SkipBusinessAssignment { get; set; } = false;
+}

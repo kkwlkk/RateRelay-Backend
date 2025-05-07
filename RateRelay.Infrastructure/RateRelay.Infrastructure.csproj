@@ -47,6 +47,8 @@
       <EmbeddedResource Include="DataAccess\Migrations\2025\006_INIT_BUSINESS_REVIEWS.sql" />
       <None Remove="DataAccess\Migrations\2025\007_ADD_ACCOUNT_ONBOARDING.sql" />
       <EmbeddedResource Include="DataAccess\Migrations\2025\007_ADD_ACCOUNT_ONBOARDING.sql" />
+      <None Remove="DataAccess\Migrations\2025\008_ADJUST_BUSINESS_REVIEWS.sql" />
+      <EmbeddedResource Include="DataAccess\Migrations\2025\008_ADJUST_BUSINESS_REVIEWS.sql" />
     </ItemGroup>
 
 </Project>

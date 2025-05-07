@@ -45,6 +45,7 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
         AppException => StatusCodes.Status400BadRequest,
         InvalidOperationException => StatusCodes.Status400BadRequest,
         AppOkException => StatusCodes.Status200OK,
+        ForbiddenException => StatusCodes.Status403Forbidden,
         _ => StatusCodes.Status500InternalServerError
     };
 

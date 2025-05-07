@@ -1,3 +1,4 @@
+using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using RateRelay.API.Attributes.Auth;
@@ -15,15 +16,16 @@ namespace RateRelay.API.Controllers.ReviewableBusiness;
 [Route("api/reviewable-businesses")]
 [RequireVerifiedBusiness]
 public class ReviewableBusinessQueueController(
-    IMediator mediator
+    IMediator mediator,
+    IMapper mapper
 ) : BaseController
 {
     [HttpGet("next")]
     [ProducesResponseType(typeof(GetNextBusinessForReviewOutputDto), StatusCodes.Status200OK)]
-    [RateLimit(3, 60)]
-    public async Task<IActionResult> GetNextReviewableBusinessAsync()
+    [RateLimit(50, 60)]
+    public async Task<IActionResult> GetNextReviewableBusinessAsync([FromQuery] GetNextBusinessForReviewInputDto input)
     {
-        var query = new GetNextBusinessForReviewQuery();
+        var query = mapper.Map<GetNextBusinessForReviewQuery>(input);
         var response = await mediator.Send(query);
         return Success(response);
     }
@@ -36,12 +38,12 @@ public class ReviewableBusinessQueueController(
         var response = await mediator.Send(query);
         return Success(response);
     }
-    
+
     [HttpPost("submit")]
     [ProducesResponseType(typeof(SubmitBusinessReviewOutputDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> SubmitBusinessReviewAsync()
+    public async Task<IActionResult> SubmitBusinessReviewAsync([FromBody] SubmitBusinessReviewInputDto input)
     {
-        var command = new SubmitBusinessReviewCommand();
+        var command = mapper.Map<SubmitBusinessReviewCommand>(input);
         var response = await mediator.Send(command);
         return Success(response);
     }
