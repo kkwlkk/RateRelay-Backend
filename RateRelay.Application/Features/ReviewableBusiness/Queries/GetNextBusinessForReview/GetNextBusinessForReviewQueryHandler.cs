@@ -1,7 +1,7 @@
 using AutoMapper;
 using MediatR;
 using RateRelay.Application.DTOs.ReviewableBusiness.Queries;
-using RateRelay.Application.Exceptions;
+using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Infrastructure.Services;
 
@@ -28,15 +28,17 @@ public class GetNextBusinessForReviewQueryHandler(
 
         if (businessToReview is null)
         {
-            throw new NotFoundException("No business available for review. Please try again later.");
+            throw new AppException("No business available for review. Please try again later.",
+                "ERR_NO_BUSINESS_FOR_REVIEW");
         }
 
         var businessLockTtl = await businessQueueService.GetAssignedBusinessLockTtlByUserAsync(
             currentUserContext.AccountId, cancellationToken: cancellationToken);
-    
+
         if (businessLockTtl is null)
         {
-            throw new NotFoundException("No business available for review. Please try again later.");
+            throw new AppException("No business available for review. Please try again later.",
+                "ERR_NO_BUSINESS_FOR_REVIEW");
         }
 
         var businessToReviewDto = mapper.Map<GetNextBusinessForReviewOutputDto>(businessToReview);
