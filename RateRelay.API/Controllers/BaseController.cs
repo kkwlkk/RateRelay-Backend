@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using RateRelay.Domain.Common;
 
 namespace RateRelay.API.Controllers;
 
@@ -54,14 +55,14 @@ public abstract class BaseController : ControllerBase
     protected IActionResult PagedSuccess<T>(IEnumerable<T> items, int currentPage, int pageSize, long totalCount,
         Dictionary<string, object> metadata = null)
     {
-        var response = PagedResponse<T>.Create(items, currentPage, pageSize, totalCount, metadata);
+        var response = PagedApiResponse<T>.Create(items, currentPage, pageSize, totalCount, metadata);
         return HandleApiResponse(response);
     }
 
     protected IActionResult EmptyPagedSuccess<T>(int currentPage = 1, int pageSize = 10,
         Dictionary<string, object> metadata = null)
     {
-        var response = PagedResponse<T>.Empty(currentPage, pageSize, metadata);
+        var response = PagedApiResponse<T>.Empty(currentPage, pageSize, metadata);
         return HandleApiResponse(response);
     }
 }

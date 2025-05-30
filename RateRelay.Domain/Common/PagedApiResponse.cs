@@ -1,16 +1,20 @@
 using System.Text.Json.Serialization;
 
-public class PagedResponse<T> : ApiResponse<PagedData<T>>
+namespace RateRelay.Domain.Common;
+
+public class PagedApiResponse<T> : ApiResponse<List<T>>
 {
-    public static PagedResponse<T> Create(
+    [JsonPropertyName("pagination")]
+    [JsonPropertyOrder(100)]
+    public PaginationInfo Pagination { get; init; }
+
+    public static PagedApiResponse<T> Create(
         IEnumerable<T> items,
         int currentPage,
         int pageSize,
         long totalCount,
         Dictionary<string, object>? metadata = null)
     {
-        var pagedData = new PagedData<T>(items);
-
         var pagination = new PaginationInfo
         {
             CurrentPage = currentPage,
@@ -21,42 +25,21 @@ public class PagedResponse<T> : ApiResponse<PagedData<T>>
             HasPreviousPage = currentPage > 1
         };
 
-        var finalMetadata = metadata is not null
-            ? new Dictionary<string, object>(metadata)
-            : new Dictionary<string, object>();
-
-        finalMetadata["currentPage"] = pagination.CurrentPage;
-        finalMetadata["pageSize"] = pagination.PageSize;
-        finalMetadata["totalCount"] = pagination.TotalCount;
-        finalMetadata["totalPages"] = pagination.TotalPages;
-        finalMetadata["hasNextPage"] = pagination.HasNextPage;
-        finalMetadata["hasPreviousPage"] = pagination.HasPreviousPage;
-
-        return new PagedResponse<T>
+        return new PagedApiResponse<T>
         {
             Success = true,
-            Data = pagedData,
+            Data = items.ToList(),
+            Pagination = pagination,
             Error = null,
-            Metadata = finalMetadata,
+            Metadata = metadata,
             StatusCode = 200
         };
     }
 
-    public static PagedResponse<T> Empty(int currentPage = 1, int pageSize = 10,
-        Dictionary<string, object> metadata = null)
+    public static PagedApiResponse<T> Empty(int currentPage = 1, int pageSize = 10,
+        Dictionary<string, object>? metadata = null)
     {
         return Create([], currentPage, pageSize, 0, metadata);
-    }
-}
-
-public class PagedData<T> : List<T>
-{
-    public PagedData()
-    {
-    }
-
-    public PagedData(IEnumerable<T> items) : base(items)
-    {
     }
 }
 
