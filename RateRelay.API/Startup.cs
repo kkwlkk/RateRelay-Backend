@@ -28,14 +28,15 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
                         );
 
                     return new BadRequestObjectResult(
-                        ApiResponse<object>.ValidationErrorResponse(
-                            errors.Select(e => new ValidationError
+                        ApiResponse<object>.Create(
+                            false,
+                            validationErrors: errors.Select(e => new ValidationError
                             {
                                 Property = e.Key,
                                 Message = string.Join(", ", e.Value),
                                 Code = "INVALID_INPUT"
                             }),
-                            StatusCodes.Status400BadRequest
+                            statusCode: StatusCodes.Status400BadRequest
                         )
                     );
                 };

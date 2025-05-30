@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using RateRelay.Domain.Common;
 
 namespace RateRelay.API.Controllers;
 
@@ -14,49 +13,55 @@ public abstract class BaseController : ControllerBase
 
     protected IActionResult Success<T>(T data, int statusCode = 200)
     {
-        var response = ApiResponse<T>.SuccessResponse(data, statusCode);
+        var response = ApiResponse<T>.Create(true, data, statusCode: statusCode);
         return HandleApiResponse(response);
     }
 
     protected IActionResult Success<T>(T data, Dictionary<string, object> metadata, int statusCode = 200)
     {
-        var response = ApiResponse<T>.SuccessResponse(data, metadata, statusCode);
+        var response = ApiResponse<T>.Create(true, data, metadata: metadata, statusCode: statusCode);
         return HandleApiResponse(response);
     }
 
     protected IActionResult Error<T>(string message, string code = null, int statusCode = 400)
     {
-        var response = ApiResponse<T>.ErrorResponse(message, code, statusCode);
+        var response = ApiResponse<T>.Create(false, errorMessage: message, errorCode: code, statusCode: statusCode);
         return HandleApiResponse(response);
     }
 
-    protected IActionResult Error<T>(string message, string code = null, Dictionary<string, object> metadata = null, int statusCode = 400)
+    protected IActionResult Error<T>(string message, string code = null, Dictionary<string, object> metadata = null,
+        int statusCode = 400)
     {
-        var response = ApiResponse<T>.ErrorResponse(message, code, metadata, statusCode);
+        var response = ApiResponse<T>.Create(false, errorMessage: message, errorCode: code, metadata: metadata,
+            statusCode: statusCode);
         return HandleApiResponse(response);
     }
 
     protected IActionResult ValidationError<T>(IEnumerable<ValidationError> errors, int statusCode = 400)
     {
-        var response = ApiResponse<T>.ValidationErrorResponse(errors, statusCode);
+        var response = ApiResponse<T>.Create(false, validationErrors: errors, statusCode: statusCode);
         return HandleApiResponse(response);
     }
 
-    protected IActionResult ValidationError<T>(IEnumerable<ValidationError> errors, Dictionary<string, object> metadata, int statusCode = 400)
+    protected IActionResult ValidationError<T>(IEnumerable<ValidationError> errors, Dictionary<string, object> metadata,
+        int statusCode = 400)
     {
-        var response = ApiResponse<T>.ValidationErrorResponse(errors, metadata, statusCode);
+        var response =
+            ApiResponse<T>.Create(false, validationErrors: errors, metadata: metadata, statusCode: statusCode);
         return HandleApiResponse(response);
     }
 
-    protected IActionResult WithMetadata<T>(ApiResponse<T> response, Dictionary<string, object> metadata)
+    protected IActionResult PagedSuccess<T>(IEnumerable<T> items, int currentPage, int pageSize, long totalCount,
+        Dictionary<string, object> metadata = null)
     {
-        response.WithMetadata(metadata);
+        var response = PagedResponse<T>.Create(items, currentPage, pageSize, totalCount, metadata);
         return HandleApiResponse(response);
     }
 
-    protected IActionResult WithMetadataValue<T>(ApiResponse<T> response, string key, object value)
+    protected IActionResult EmptyPagedSuccess<T>(int currentPage = 1, int pageSize = 10,
+        Dictionary<string, object> metadata = null)
     {
-        response.WithMetadataValue(key, value);
+        var response = PagedResponse<T>.Empty(currentPage, pageSize, metadata);
         return HandleApiResponse(response);
     }
 }

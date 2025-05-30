@@ -44,10 +44,12 @@ public class OnboardingStepFilter(
             {
                 var currentStep = await onboardingService.GetCurrentStepAsync(currentUserContext.AccountId);
 
-                var response = ApiResponse<object>.ErrorResponse(
+                var response = ApiResponse<object>.Create(
+                    false,
+                    errorMessage:
                     $"You are currently at onboarding step {currentStep} and cannot access step {requiredStep}.",
-                    "ONBOARDING_STEP_INACCESSIBLE",
-                    403);
+                    errorCode: "ONBOARDING_STEP_INACCESSIBLE",
+                    statusCode: 403);
 
                 context.Result = new ObjectResult(response)
                 {
@@ -63,10 +65,12 @@ public class OnboardingStepFilter(
 
             if (currentStep < requiredStep)
             {
-                var response = ApiResponse<object>.ErrorResponse(
+                var response = ApiResponse<object>.Create(
+                    false,
+                    errorMessage:
                     $"You must complete onboarding step {requiredStep} before accessing this resource.",
-                    "ONBOARDING_INCOMPLETE",
-                    403);
+                    errorCode: "ONBOARDING_INCOMPLETE",
+                    statusCode: 403);
 
                 context.Result = new ObjectResult(response)
                 {

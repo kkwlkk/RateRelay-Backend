@@ -99,10 +99,11 @@ public class RateLimitingMiddleware(
         context.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
         context.Response.ContentType = "application/json";
 
-        var response = ApiResponse<object>.ErrorResponse(
-            "Rate limit exceeded. Please try again later.",
-            "RATE_LIMIT_EXCEEDED",
-            StatusCodes.Status429TooManyRequests);
+        var response = ApiResponse<object>.Create(
+            false,
+            errorMessage: "Rate limit exceeded. Please try again later.",
+            errorCode: "RATE_LIMIT_EXCEEDED",
+            statusCode: StatusCodes.Status429TooManyRequests);
 
         await context.Response.WriteAsync(JsonSerializer.Serialize(response));
         return false;

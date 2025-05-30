@@ -54,8 +54,11 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
         switch (exception)
         {
             case ValidationException validationException:
-                return ApiResponse<object>.ValidationErrorResponse(validationException.ValidationErrors, statusCode);
-                
+                return ApiResponse<object>.Create(
+                    false,
+                    validationErrors: validationException.ValidationErrors,
+                    statusCode: statusCode);
+
             case FluentValidation.ValidationException fluentValidationEx:
             {
                 var validationErrors = fluentValidationEx.Errors.Select(e => new ValidationError
@@ -65,18 +68,25 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
                     Code = e.ErrorCode,
                     AttemptedValue = e.AttemptedValue
                 });
-                return ApiResponse<object>.ValidationErrorResponse(validationErrors, statusCode);
+                return ApiResponse<object>.Create(
+                    false,
+                    validationErrors: validationErrors,
+                    statusCode: statusCode);
             }
-            
+
             case AppException appException:
-                return ApiResponse<object>.ErrorResponse(
-                    appException.Message, 
-                    appException.ErrorCode, 
-                    appException.Metadata, 
-                    statusCode);
-                
+                return ApiResponse<object>.Create(
+                    false,
+                    errorMessage: appException.Message,
+                    errorCode: appException.ErrorCode,
+                    metadata: appException.Metadata,
+                    statusCode: statusCode);
+
             default:
-                return ApiResponse<object>.ErrorResponse(exception.Message, null, statusCode);
+                return ApiResponse<object>.Create(
+                    false,
+                    errorMessage: "An unexpected error occurred. Please try again later.",
+                    statusCode: statusCode);
         }
     }
 }
