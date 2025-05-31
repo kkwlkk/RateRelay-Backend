@@ -52,17 +52,8 @@ public abstract class BaseController : ControllerBase
         return HandleApiResponse(response);
     }
 
-    protected IActionResult PagedSuccess<T>(IEnumerable<T> items, int currentPage, int pageSize, long totalCount,
-        Dictionary<string, object> metadata = null)
+    protected IActionResult PagedSuccess<T>(PagedApiResponse<T> response)
     {
-        var response = PagedApiResponse<T>.Create(items, currentPage, pageSize, totalCount, metadata);
-        return HandleApiResponse(response);
-    }
-
-    protected IActionResult EmptyPagedSuccess<T>(int currentPage = 1, int pageSize = 10,
-        Dictionary<string, object> metadata = null)
-    {
-        var response = PagedApiResponse<T>.Empty(currentPage, pageSize, metadata);
         return HandleApiResponse(response);
     }
 }
