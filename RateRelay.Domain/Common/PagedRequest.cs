@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace RateRelay.Domain.Common;
 
@@ -12,7 +13,8 @@ public class PagedRequest
 
     public string? SortBy { get; set; }
 
-    public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public SortDirection SortDirection { get; set; } = SortDirection.Asc;
 
     public string? Search { get; set; }
 
@@ -20,10 +22,14 @@ public class PagedRequest
     public int GetTake() => PageSize;
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum SortDirection
 {
-    Ascending = 0,
-    Descending = 1
+    [JsonPropertyName("asc")]
+    Asc,
+
+    [JsonPropertyName("desc")]
+    Desc
 }
 
 public static class PagedRequestExtensions
@@ -58,7 +64,7 @@ public static class PagedRequestExtensions
             var property = System.Linq.Expressions.Expression.Property(parameter, request.SortBy);
             var lambda = System.Linq.Expressions.Expression.Lambda(property, parameter);
 
-            var methodName = request.SortDirection == SortDirection.Ascending ? "OrderBy" : "OrderByDescending";
+            var methodName = request.SortDirection == SortDirection.Asc ? "OrderBy" : "OrderByDescending";
             var method = typeof(Queryable).GetMethods()
                 .First(m => m.Name == methodName && m.GetParameters().Length == 2)
                 .MakeGenericMethod(typeof(T), property.Type);
