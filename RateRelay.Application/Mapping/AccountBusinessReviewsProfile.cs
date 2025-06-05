@@ -9,12 +9,15 @@ public class AccountBusinessReviewsProfile : Profile
     {
         CreateMap<DTOs.Account.ReviewHistory.Queries.AccountReviewHistoryQueryInputDto, GetAccountReviewHistoryQuery>();
 
-        CreateMap<Domain.Entities.BusinessReviewEntity, DTOs.Account.ReviewHistory.Queries.AccountReviewHistoryQueryOutputDto>()
+        CreateMap<Domain.Entities.BusinessReviewEntity,
+                DTOs.Account.ReviewHistory.Queries.AccountReviewHistoryQueryOutputDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.BusinessName, opt => opt.MapFrom(src => src.Business.BusinessName))
             .ForMember(dest => dest.Cid, opt => opt.MapFrom(src => src.Business.Cid))
             .ForMember(dest => dest.MapUrl, opt => opt.Ignore())
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+            .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Rating))
+            .ForMember(dest => dest.Comment, opt => opt.MapFrom(src => src.Comment))
             .ForMember(dest => dest.DateCreatedUtc, opt => opt.MapFrom(src => src.DateCreatedUtc));
     }
 }

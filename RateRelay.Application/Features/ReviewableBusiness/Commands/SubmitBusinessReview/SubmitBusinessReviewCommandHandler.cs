@@ -30,7 +30,7 @@ public class SubmitBusinessReviewCommandHandler(
         var review = await reviewService.GetUserReviewByBusinessIdAsync(
             assignedBusiness.Id, currentUserContext.AccountId, cancellationToken: cancellationToken);
 
-        if (review is not null)
+        if (review is { IsRejected: false, IsPending: false })
         {
             throw new AppException("You have already submitted a review for this business.");
         }

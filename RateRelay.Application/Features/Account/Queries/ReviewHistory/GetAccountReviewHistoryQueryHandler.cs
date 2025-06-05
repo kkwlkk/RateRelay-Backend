@@ -1,10 +1,10 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using RateRelay.Application.DTOs.Account.ReviewHistory.Queries;
 using RateRelay.Domain.Common;
 using RateRelay.Domain.Entities;
-using RateRelay.Domain.Extensions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.DataAccess;
 
@@ -24,15 +24,24 @@ public class GetAccountReviewHistoryQueryHandler(
         await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
         var businessReviewsRepository = unitOfWork.GetRepository<BusinessReviewEntity>();
 
-        var businessReviews = businessReviewsRepository.GetBaseQueryable()
+        var query = businessReviewsRepository.GetBaseQueryable()
             .Where(x => x.ReviewerId == accountId)
-            .OrderByDescending(x => x.DateCreatedUtc);
+            .ApplySearch(request, x =>
+                x.Business.BusinessName.Contains(request.Search!) ||
+                x.Comment.Contains(request.Search!) ||
+                x.Id.ToString().Contains(request.Search!));
 
-        var response = await businessReviews
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var reviews = await query
             .ProjectTo<AccountReviewHistoryQueryOutputDto>(mapper.ConfigurationProvider)
-            .ToPagedApiResponseAsync(request.Page, request.PageSize, cancellationToken: cancellationToken);
+            .ApplySorting(request)
+            .ApplyPaging(request)
+            .ToListAsync(cancellationToken);
 
-        response.Data.ForEach(review => { review.MapUrl = googleMapsService.GenerateMapUrlFromCid(review.Cid); });
+        reviews.ForEach(review => { review.MapUrl = googleMapsService.GenerateMapUrlFromCid(review.Cid); });
+
+        var response = request.ToPagedResponse(reviews, totalCount);
 
         return response;
     }

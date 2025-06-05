@@ -13,8 +13,8 @@ public class ReviewService(
 ) : IReviewService
 {
     public async Task<bool> AddUserReviewAsync(
-        long businessId, 
-        long reviewerId, 
+        long businessId,
+        long reviewerId,
         BusinessRating rating,
         string comment,
         bool postedGoogleReview,
@@ -33,7 +33,9 @@ public class ReviewService(
         var reviewRepository = unitOfWork.GetRepository<BusinessReviewEntity>();
 
         var existingReview = await reviewRepository
-            .FindAsync(r => r.BusinessId == businessId && r.ReviewerId == reviewerId, cancellationToken);
+            .FindAsync(r => r.BusinessId == businessId && r.ReviewerId == reviewerId &&
+                            (r.Status == BusinessReviewStatus.Pending || r.Status == BusinessReviewStatus.Accepted),
+                cancellationToken);
 
         if (existingReview.Any())
         {
