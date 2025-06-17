@@ -55,8 +55,7 @@ public class RejectPendingBusinessReviewCommandHandler(
         }
 
         var isRejected = await reviewService.RejectUserReviewAsync(
-            businessReview.BusinessId,
-            currentUserContext.AccountId,
+            reviewId: businessReview.Id,
             cancellationToken
         );
 

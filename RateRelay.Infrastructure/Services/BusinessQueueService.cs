@@ -30,80 +30,24 @@ public class BusinessQueueService(
             var businessReviewRepository = unitOfWork.GetRepository<BusinessReviewEntity>();
 
             var existingAssignment = await GetUserAssignedBusinessAsync(accountId, cancellationToken);
-
             if (existingAssignment is not null)
             {
-                if (existingAssignment.OwnerAccount != null && existingAssignment.OwnerAccount.Id == accountId)
+                var shouldKeepAssignment = await ValidateExistingAssignmentAsync(
+                    existingAssignment, accountId, businessReviewRepository, cancellationToken);
+                
+                if (shouldKeepAssignment)
                 {
-                    if (ApplicationEnvironment.Current().IsDevelopment)
-                    {
-                        logger.Debug(
-                            "User {AccountId} was assigned to their own business {BusinessId}. Finding a new business.",
-                            accountId, existingAssignment.Id);
-                    }
-
-                    await UnassignBusinessFromUserAsync(existingAssignment.Id, accountId);
-                }
-                else
-                {
-                    var hasReview = await businessReviewRepository
-                        .GetBaseQueryable()
-                        .AnyAsync(r => r.ReviewerId == accountId &&
-                                       r.BusinessId == existingAssignment.Id &&
-                                       (r.Status == BusinessReviewStatus.Pending ||
-                                        r.Status == BusinessReviewStatus.Accepted),
-                            cancellationToken);
-
-                    if (hasReview)
-                    {
-                        logger.Information(
-                            "User {AccountId} was assigned to business {BusinessId} they already reviewed. Finding a new business.",
-                            accountId, existingAssignment.Id);
-
-                        await UnassignBusinessFromUserAsync(existingAssignment.Id, accountId);
-                    }
-                    else
-                    {
-                        if (ApplicationEnvironment.Current().IsDevelopment)
-                        {
-                            logger.Debug("User {AccountId} already has business {BusinessId} assigned.",
-                                accountId, existingAssignment.Id);
-                        }
-
-                        return existingAssignment;
-                    }
+                    return existingAssignment;
                 }
             }
 
-            var businessesWithUserReviews = await businessReviewRepository
-                .GetBaseQueryable()
-                .Where(r => r.ReviewerId == accountId &&
-                            (r.Status == BusinessReviewStatus.Pending ||
-                             r.Status == BusinessReviewStatus.Accepted))
-                .Select(r => r.BusinessId)
-                .ToListAsync(cancellationToken);
-
-            if (ApplicationEnvironment.Current().IsDevelopment)
-            {
-                logger.Debug("Found {Count} businesses with reviews from user {AccountId}",
-                    businessesWithUserReviews.Count, accountId);
-            }
+            var excludedBusinessIds = await GetExcludedBusinessIdsAsync(
+                accountId, businessReviewRepository, cancellationToken);
 
             var skippedBusinesses = await GetSkippedBusinessesForUserAsync(accountId, cancellationToken);
+            excludedBusinessIds.AddRange(skippedBusinesses);
 
-            const int pageSize = 25;
-
-            var baseQuery = businessRepository.GetBaseQueryable()
-                .Include(b => b.OwnerAccount)
-                .Where(b => b.OwnerAccount != null)
-                .Where(b => b.OwnerAccount != null && b.OwnerAccount.Id != accountId)
-                .Where(b => b.IsVerified)
-                .Where(b => b.OwnerAccount != null && b.OwnerAccount.PointBalance >
-                    PointConstants.MinimumOwnerPointBalanceForBusinessVisibility)
-                .Where(b => !businessesWithUserReviews.Contains(b.Id))
-                .Where(b => !skippedBusinesses.Contains(b.Id))
-                .OrderBy(b => b.Priority)
-                .ThenBy(b => b.Id);
+            var baseQuery = BuildBaseBusinessQuery(businessRepository, accountId, excludedBusinessIds);
 
             if (!await baseQuery.AnyAsync(cancellationToken))
             {
@@ -111,89 +55,173 @@ public class BusinessQueueService(
                 return null;
             }
 
-            for (var attempt = 0; attempt < maxAttempts; attempt++)
-            {
-                var businesses = await baseQuery
-                    .Skip(attempt * pageSize)
-                    .Take(pageSize)
-                    .ToListAsync(cancellationToken);
-
-                if (businesses.Count == 0)
-                {
-                    logger.Information(
-                        "No more businesses available after checking {Attempts} batches for user {AccountId}",
-                        attempt, accountId);
-                    return null;
-                }
-
-                foreach (var business in businesses)
-                {
-                    var hasReview = await businessReviewRepository
-                        .GetBaseQueryable()
-                        .AnyAsync(r => r.ReviewerId == accountId &&
-                                       r.BusinessId == business.Id &&
-                                       (r.Status == BusinessReviewStatus.Pending ||
-                                        r.Status == BusinessReviewStatus.Accepted),
-                            cancellationToken);
-
-                    if (hasReview)
-                    {
-                        if (ApplicationEnvironment.Current().IsDevelopment)
-                        {
-                            logger.Debug("Skipping business {BusinessId} as user {AccountId} has already reviewed it",
-                                business.Id, accountId);
-                        }
-
-                        continue;
-                    }
-
-                    if (business.OwnerAccount != null && business.OwnerAccount.Id == accountId)
-                    {
-                        if (ApplicationEnvironment.Current().IsDevelopment)
-                        {
-                            logger.Debug("Skipping business {BusinessId} as it's owned by user {AccountId}",
-                                business.Id, accountId);
-                        }
-
-                        continue;
-                    }
-
-                    if (business.OwnerAccount is
-                        { PointBalance: < PointConstants.MinimumOwnerPointBalanceForBusinessVisibility })
-                    {
-                        if (ApplicationEnvironment.Current().IsDevelopment)
-                        {
-                            logger.Debug(
-                                "Skipping business {BusinessId} as owner has not enough points to be visible in the queue",
-                                business.Id);
-                        }
-
-                        continue;
-                    }
-
-                    var assignSuccess = await AssignBusinessToUserAsync(business.Id, accountId);
-
-                    if (!assignSuccess)
-                        continue;
-
-                    return business;
-                }
-
-                if (ApplicationEnvironment.Current().IsDevelopment)
-                {
-                    logger.Debug("All businesses in batch {Attempt} were locked, trying next batch", attempt);
-                }
-            }
-
-            logger.Information("Could not find available business after {MaxAttempts} batches for user {AccountId}",
-                maxAttempts, accountId);
-            return null;
+            return await FindAndAssignAvailableBusinessAsync(
+                baseQuery, accountId, maxAttempts, cancellationToken);
         }
         catch (Exception ex)
         {
             logger.Error(ex, "Error finding available business for user {AccountId}", accountId);
             throw;
         }
+    }
+
+    private async Task<bool> ValidateExistingAssignmentAsync(
+        BusinessEntity existingAssignment,
+        long accountId,
+        IRepository<BusinessReviewEntity> businessReviewRepository,
+        CancellationToken cancellationToken)
+    {
+        if (existingAssignment.OwnerAccount?.Id == accountId)
+        {
+            if (ApplicationEnvironment.Current().IsDevelopment)
+            {
+                logger.Debug("User {AccountId} was assigned to their own business {BusinessId}. Finding a new business.",
+                    accountId, existingAssignment.Id);
+            }
+            await UnassignBusinessFromUserAsync(existingAssignment.Id, accountId);
+            return false;
+        }
+
+        var hasActiveReview = await businessReviewRepository
+            .GetBaseQueryable()
+            .AnyAsync(r => r.ReviewerId == accountId &&
+                           r.BusinessId == existingAssignment.Id &&
+                           (r.Status == BusinessReviewStatus.Pending ||
+                            r.Status == BusinessReviewStatus.Accepted),
+                cancellationToken);
+
+        if (hasActiveReview)
+        {
+            logger.Information("User {AccountId} was assigned to business {BusinessId} they already reviewed. Finding a new business.",
+                accountId, existingAssignment.Id);
+            await UnassignBusinessFromUserAsync(existingAssignment.Id, accountId);
+            return false;
+        }
+
+        if (ApplicationEnvironment.Current().IsDevelopment)
+        {
+            logger.Debug("User {AccountId} already has business {BusinessId} assigned.",
+                accountId, existingAssignment.Id);
+        }
+
+        return true;
+    }
+
+    private async Task<List<long>> GetExcludedBusinessIdsAsync(
+        long accountId,
+        IRepository<BusinessReviewEntity> businessReviewRepository,
+        CancellationToken cancellationToken)
+    {
+        var businessesWithActiveReviews = await businessReviewRepository
+            .GetBaseQueryable()
+            .Where(r => r.ReviewerId == accountId &&
+                        (r.Status == BusinessReviewStatus.Pending ||
+                         r.Status == BusinessReviewStatus.Accepted))
+            .Select(r => r.BusinessId)
+            .ToListAsync(cancellationToken);
+
+        var businessesWithThreeRejections = await businessReviewRepository
+            .GetBaseQueryable()
+            .Where(r => r.ReviewerId == accountId && r.Status == BusinessReviewStatus.Rejected)
+            .GroupBy(r => r.BusinessId)
+            .Where(g => g.Count() >= 3)
+            .Select(g => g.Key)
+            .ToListAsync(cancellationToken);
+
+        var excludedBusinessIds = businessesWithActiveReviews.Union(businessesWithThreeRejections).ToList();
+
+        if (ApplicationEnvironment.Current().IsDevelopment)
+        {
+            logger.Debug("Found {ActiveCount} businesses with active reviews and {RejectedCount} businesses with 3+ rejections for user {AccountId}",
+                businessesWithActiveReviews.Count, businessesWithThreeRejections.Count, accountId);
+        }
+
+        return excludedBusinessIds;
+    }
+
+    private IQueryable<BusinessEntity> BuildBaseBusinessQuery(
+        IRepository<BusinessEntity> businessRepository,
+        long accountId,
+        List<long> excludedBusinessIds)
+    {
+        return businessRepository.GetBaseQueryable()
+            .Include(b => b.OwnerAccount)
+            .Where(b => b.OwnerAccount != null && b.OwnerAccount.Id != accountId)
+            .Where(b => b.IsVerified)
+            .Where(b => b.OwnerAccount.PointBalance >= PointConstants.MinimumOwnerPointBalanceForBusinessVisibility)
+            .Where(b => !excludedBusinessIds.Contains(b.Id))
+            .OrderBy(b => b.Priority)
+            .ThenBy(b => b.Id);
+    }
+
+    private async Task<BusinessEntity?> FindAndAssignAvailableBusinessAsync(
+        IQueryable<BusinessEntity> baseQuery,
+        long accountId,
+        int maxAttempts,
+        CancellationToken cancellationToken)
+    {
+        const int pageSize = 25;
+
+        for (var attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            var businesses = await baseQuery
+                .Skip(attempt * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            if (businesses.Count == 0)
+            {
+                logger.Information("No more businesses available after checking {Attempts} batches for user {AccountId}",
+                    attempt, accountId);
+                return null;
+            }
+
+            foreach (var business in businesses)
+            {
+                if (!IsBusinessEligibleForUser(business, accountId))
+                    continue;
+
+                var assignSuccess = await AssignBusinessToUserAsync(business.Id, accountId);
+                if (assignSuccess)
+                {
+                    return business;
+                }
+            }
+
+            if (ApplicationEnvironment.Current().IsDevelopment)
+            {
+                logger.Debug("All businesses in batch {Attempt} were locked, trying next batch", attempt);
+            }
+        }
+
+        logger.Information("Could not find available business after {MaxAttempts} batches for user {AccountId}",
+            maxAttempts, accountId);
+        return null;
+    }
+
+    private bool IsBusinessEligibleForUser(BusinessEntity business, long accountId)
+    {
+        if (business.OwnerAccount?.Id == accountId)
+        {
+            if (ApplicationEnvironment.Current().IsDevelopment)
+            {
+                logger.Debug("Skipping business {BusinessId} as it's owned by user {AccountId}",
+                    business.Id, accountId);
+            }
+            return false;
+        }
+
+        if (business.OwnerAccount?.PointBalance < PointConstants.MinimumOwnerPointBalanceForBusinessVisibility)
+        {
+            if (ApplicationEnvironment.Current().IsDevelopment)
+            {
+                logger.Debug("Skipping business {BusinessId} as owner has insufficient points for visibility",
+                    business.Id);
+            }
+            return false;
+        }
+
+        return true;
     }
 
     public async Task<bool> SkipBusinessAssignmentAsync(long accountId,
@@ -317,13 +345,7 @@ public class BusinessQueueService(
             accountId.ToString()
         );
 
-        if (long.TryParse(cachedBusinessId.ToString(), out var businessId) == false)
-        {
-            logger.Information("No business assigned to user {AccountId}", accountId);
-            return null;
-        }
-
-        if (cachedBusinessId is null)
+        if (cachedBusinessId is null || string.IsNullOrEmpty(cachedBusinessId.ToString()))
         {
             logger.Information("No business assigned to user {AccountId}", accountId);
             return null;
@@ -331,7 +353,7 @@ public class BusinessQueueService(
 
         var ttl = await distributedLockProvider.GetLockTtlAsync(
             DistributedLockCategory.BusinessQueue,
-            businessId.ToString()
+            cachedBusinessId.ToString()
         );
 
         return ttl;

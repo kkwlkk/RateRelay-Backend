@@ -5,6 +5,7 @@ using RateRelay.Application.DTOs.Business.BusinessReviews.Queries;
 using RateRelay.Application.Exceptions;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Enums;
+using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces.DataAccess;
 using RateRelay.Infrastructure.Services;
 

@@ -15,7 +15,6 @@ public static class ExceptionHelper
             or InvalidJwtException
             or NotFoundException
             or AppException
-            or InvalidOperationException 
             or ForbiddenException;
     }
 }

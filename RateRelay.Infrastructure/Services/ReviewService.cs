@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using RateRelay.Domain.Constants;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Enums;
+using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.DataAccess;
 
@@ -27,7 +28,8 @@ public class ReviewService(
 
         if (business is null)
         {
-            throw new ArgumentException($"Business with ID {businessId} not found.");
+            throw new AppException(
+                $"Business with ID {businessId} not found.", "BUSINESS_NOT_FOUND");
         }
 
         var reviewRepository = unitOfWork.GetRepository<BusinessReviewEntity>();
@@ -53,38 +55,41 @@ public class ReviewService(
             PostedGoogleReview = postedGoogleReview
         };
 
+        await pointService.DeductPointsAsync(
+            business.OwnerAccountId,
+            PointConstants.ReviewSubmissionLockPoints,
+            PointTransactionType.ReviewSubmissionLock,
+            null,
+            cancellationToken
+        );
+
         await reviewRepository.InsertAsync(review, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return true;
     }
 
-    public async Task<bool> AcceptUserReviewAsync(long businessId, long reviewerId, CancellationToken cancellationToken)
+    public async Task<bool> AcceptUserReviewAsync(long reviewId, CancellationToken cancellationToken)
     {
         await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
         var reviewRepository = unitOfWork.GetRepository<BusinessReviewEntity>();
 
-        var review = await reviewRepository.GetBaseQueryable()
-            .FirstOrDefaultAsync(r => r.BusinessId == businessId && r.ReviewerId == reviewerId, cancellationToken);
+        var review = await reviewRepository.GetByIdAsync(reviewId, cancellationToken);
 
         if (review is null)
         {
-            throw new ArgumentException($"Review with ID {reviewerId} not found.");
+            throw new ArgumentException($"Review with ID {reviewId} not found.");
         }
 
-        if (review.BusinessId != businessId)
+        if (review.Status == BusinessReviewStatus.Accepted)
         {
-            throw new InvalidOperationException(
-                $"Review with ID {reviewerId} does not belong to business with ID {businessId}.");
+            throw new AppException(
+                $"Review with ID {reviewId} has already been accepted.", "REVIEW_ALREADY_ACCEPTED");
         }
 
-        switch (review.Status)
+        if (review.Status == BusinessReviewStatus.Rejected)
         {
-            case BusinessReviewStatus.Accepted:
-                throw new InvalidOperationException(
-                    $"Review with ID {reviewerId} has already been accepted.");
-            case BusinessReviewStatus.Rejected:
-                throw new InvalidOperationException(
-                    $"Review with ID {reviewerId} has already been rejected.");
+            throw new AppException(
+                $"Review with ID {reviewId} has already been rejected.", "REVIEW_ALREADY_REJECTED");
         }
 
         reviewRepository.Update(review);
@@ -93,51 +98,56 @@ public class ReviewService(
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         await pointService.AddPointsAsync(
-            reviewerId,
-            PointConstants.BusinessReviewPoints,
-            PointTransactionType.BusinessReview,
-            $"Accepted review for business with ID {businessId}",
+            review.ReviewerId,
+            PointConstants.AcceptedReviewRewardPoints,
+            PointTransactionType.ReviewAcceptedReward,
+            null,
             cancellationToken
         );
 
         return true;
     }
 
-    public async Task<bool> RejectUserReviewAsync(long businessId, long reviewerId, CancellationToken cancellationToken)
+    public async Task<bool> RejectUserReviewAsync(long reviewId, CancellationToken cancellationToken)
     {
         await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
         var reviewRepository = unitOfWork.GetRepository<BusinessReviewEntity>();
 
-        var review = await reviewRepository
-            .GetBaseQueryable()
-            .FirstOrDefaultAsync(r => r.BusinessId == businessId && r.ReviewerId == reviewerId, cancellationToken);
-
+        var review = await reviewRepository.GetBaseQueryable()
+            .Include(r => r.Business)
+            .FirstOrDefaultAsync(r => r.Id == reviewId, cancellationToken);
+        
         if (review is null)
         {
-            throw new ArgumentException($"Review with ID {reviewerId} not found.");
+           throw new AppException(
+                $"Review with ID {reviewId} not found.", "REVIEW_NOT_FOUND"); 
         }
 
-        if (review.BusinessId != businessId)
+        if (review.Status == BusinessReviewStatus.Rejected)
         {
-            throw new InvalidOperationException(
-                $"Review with ID {reviewerId} does not belong to business with ID {businessId}.");
+            throw new AppException(
+                $"Review with ID {reviewId} has already been rejected.", "REVIEW_ALREADY_REJECTED");
         }
 
-        switch (review.Status)
+        if (review.Status == BusinessReviewStatus.Accepted)
         {
-            case BusinessReviewStatus.Rejected:
-                throw new InvalidOperationException(
-                    $"Review with ID {reviewerId} has already been rejected.");
-            case BusinessReviewStatus.Accepted:
-                throw new InvalidOperationException(
-                    $"Review with ID {reviewerId} has already been accepted.");
+            throw new AppException(
+                $"Review with ID {reviewId} has already been accepted.", "REVIEW_ALREADY_ACCEPTED");
         }
 
         reviewRepository.Update(review);
         review.Status = BusinessReviewStatus.Rejected;
         review.DateRejectedUtc = DateTime.UtcNow;
         await unitOfWork.SaveChangesAsync(cancellationToken);
-
+        
+        await pointService.AddPointsAsync(
+            review.Business.OwnerAccountId,
+            PointConstants.RejectedReviewReturnPoints,
+            PointTransactionType.ReviewRejectionReturn,
+            null,
+            cancellationToken
+        );
+        
         return true;
     }
 

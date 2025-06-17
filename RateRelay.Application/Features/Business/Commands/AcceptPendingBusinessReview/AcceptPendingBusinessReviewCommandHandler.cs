@@ -54,8 +54,7 @@ public class AcceptPendingBusinessReviewCommandHandler(
         }
 
         var isAccepted = await reviewService.AcceptUserReviewAsync(
-            businessReview.BusinessId,
-            currentUserContext.AccountId,
+            reviewId: businessReview.Id,
             cancellationToken
         );
 

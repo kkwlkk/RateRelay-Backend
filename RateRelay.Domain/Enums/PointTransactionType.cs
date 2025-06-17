@@ -5,13 +5,18 @@ namespace RateRelay.Domain.Enums;
 
 public enum PointTransactionType
 {
-    [Display(Name = "Successful Business Review")]
-    [Description("Points earned for reviewing a business")]
-    BusinessReview = 2,
+    [Display(Name = "Review Accepted Reward")]
+    [Description("Points earned by reviewer when business owner accepts their review")]
+    ReviewAcceptedReward = 1,
 
-    // Debit transactions (remove points)
+    [Display(Name = "Review Submission Lock")]
+    [Description("Points temporarily locked from business owner when review is submitted")]
+    ReviewSubmissionLock = 2,
 
-    // Internal transactions
+    [Display(Name = "Review Rejection Return")]
+    [Description("Points returned to business owner when they reject a review")]
+    ReviewRejectionReturn = 3,
+
     [Display(Name = "Manual Adjustment")]
     [Description("Points manually adjusted by an administrator")]
     ManualAdjustment = 901,

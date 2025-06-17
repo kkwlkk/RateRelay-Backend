@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using RateRelay.Application.Exceptions;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;

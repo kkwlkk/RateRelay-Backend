@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using RateRelay.Application.Exceptions;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Enums;
+using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.DataAccess;
 using Serilog;

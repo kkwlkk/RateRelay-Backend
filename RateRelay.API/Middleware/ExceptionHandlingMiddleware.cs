@@ -1,7 +1,6 @@
 using System.Text.Json;
 using RateRelay.Application.Exceptions;
 using RateRelay.Application.Helpers;
-using RateRelay.Domain.Common;
 using RateRelay.Domain.Exceptions;
 using ValidationException = RateRelay.Application.Exceptions.ValidationException;
 
@@ -80,6 +79,13 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
                     errorMessage: appException.Message,
                     errorCode: appException.ErrorCode,
                     metadata: appException.Metadata,
+                    statusCode: statusCode);
+            
+            case NotFoundException notFoundException:
+                return ApiResponse<object>.Create(
+                    false,
+                    errorMessage: notFoundException.Message,
+                    errorCode: notFoundException.ErrorCode,
                     statusCode: statusCode);
 
             default:

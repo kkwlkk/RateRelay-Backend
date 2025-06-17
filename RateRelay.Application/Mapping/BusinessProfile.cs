@@ -3,10 +3,13 @@ using RateRelay.Application.DTOs.Business.BusinessReviews.Commands;
 using RateRelay.Application.DTOs.Business.BusinessReviews.Queries;
 using RateRelay.Application.DTOs.Business.BusinessVerification.Commands;
 using RateRelay.Application.DTOs.Business.BusinessVerification.Queries;
+using RateRelay.Application.DTOs.Business.UserBusiness.Queries;
 using RateRelay.Application.Features.Business.Commands.AcceptPendingBusinessReview;
 using RateRelay.Application.Features.Business.Commands.InitiateBusinessVerification;
 using RateRelay.Application.Features.Business.Commands.RejectPendingBusinessReview;
+using RateRelay.Application.Features.Business.Queries.GetAllUserBusinesses;
 using RateRelay.Application.Features.Business.Queries.GetAwaitingBusinessReviews;
+using RateRelay.Application.Features.Business.Queries.GetBusinessReviews;
 using RateRelay.Domain.Entities;
 
 namespace RateRelay.Application.Mapping;
@@ -40,12 +43,25 @@ public class BusinessProfile : Profile
         CreateMap<BusinessReviewEntity, GetAwaitingBusinessReviewsOutputDto>()
             .ForMember(dest => dest.ReviewId, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.SubmittedAt, opt => opt.MapFrom(src => src.DateCreatedUtc));
-        
+
         CreateMap<AcceptPendingBusinessReviewInputDto, AcceptPendingBusinessReviewCommand>()
             .ForMember(dest => dest.ReviewId, opt => opt.MapFrom(src => src.ReviewId));
-        
+
         CreateMap<RejectPendingBusinessReviewInputDto, RejectPendingBusinessReviewCommand>()
             .ForMember(dest => dest.ReviewId, opt => opt.MapFrom(src => src.ReviewId));
+
+        CreateMap<GetAllUserBusinessesQueryInputDto, GetAllUserBusinessesQuery>();
+
+        CreateMap<GetBusinessReviewsQueryInputDto, GetBusinessReviewsQuery>();
+
+        CreateMap<BusinessEntity, GetBusinessQueryOutputDto>()
+            .ForMember(dest => dest.AverageRating, opt => opt.Ignore())
+            .ForMember(dest => dest.Reviews, opt => opt.Ignore());
+
+        CreateMap<BusinessReviewEntity, GetBusinessReviewsQueryOutputDto>()
+            .ForMember(dest => dest.Comment, opt => opt.MapFrom(src => src.Comment.Trim()))
+            .ForMember(dest => dest.PostedGoogleMapsReview, opt => opt.MapFrom(src => src.PostedGoogleReview))
+            .ForMember(dest => dest.GoogleMapsReviewUrl, opt => opt.Ignore());
     }
 
     private string GetVerificationStatus(BusinessVerificationEntity entity)
