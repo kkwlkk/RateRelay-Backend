@@ -57,11 +57,22 @@ public class ReviewService(
 
         await pointService.DeductPointsAsync(
             business.OwnerAccountId,
-            PointConstants.ReviewSubmissionLockPoints,
+            PointConstants.BasicReviewPoints,
             PointTransactionType.ReviewSubmissionLock,
             null,
             cancellationToken
         );
+
+        if (postedGoogleReview)
+        {
+            await pointService.DeductPointsAsync(
+                business.OwnerAccountId,
+                PointConstants.GoogleMapsReviewPoints,
+                PointTransactionType.GoogleMapsReviewLock,
+                null,
+                cancellationToken
+            );
+        }
 
         await reviewRepository.InsertAsync(review, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -99,11 +110,22 @@ public class ReviewService(
 
         await pointService.AddPointsAsync(
             review.ReviewerId,
-            PointConstants.AcceptedReviewRewardPoints,
+            PointConstants.BasicReviewPoints,
             PointTransactionType.ReviewAcceptedReward,
             null,
             cancellationToken
         );
+        
+        if (review.PostedGoogleReview)
+        {
+            await pointService.AddPointsAsync(
+                review.ReviewerId,
+                PointConstants.GoogleMapsReviewPoints,
+                PointTransactionType.GoogleMapsReviewBonus,
+                null,
+                cancellationToken
+            );
+        }
 
         return true;
     }
@@ -139,14 +161,25 @@ public class ReviewService(
         review.Status = BusinessReviewStatus.Rejected;
         review.DateRejectedUtc = DateTime.UtcNow;
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        
+
         await pointService.AddPointsAsync(
             review.Business.OwnerAccountId,
-            PointConstants.RejectedReviewReturnPoints,
+            PointConstants.BasicReviewPoints,
             PointTransactionType.ReviewRejectionReturn,
             null,
             cancellationToken
         );
+
+        if (review.PostedGoogleReview)
+        {
+            await pointService.AddPointsAsync(
+                review.Business.OwnerAccountId,
+                PointConstants.GoogleMapsReviewPoints,
+                PointTransactionType.GoogleMapsReviewReturn,
+                null,
+                cancellationToken
+            );
+        }
         
         return true;
     }
