@@ -15,7 +15,7 @@ public class GetAccountQueryHandler(
 {
     public async Task<AccountQueryOutputDto> Handle(GetAccountQuery request, CancellationToken cancellationToken)
     {
-        var account = await userService.GetFullAccountByIdAsync(userContext.AccountId, cancellationToken);
+        var account = await userService.GetByIdAsync(userContext.AccountId, cancellationToken);
 
         if (account is null)
         {

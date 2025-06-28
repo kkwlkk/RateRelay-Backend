@@ -11,7 +11,7 @@ public class UserService(
     IUnitOfWorkFactory unitOfWorkFactory
 ) : IUserService
 {
-    public async Task<AccountEntity> GetFullAccountByIdAsync(long accountId,
+    public async Task<AccountEntity> GetByIdAsync(long accountId,
         CancellationToken cancellationToken = default)
     {
         try
@@ -25,7 +25,7 @@ public class UserService(
 
             if (account is null)
             {
-                throw new AppException($"Account with ID {accountId} not found.");
+                throw new AppException($"Account with ID {accountId} not found.", "AccountNotFound");
             }
 
             return account;

@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using RateRelay.Domain.Interfaces;
-using RateRelay.Domain.Interfaces.Services;
 using RateRelay.Infrastructure.Services;
 
 namespace RateRelay.Infrastructure.Extensions;
@@ -15,5 +14,6 @@ public static class InfrastructureMiscExtensions
         services.AddScoped<IBusinessQueueService, BusinessQueueService>();
         services.AddScoped<IGoogleMapsService, GoogleMapsService>();
         services.AddScoped<IOnboardingService, OnboardingService>();
+        services.AddScoped<ITicketService, TicketService>();
     }
 }

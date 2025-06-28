@@ -11,7 +11,6 @@ using RateRelay.Domain.Entities;
 using RateRelay.Domain.Enums;
 using RateRelay.Domain.Extensions;
 using RateRelay.Domain.Interfaces;
-using RateRelay.Domain.Interfaces.Services;
 using RateRelay.Infrastructure.Configuration;
 using RateRelay.Infrastructure.DataAccess.Context;
 using Serilog;
@@ -111,11 +110,6 @@ public class AuthService(
     public string HashPassword(string password)
     {
         return BCrypt.Net.BCrypt.HashPassword(password, BCrypt.Net.BCrypt.GenerateSalt(12));
-    }
-
-    public bool HasPermission(ulong permissions, Permission permission)
-    {
-        return permissions.HasPermission(permission);
     }
 
     public async Task<ulong> GetEffectivePermissionsAsync(long accountId)

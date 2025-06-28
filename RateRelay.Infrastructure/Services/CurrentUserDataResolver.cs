@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using RateRelay.Domain.Interfaces;
-using RateRelay.Domain.Interfaces.Services;
 
 namespace RateRelay.Infrastructure.Services;
 

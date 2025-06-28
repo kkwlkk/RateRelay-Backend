@@ -8,7 +8,9 @@ using RateRelay.Application.DTOs.Business.BusinessReviews.Commands;
 using RateRelay.Application.DTOs.Business.BusinessReviews.Queries;
 using RateRelay.Application.Features.Business.Commands.AcceptPendingBusinessReview;
 using RateRelay.Application.Features.Business.Commands.RejectPendingBusinessReview;
+using RateRelay.Application.Features.Business.Commands.ReportBusinessReview;
 using RateRelay.Application.Features.Business.Queries.GetAwaitingBusinessReviews;
+using RateRelay.Domain.Enums;
 
 namespace RateRelay.API.Controllers.Business;
 
@@ -40,11 +42,20 @@ public class BusinessReviewsController(
         return Success(response);
     }
     
-    [HttpPost("reject")]
-    [ProducesResponseType(typeof(RejectPendingBusinessReviewOutputDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> RejectPendingBusinessReview([FromBody] RejectPendingBusinessReviewInputDto dto)
+    // [HttpPost("reject")]
+    // [ProducesResponseType(typeof(RejectPendingBusinessReviewOutputDto), StatusCodes.Status200OK)]
+    // public async Task<IActionResult> RejectPendingBusinessReview([FromBody] RejectPendingBusinessReviewInputDto dto)
+    // {
+    //     var command = mapper.Map<RejectPendingBusinessReviewCommand>(dto);
+    //     var response = await mediator.Send(command);
+    //     return Success(response);
+    // }
+    
+    [HttpPost("report")]
+    [ProducesResponseType(typeof(ReportBusinessReviewOutputDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ReportBusinessReview([FromBody] ReportBusinessReviewInputDto dto)
     {
-        var command = mapper.Map<RejectPendingBusinessReviewCommand>(dto);
+        var command = mapper.Map<ReportBusinessReviewCommand>(dto);
         var response = await mediator.Send(command);
         return Success(response);
     }

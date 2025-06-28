@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using RateRelay.Domain.Enums;
 using RateRelay.Domain.Extensions;
+using RateRelay.Domain.Extensions.Account;
 
 namespace RateRelay.Infrastructure.Authorization;
 
@@ -29,6 +30,7 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
         if (permissions.HasPermission(requirement.Permission))
         {
             context.Succeed(requirement);
+            return Task.CompletedTask;
         }
 
         return Task.CompletedTask;

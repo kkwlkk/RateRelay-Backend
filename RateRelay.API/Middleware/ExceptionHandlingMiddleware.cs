@@ -41,6 +41,7 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
         KeyNotFoundException => StatusCodes.Status404NotFound,
         UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
         NotFoundException => StatusCodes.Status404NotFound,
+        UnauthorizedException => StatusCodes.Status401Unauthorized,
         AppException => StatusCodes.Status400BadRequest,
         InvalidOperationException => StatusCodes.Status400BadRequest,
         AppOkException => StatusCodes.Status200OK,
@@ -86,6 +87,13 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
                     false,
                     errorMessage: notFoundException.Message,
                     errorCode: notFoundException.ErrorCode,
+                    statusCode: statusCode);
+            
+            case ForbiddenException forbiddenException:
+                return ApiResponse<object>.Create(
+                    false,
+                    errorMessage: forbiddenException.Message,
+                    errorCode: forbiddenException.ErrorCode,
                     statusCode: statusCode);
 
             default:

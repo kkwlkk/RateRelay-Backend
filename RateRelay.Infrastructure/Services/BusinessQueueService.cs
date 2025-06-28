@@ -116,7 +116,8 @@ public class BusinessQueueService(
             .GetBaseQueryable()
             .Where(r => r.ReviewerId == accountId &&
                         (r.Status == BusinessReviewStatus.Pending ||
-                         r.Status == BusinessReviewStatus.Accepted))
+                         r.Status == BusinessReviewStatus.Accepted ||
+                         r.Status == BusinessReviewStatus.UnderDispute))
             .Select(r => r.BusinessId)
             .ToListAsync(cancellationToken);
 

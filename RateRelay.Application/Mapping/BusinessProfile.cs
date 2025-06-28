@@ -7,6 +7,7 @@ using RateRelay.Application.DTOs.Business.UserBusiness.Queries;
 using RateRelay.Application.Features.Business.Commands.AcceptPendingBusinessReview;
 using RateRelay.Application.Features.Business.Commands.InitiateBusinessVerification;
 using RateRelay.Application.Features.Business.Commands.RejectPendingBusinessReview;
+using RateRelay.Application.Features.Business.Commands.ReportBusinessReview;
 using RateRelay.Application.Features.Business.Queries.GetAllUserBusinesses;
 using RateRelay.Application.Features.Business.Queries.GetAwaitingBusinessReviews;
 using RateRelay.Application.Features.Business.Queries.GetBusinessReviews;
@@ -62,6 +63,11 @@ public class BusinessProfile : Profile
             .ForMember(dest => dest.Comment, opt => opt.MapFrom(src => src.Comment.Trim()))
             .ForMember(dest => dest.PostedGoogleMapsReview, opt => opt.MapFrom(src => src.PostedGoogleReview))
             .ForMember(dest => dest.GoogleMapsReviewUrl, opt => opt.Ignore());
+        
+        CreateMap<ReportBusinessReviewInputDto, ReportBusinessReviewCommand>()
+            .ForMember(dest => dest.ReviewId, opt => opt.MapFrom(src => src.ReviewId))
+            .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content.Trim()))
+            .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.Reason));
     }
 
     private string GetVerificationStatus(BusinessVerificationEntity entity)

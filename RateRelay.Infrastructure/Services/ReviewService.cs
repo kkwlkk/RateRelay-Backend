@@ -115,7 +115,7 @@ public class ReviewService(
             null,
             cancellationToken
         );
-        
+
         if (review.PostedGoogleReview)
         {
             await pointService.AddPointsAsync(
@@ -138,11 +138,11 @@ public class ReviewService(
         var review = await reviewRepository.GetBaseQueryable()
             .Include(r => r.Business)
             .FirstOrDefaultAsync(r => r.Id == reviewId, cancellationToken);
-        
+
         if (review is null)
         {
-           throw new AppException(
-                $"Review with ID {reviewId} not found.", "REVIEW_NOT_FOUND"); 
+            throw new AppException(
+                $"Review with ID {reviewId} not found.", "REVIEW_NOT_FOUND");
         }
 
         if (review.Status == BusinessReviewStatus.Rejected)
@@ -180,7 +180,7 @@ public class ReviewService(
                 cancellationToken
             );
         }
-        
+
         return true;
     }
 
@@ -206,6 +206,16 @@ public class ReviewService(
             .FindAsync(r => r.BusinessId == businessId, cancellationToken);
 
         return reviews;
+    }
+
+    public async Task<BusinessReviewEntity?> GetBusinessReviewAsync(long reviewId, CancellationToken cancellationToken)
+    {
+        await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
+        var reviewRepository = unitOfWork.GetRepository<BusinessReviewEntity>();
+
+        var review = await reviewRepository.GetByIdAsync(reviewId, cancellationToken);
+
+        return review;
     }
 
     public async Task<BusinessReviewEntity?> GetUserReviewByBusinessIdAsync(long businessId, long reviewerId,
@@ -252,5 +262,64 @@ public class ReviewService(
         }
 
         return review;
+    }
+
+    public async Task<bool> ReportBusinessReviewAsync(long reporterId, long reviewId, string content, BusinessReviewReportReason reason,
+        CancellationToken cancellationToken)
+    {
+        await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
+        var businessRepository = unitOfWork.GetRepository<BusinessEntity>();
+        
+        var review = await GetBusinessReviewAsync(reviewId, cancellationToken);
+        
+        if (review is null)
+        {
+            throw new NotFoundException(
+                $"Business review with ID {reviewId} not found.", "BusinessReviewNotFound");
+        }
+        
+        var business = await businessRepository.GetByIdAsync(review.BusinessId, cancellationToken);
+        
+        if (business is null)
+        {
+            throw new NotFoundException(
+                $"Business with ID {review.BusinessId} not found.", "BusinessNotFound");
+        }
+        
+        if (review.ReviewerId == reporterId)
+        {
+            throw new AppException(
+                $"You cannot report your own review with ID {reviewId}.",
+                "BusinessReviewCannotReportOwn");
+        }
+        
+        if (business.OwnerAccountId != reporterId)
+        {
+            throw new AppException(
+                $"You do not have permission to report this review with ID {reviewId}.",
+                "BusinessReviewNoPermissionToReport");
+        }
+
+        if (review.Status is BusinessReviewStatus.UnderDispute)
+        {
+            throw new AppException(
+                $"Business review with ID {reviewId} is already under dispute.",
+                "BusinessReviewAlreadyUnderDispute");
+        }
+        
+        if (review.Status is not BusinessReviewStatus.Pending and not BusinessReviewStatus.Accepted)
+        {
+            throw new AppException(
+                $"Business review with ID {reviewId} cannot be reported.",
+                "BusinessReviewCannotBeReported");
+        }
+        
+        // review.Status = BusinessReviewStatus.UnderDispute;
+        
+        
+        return true;
+        
+        
+        
     }
 }
