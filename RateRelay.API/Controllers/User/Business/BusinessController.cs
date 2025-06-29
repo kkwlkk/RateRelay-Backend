@@ -7,13 +7,13 @@ using RateRelay.Application.Features.Business.Queries.GetAllUserBusinesses;
 using RateRelay.Application.Features.Business.Queries.GetBusiness;
 using RateRelay.Application.Features.Business.Queries.GetBusinessReviews;
 
-namespace RateRelay.API.Controllers.Business;
+namespace RateRelay.API.Controllers.User.Business;
 
 [ApiController]
 [Area("Account")]
 [Route("api/business")]
 [RequireVerifiedBusiness]
-public class BusinessController(IMapper mapper, IMediator mediator) : BaseController
+public class BusinessController(IMapper mapper, IMediator mediator) : UserBaseController
 {
     [HttpGet]
     [ProducesResponseType(typeof(List<GetBusinessQueryOutputDto>), StatusCodes.Status200OK)]

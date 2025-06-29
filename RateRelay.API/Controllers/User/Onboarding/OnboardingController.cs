@@ -15,13 +15,13 @@ using RateRelay.Application.Features.Onboarding.Commands.CompleteWelcomeStep;
 using RateRelay.Application.Features.Onboarding.Queries.GetOnboardingStatus;
 using RateRelay.Domain.Enums;
 
-namespace RateRelay.API.Controllers.Onboarding;
+namespace RateRelay.API.Controllers.User.Onboarding;
 
 [ApiController]
 [Area("Onboarding")]
 [Route("api/onboarding")]
 [Authorize]
-public class OnboardingController(IMediator mediator, IMapper mapper) : BaseController
+public class OnboardingController(IMediator mediator, IMapper mapper) : UserBaseController
 {
     [HttpGet("status")]
     [ProducesResponseType(typeof(GetOnboardingStatusOutputDto), StatusCodes.Status200OK)]

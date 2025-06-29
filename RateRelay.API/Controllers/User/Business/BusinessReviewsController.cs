@@ -1,18 +1,15 @@
 using AutoMapper;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RateRelay.API.Attributes.Auth;
 using RateRelay.API.Attributes.RateLimiting;
 using RateRelay.Application.DTOs.Business.BusinessReviews.Commands;
 using RateRelay.Application.DTOs.Business.BusinessReviews.Queries;
 using RateRelay.Application.Features.Business.Commands.AcceptPendingBusinessReview;
-using RateRelay.Application.Features.Business.Commands.RejectPendingBusinessReview;
 using RateRelay.Application.Features.Business.Commands.ReportBusinessReview;
 using RateRelay.Application.Features.Business.Queries.GetAwaitingBusinessReviews;
-using RateRelay.Domain.Enums;
 
-namespace RateRelay.API.Controllers.Business;
+namespace RateRelay.API.Controllers.User.Business;
 
 [ApiController]
 [Area("Account")]
@@ -21,7 +18,7 @@ namespace RateRelay.API.Controllers.Business;
 public class BusinessReviewsController(
     IMediator mediator,
     IMapper mapper
-) : BaseController
+) : UserBaseController
 {
     [HttpGet("awaiting")]
     [ProducesResponseType(typeof(List<GetAwaitingBusinessReviewsOutputDto>), StatusCodes.Status200OK)]

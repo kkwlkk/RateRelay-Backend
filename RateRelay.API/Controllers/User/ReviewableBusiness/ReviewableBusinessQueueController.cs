@@ -9,7 +9,7 @@ using RateRelay.Application.Features.ReviewableBusiness.Commands.SubmitBusinessR
 using RateRelay.Application.Features.ReviewableBusiness.Queries.GetNextBusinessForReview;
 using RateRelay.Application.Features.ReviewableBusiness.Queries.GetTimeLeftForBusinessReview;
 
-namespace RateRelay.API.Controllers.ReviewableBusiness;
+namespace RateRelay.API.Controllers.User.ReviewableBusiness;
 
 [ApiController]
 [Area("Account")]
@@ -18,7 +18,7 @@ namespace RateRelay.API.Controllers.ReviewableBusiness;
 public class ReviewableBusinessQueueController(
     IMediator mediator,
     IMapper mapper
-) : BaseController
+) : UserBaseController
 {
     [HttpGet("next")]
     [ProducesResponseType(typeof(GetNextBusinessForReviewOutputDto), StatusCodes.Status200OK)]

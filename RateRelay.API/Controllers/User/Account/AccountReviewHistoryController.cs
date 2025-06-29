@@ -7,14 +7,14 @@ using RateRelay.Application.DTOs.Account.ReviewHistory.Queries;
 using RateRelay.Application.Features.Account.Queries.ReviewHistory;
 using RateRelay.Domain.Common;
 
-namespace RateRelay.API.Controllers.Account;
+namespace RateRelay.API.Controllers.User.Account;
 
 [ApiController]
 [Area("Account")]
 [Route("api/account")]
 [Authorize]
 [RequireVerifiedBusiness]
-public class AccountReviewHistoryController(IMapper mapper, IMediator mediator) : BaseController
+public class AccountReviewHistoryController(IMapper mapper, IMediator mediator) : UserBaseController
 {
     [HttpGet("review-history")]
     [ProducesResponseType(typeof(PagedApiResponse<AccountReviewHistoryQueryOutputDto>), StatusCodes.Status200OK)]
