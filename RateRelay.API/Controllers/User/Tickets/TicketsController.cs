@@ -11,13 +11,13 @@ using RateRelay.Application.Features.Tickets.Queries.GetTicketComments;
 using RateRelay.Application.Features.Tickets.Queries.GetUserTickets;
 using RateRelay.Domain.Common;
 
-namespace RateRelay.API.Controllers.Tickets;
+namespace RateRelay.API.Controllers.User.Tickets;
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
 [Area("User Tickets")]
-public class TicketsController(IMediator mediator, IMapper mapper) : BaseController
+public class TicketsController(IMediator mediator, IMapper mapper) : UserBaseController
 {
     [HttpPost]
     public async Task<IActionResult> CreateTicket(CreateTicketCommand command,

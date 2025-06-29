@@ -1,4 +1,5 @@
 using FluentValidation;
+using RateRelay.Application.Features.User.Tickets.Commands.CreateTicket;
 
 namespace RateRelay.Application.Features.Tickets.Commands.CreateTicket;
 

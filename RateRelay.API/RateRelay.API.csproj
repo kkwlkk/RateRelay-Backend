@@ -19,4 +19,9 @@
       <ProjectReference Include="..\RateRelay.Domain\RateRelay.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Controllers\Admin\" />
+      <Folder Include="Controllers\User\" />
+    </ItemGroup>
+
 </Project>

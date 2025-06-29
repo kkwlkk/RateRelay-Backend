@@ -2,7 +2,6 @@ using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RateRelay.API.Attributes.Auth;
 using RateRelay.API.Attributes.RateLimiting;
 using RateRelay.Application.DTOs.Business.BusinessVerification.Commands;
 using RateRelay.Application.DTOs.Business.BusinessVerification.Queries;
@@ -11,7 +10,7 @@ using RateRelay.Application.Features.Business.Commands.ProcessBusinessVerificati
 using RateRelay.Application.Features.Business.Queries.GetBusinessVerificationChallenge;
 using RateRelay.Application.Features.Business.Queries.GetBusinessVerificationStatus;
 
-namespace RateRelay.API.Controllers.Business;
+namespace RateRelay.API.Controllers.User.Business;
 
 [ApiController]
 [Area("Account")]
@@ -20,7 +19,7 @@ namespace RateRelay.API.Controllers.Business;
 public class BusinessVerificationController(
     IMediator mediator,
     IMapper mapper
-) : BaseController
+) : UserBaseController
 {
     [HttpPost("initiate")]
     [ProducesResponseType(typeof(BusinessVerificationOutputDto), StatusCodes.Status200OK)]

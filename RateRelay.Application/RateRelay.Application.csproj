@@ -37,4 +37,11 @@
       <None Remove="DependencyInjection\MediatRConfiguration\**" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="DTOs\Admin\" />
+      <Folder Include="DTOs\User\" />
+      <Folder Include="Features\Admin\" />
+      <Folder Include="Features\User\" />
+    </ItemGroup>
+
 </Project>
