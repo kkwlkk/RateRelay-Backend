@@ -11,6 +11,7 @@ using RateRelay.Application.Features.Tickets.Commands.CreateTicket;
 using RateRelay.Application.Features.Tickets.Queries.GetTicket;
 using RateRelay.Application.Features.Tickets.Queries.GetTicketComments;
 using RateRelay.Application.Features.User.Tickets.Commands.CloseTicket;
+using RateRelay.Application.Features.User.Tickets.Commands.CreateTicket;
 using RateRelay.Application.Features.User.Tickets.Queries.GetUserTickets;
 using RateRelay.Domain.Common;
 
@@ -26,7 +27,7 @@ public class TicketsController(IMediator mediator, IMapper mapper) : UserBaseCon
         CancellationToken cancellationToken)
     {
         var result = await mediator.Send(command, cancellationToken);
-        return CreatedAtAction(nameof(CreateTicket), new { id = result.Id }, result);
+        return Success(result, StatusCodes.Status201Created);
     }
 
     [HttpGet]

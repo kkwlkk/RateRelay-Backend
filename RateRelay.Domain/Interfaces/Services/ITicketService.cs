@@ -94,4 +94,10 @@ public interface ITicketService
         TicketType? typeFilter = null,
         CancellationToken cancellationToken = default
     );
+
+    Task<bool> IsUserOnTicketCooldownAsync(
+        long userId,
+        TicketType type,
+        CancellationToken cancellationToken = default
+    );
 }

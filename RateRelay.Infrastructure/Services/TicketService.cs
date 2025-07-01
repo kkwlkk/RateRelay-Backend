@@ -8,6 +8,7 @@ using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using RateRelay.Domain.Common;
+using RateRelay.Domain.Constants;
 
 namespace RateRelay.Infrastructure.Services;
 
@@ -463,6 +464,22 @@ public class TicketService(
             CurrentPage = pageNumber,
             PageSize = pageSize
         };
+    }
+
+    public async Task<bool> IsUserOnTicketCooldownAsync(long userId, TicketType type,
+        CancellationToken cancellationToken = default)
+    {
+        await using var uow = await unitOfWorkFactory.CreateAsync();
+        var ticketRepository = uow.GetRepository<TicketEntity>();
+
+        const int cooldownPeriod = TicketConstants.CooldownPeriodSeconds;
+        var lastTicket = await ticketRepository.GetBaseQueryable()
+            .Where(t => t.ReporterId == userId && t.Type == type &&
+                        t.DateCreatedUtc > DateTime.UtcNow.AddSeconds(-cooldownPeriod))
+            .OrderByDescending(t => t.DateCreatedUtc)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        return lastTicket != null;
     }
 
     private static void ApplyStatusSpecificChanges(TicketEntity ticket, TicketStatus newStatus)

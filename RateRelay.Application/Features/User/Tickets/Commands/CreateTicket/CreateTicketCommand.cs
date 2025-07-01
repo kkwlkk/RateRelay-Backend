@@ -2,7 +2,7 @@ using MediatR;
 using RateRelay.Application.DTOs.Tickets.Commands;
 using RateRelay.Domain.Enums;
 
-namespace RateRelay.Application.Features.Tickets.Commands.CreateTicket;
+namespace RateRelay.Application.Features.User.Tickets.Commands.CreateTicket;
 
 public class CreateTicketCommand : IRequest<CreateTicketOutputDto>
 {
