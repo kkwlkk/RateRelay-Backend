@@ -1,5 +1,5 @@
 using MediatR;
-using RateRelay.Application.DTOs.Account.Queries;
+using RateRelay.Application.DTOs.User.Account.Queries;
 
 namespace RateRelay.Application.Features.Account.Queries.GetAccount;
 

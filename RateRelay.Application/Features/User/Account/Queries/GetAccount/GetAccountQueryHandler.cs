@@ -1,11 +1,12 @@
 using AutoMapper;
 using MediatR;
 using RateRelay.Application.DTOs;
-using RateRelay.Application.DTOs.Account.Queries;
+using RateRelay.Application.DTOs.User.Account.Queries;
+using RateRelay.Application.Features.Account.Queries.GetAccount;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Infrastructure.Services;
 
-namespace RateRelay.Application.Features.Account.Queries.GetAccount;
+namespace RateRelay.Application.Features.User.Account.Queries.GetAccount;
 
 public class GetAccountQueryHandler(
     CurrentUserContext userContext,
