@@ -17,8 +17,8 @@ public class TicketService(
 ) : ITicketService
 {
     public async Task<TicketEntity> CreateTicketAsync(TicketType type, string title, string description,
-        long reporterId, string? internalNotes = null,
-        long? assignedToId = null, CancellationToken cancellationToken = default)
+        long reporterId, string? internalNotes = null, long? assignedToId = null,
+        TicketSubjects? subjects = null, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(title) || title.Length > typeof(TicketEntity).GetMaxLength(nameof(TicketEntity.Title)))
             throw new AppException("Title cannot be empty or exceed maximum length.", nameof(title));
@@ -43,6 +43,8 @@ public class TicketService(
             InternalNotes = internalNotes ?? string.Empty,
             AssignedToId = assignedToId
         };
+
+        subjects?.ApplyTo(ticket);
 
         await using var uow = await unitOfWorkFactory.CreateAsync();
         var ticketRepository = uow.GetRepository<TicketEntity>();

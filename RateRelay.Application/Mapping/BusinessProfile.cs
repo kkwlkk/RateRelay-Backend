@@ -4,13 +4,15 @@ using RateRelay.Application.DTOs.Business.BusinessReviews.Queries;
 using RateRelay.Application.DTOs.Business.BusinessVerification.Commands;
 using RateRelay.Application.DTOs.Business.BusinessVerification.Queries;
 using RateRelay.Application.DTOs.Business.UserBusiness.Queries;
+using RateRelay.Application.DTOs.User.Business.BusinessReviews.Commands;
+using RateRelay.Application.DTOs.User.Business.UserBusiness.Queries;
 using RateRelay.Application.Features.Business.Commands.AcceptPendingBusinessReview;
 using RateRelay.Application.Features.Business.Commands.InitiateBusinessVerification;
-using RateRelay.Application.Features.Business.Commands.RejectPendingBusinessReview;
-using RateRelay.Application.Features.Business.Commands.ReportBusinessReview;
 using RateRelay.Application.Features.Business.Queries.GetAllUserBusinesses;
-using RateRelay.Application.Features.Business.Queries.GetAwaitingBusinessReviews;
-using RateRelay.Application.Features.Business.Queries.GetBusinessReviews;
+using RateRelay.Application.Features.User.Business.Commands.AcceptPendingBusinessReview;
+using RateRelay.Application.Features.User.Business.Commands.ReportBusinessReview;
+using RateRelay.Application.Features.User.Business.Queries.GetAllUserBusinesses;
+using RateRelay.Application.Features.User.Business.Queries.GetBusinessReviews;
 using RateRelay.Domain.Entities;
 
 namespace RateRelay.Application.Mapping;
@@ -38,18 +40,9 @@ public class BusinessProfile : Profile
             .ForMember(dest => dest.VerificationOpeningTime, opt => opt.MapFrom(src => src.VerificationOpeningTime))
             .ForMember(dest => dest.VerificationClosingTime, opt => opt.MapFrom(src => src.VerificationClosingTime));
 
-        CreateMap<GetAwaitingBusinessReviewsInputDto, GetAwaitingBusinessReviewsQuery>()
-            .ForMember(dest => dest.BusinessId, opt => opt.MapFrom(src => src.BusinessId));
-
         CreateMap<BusinessReviewEntity, GetAwaitingBusinessReviewsOutputDto>()
             .ForMember(dest => dest.ReviewId, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.SubmittedAt, opt => opt.MapFrom(src => src.DateCreatedUtc));
-
-        CreateMap<AcceptPendingBusinessReviewInputDto, AcceptPendingBusinessReviewCommand>()
-            .ForMember(dest => dest.ReviewId, opt => opt.MapFrom(src => src.ReviewId));
-
-        CreateMap<RejectPendingBusinessReviewInputDto, RejectPendingBusinessReviewCommand>()
-            .ForMember(dest => dest.ReviewId, opt => opt.MapFrom(src => src.ReviewId));
 
         CreateMap<GetAllUserBusinessesQueryInputDto, GetAllUserBusinessesQuery>();
 
@@ -65,7 +58,6 @@ public class BusinessProfile : Profile
             .ForMember(dest => dest.GoogleMapsReviewUrl, opt => opt.Ignore());
         
         CreateMap<ReportBusinessReviewInputDto, ReportBusinessReviewCommand>()
-            .ForMember(dest => dest.ReviewId, opt => opt.MapFrom(src => src.ReviewId))
             .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content.Trim()))
             .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.Reason));
     }

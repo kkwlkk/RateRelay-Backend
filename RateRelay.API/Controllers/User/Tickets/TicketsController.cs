@@ -14,7 +14,6 @@ using RateRelay.Domain.Common;
 namespace RateRelay.API.Controllers.User.Tickets;
 
 [ApiController]
-[Route("api/[controller]")]
 [Authorize]
 [Area("User Tickets")]
 public class TicketsController(IMediator mediator, IMapper mapper) : UserBaseController

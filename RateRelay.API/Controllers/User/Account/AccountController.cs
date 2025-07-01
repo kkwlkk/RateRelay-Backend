@@ -8,7 +8,6 @@ namespace RateRelay.API.Controllers.User.Account;
 
 [ApiController]
 [Area("Account")]
-[Route("api/[controller]")]
 [Authorize]
 public class AccountController(IMediator mediator) : UserBaseController
 {

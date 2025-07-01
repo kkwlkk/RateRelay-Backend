@@ -11,12 +11,12 @@ namespace RateRelay.API.Controllers.User.Account;
 
 [ApiController]
 [Area("Account")]
-[Route("api/account")]
+[Route("api/user/account/reviews")]
 [Authorize]
 [RequireVerifiedBusiness]
-public class AccountReviewHistoryController(IMapper mapper, IMediator mediator) : UserBaseController
+public class AccountReviewsController(IMapper mapper, IMediator mediator) : UserBaseController
 {
-    [HttpGet("review-history")]
+    [HttpGet]
     [ProducesResponseType(typeof(PagedApiResponse<AccountReviewHistoryQueryOutputDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAccountReviewHistory([FromQuery] AccountReviewHistoryQueryInputDto input)
     {

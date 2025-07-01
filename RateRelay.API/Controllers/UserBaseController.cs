@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RateRelay.Domain.Interfaces;
 
 namespace RateRelay.API.Controllers;
 

@@ -1,10 +1,10 @@
 using RateRelay.Domain.Enums;
 
-namespace RateRelay.Application.DTOs.Business.BusinessReviews.Commands;
+namespace RateRelay.Application.DTOs.User.Business.BusinessReviews.Commands;
 
 public class ReportBusinessReviewInputDto
 {
-    public long ReviewId { get; set; }
+    public string Title { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
     public BusinessReviewReportReason Reason { get; set; } = BusinessReviewReportReason.Other;
 }

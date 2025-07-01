@@ -14,7 +14,7 @@ namespace RateRelay.API.Controllers.User.Business;
 
 [ApiController]
 [Area("Account")]
-[Route("api/business/verification")]
+[Route("api/user/business/verification")]
 [Authorize]
 public class BusinessVerificationController(
     IMediator mediator,

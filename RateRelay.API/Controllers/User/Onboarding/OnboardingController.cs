@@ -19,7 +19,6 @@ namespace RateRelay.API.Controllers.User.Onboarding;
 
 [ApiController]
 [Area("Onboarding")]
-[Route("api/onboarding")]
 [Authorize]
 public class OnboardingController(IMediator mediator, IMapper mapper) : UserBaseController
 {

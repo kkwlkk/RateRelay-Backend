@@ -18,7 +18,7 @@ public class CreateTicketCommandHandler(
         var currentUserId = userContext.AccountId;
         var ticket = await ticketService.CreateTicketAsync(
             request.Type, request.Title, request.Description, currentUserId,
-            null, null, cancellationToken);
+            cancellationToken: cancellationToken);
 
         return mapper.Map<CreateTicketOutputDto>(ticket);
     }

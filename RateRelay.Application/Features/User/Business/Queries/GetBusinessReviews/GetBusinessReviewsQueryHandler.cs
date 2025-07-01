@@ -2,12 +2,13 @@ using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RateRelay.Application.DTOs.Business.UserBusiness.Queries;
+using RateRelay.Application.DTOs.User.Business.UserBusiness.Queries;
 using RateRelay.Domain.Common;
 using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.DataAccess;
 
-namespace RateRelay.Application.Features.Business.Queries.GetBusinessReviews;
+namespace RateRelay.Application.Features.User.Business.Queries.GetBusinessReviews;
 
 public class GetBusinessReviewsQueryHandler(
     ICurrentUserDataResolver currentUserDataResolver,
@@ -43,6 +44,11 @@ public class GetBusinessReviewsQueryHandler(
             .OrderBy(x => x.Id)
             .ApplySearch(request, x => x.Comment.Contains(request.Search!) || x.Id.ToString().Contains(request.Search!))
             .ApplySorting(request);
+        
+        if (request.ReviewId.HasValue)
+        {
+            baseQuery = baseQuery.Where(x => x.Id == request.ReviewId.Value);
+        }
 
         var totalCount = await baseQuery.CountAsync(cancellationToken);
 

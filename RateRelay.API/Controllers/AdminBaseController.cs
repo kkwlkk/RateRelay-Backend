@@ -6,7 +6,7 @@ using RateRelay.Domain.Interfaces;
 namespace RateRelay.API.Controllers;
 
 [ApiController]
-[Route("api/admin/[controller]")]
+[Route("api/admin")]
 [Area("Admin")]
 [Authorize]
 [RequireAdmin]

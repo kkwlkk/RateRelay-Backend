@@ -1,7 +1,7 @@
 using FluentValidation;
 using RateRelay.Application.Extensions;
 
-namespace RateRelay.Application.Features.Business.Commands.ReportBusinessReview;
+namespace RateRelay.Application.Features.User.Business.Commands.ReportBusinessReview;
 
 public class ReportBusinessReviewCommandValidator : AbstractValidator<ReportBusinessReviewCommand>
 {
@@ -11,6 +11,19 @@ public class ReportBusinessReviewCommandValidator : AbstractValidator<ReportBusi
             .GreaterThan(0)
             .WithMessage("Review ID must be greater than 0.")
             .WithAppErrorCode("InvalidReviewId");
+        
+        RuleFor(x => x.BusinessId)
+            .GreaterThan(0)
+            .WithMessage("Business ID must be greater than 0.")
+            .WithAppErrorCode("InvalidBusinessId");
+        
+        RuleFor(x => x.Title)
+            .NotEmpty()
+            .WithMessage("Title cannot be empty.")
+            .WithAppErrorCode("TitleEmpty")
+            .MaximumLength(64)
+            .WithMessage("Title cannot exceed 64 characters.")
+            .WithErrorCode("TitleTooLong");
 
         RuleFor(x => x.Content)
             .NotEmpty()

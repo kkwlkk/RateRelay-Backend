@@ -13,6 +13,7 @@ public interface ITicketService
         long reporterId,
         string? internalNotes = null,
         long? assignedToId = null,
+        TicketSubjects? subjects = null,
         CancellationToken cancellationToken = default
     );
 

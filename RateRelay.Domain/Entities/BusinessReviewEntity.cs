@@ -41,4 +41,28 @@ public class BusinessReviewEntity : BaseEntity
 
     [NotMapped]
     public bool IsPending => Status == BusinessReviewStatus.Pending;
+
+    public void UpdateStatus(BusinessReviewStatus newStatus)
+    {
+        if (Status == newStatus) return;
+
+        Status = newStatus;
+        var now = DateTime.UtcNow;
+
+        switch (newStatus)
+        {
+            case BusinessReviewStatus.Accepted:
+                DateAcceptedUtc = now;
+                DateRejectedUtc = null;
+                break;
+            case BusinessReviewStatus.Rejected:
+                DateRejectedUtc = now;
+                DateAcceptedUtc = null;
+                break;
+            case BusinessReviewStatus.Pending:
+                DateAcceptedUtc = null;
+                DateRejectedUtc = null;
+                break;
+        }
+    }
 }

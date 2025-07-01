@@ -13,7 +13,7 @@ namespace RateRelay.API.Controllers.User.ReviewableBusiness;
 
 [ApiController]
 [Area("Account")]
-[Route("api/reviewable-businesses")]
+[Route("api/user/reviewable-businesses")]
 [RequireVerifiedBusiness]
 public class ReviewableBusinessQueueController(
     IMediator mediator,

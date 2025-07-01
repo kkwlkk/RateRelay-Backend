@@ -1,7 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RateRelay.Application.DTOs.Business.BusinessReviews.Commands;
-using RateRelay.Application.Exceptions;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Enums;
 using RateRelay.Domain.Exceptions;
@@ -9,7 +8,7 @@ using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.DataAccess;
 using RateRelay.Infrastructure.Services;
 
-namespace RateRelay.Application.Features.Business.Commands.AcceptPendingBusinessReview;
+namespace RateRelay.Application.Features.User.Business.Commands.AcceptPendingBusinessReview;
 
 public class AcceptPendingBusinessReviewCommandHandler(
     CurrentUserContext currentUserContext,
@@ -32,6 +31,11 @@ public class AcceptPendingBusinessReviewCommandHandler(
         if (businessReview is null)
         {
             throw new NotFoundException($"Business review with ID {request.ReviewId} not found.");
+        }
+        
+        if (businessReview.BusinessId != request.BusinessId)
+        {
+            throw new ForbiddenException("The review does not belong to the specified business.");
         }
 
         var business = await businessRepository.GetBaseQueryable()
