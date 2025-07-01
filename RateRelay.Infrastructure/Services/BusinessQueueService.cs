@@ -419,6 +419,35 @@ public class BusinessQueueService(
         return true;
     }
 
+    public async Task<bool> IsBusinessEligibleForQueueAsync(long businessId, CancellationToken cancellationToken = default)
+    {
+        await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
+        var businessRepository = unitOfWork.GetRepository<BusinessEntity>();
+        
+        var business = await businessRepository.GetBaseQueryable()
+            .Where(b => b.Id == businessId)
+            .Include(b => b.OwnerAccount)
+            .FirstOrDefaultAsync(cancellationToken);
+        
+        if (business is null)
+        {
+            logger.Information("Business {BusinessId} not found", businessId);
+            return false;
+        }
+        
+        if (business.OwnerAccount?.PointBalance < PointConstants.MinimumOwnerPointBalanceForBusinessVisibility)
+        {
+            if (ApplicationEnvironment.Current().IsDevelopment)
+            {
+                logger.Debug("Business {BusinessId} is not accessible due to insufficient owner points", businessId);
+            }
+
+            return false;
+        }
+        
+        return true;
+    }
+
     private async Task<List<long>> GetSkippedBusinessesForUserAsync(long accountId,
         CancellationToken cancellationToken = default)
     {

@@ -22,4 +22,6 @@ public interface IBusinessQueueService
     Task<bool> AssignBusinessToUserAsync(long businessId, long accountId);
 
     Task<bool> UnassignBusinessFromUserAsync(long businessId, long accountId);
+    
+    Task<bool> IsBusinessEligibleForQueueAsync(long businessId, CancellationToken cancellationToken = default);
 }

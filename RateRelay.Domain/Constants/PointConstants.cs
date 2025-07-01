@@ -11,5 +11,5 @@ public static class PointConstants
     public const int GoogleMapsReviewPoints = 1;
     
     [Description("Minimum points required for a business owner to receive reviews and maintain platform visibility")]
-    public const int MinimumOwnerPointBalanceForBusinessVisibility = 1;
+    public const int MinimumOwnerPointBalanceForBusinessVisibility = 2;
 }

@@ -1,4 +1,4 @@
-namespace RateRelay.Application.DTOs.Business.UserBusiness.Queries;
+namespace RateRelay.Application.DTOs.User.Business.UserBusiness.Queries;
 
 public class GetBusinessQueryOutputDto
 {
@@ -7,6 +7,7 @@ public class GetBusinessQueryOutputDto
     public required string Cid { get; set; }
     public required string BusinessName { get; set; }
     public required bool IsVerified { get; set; }
+    public required bool IsEligibleForQueue { get; set; }
     public required DateTime DateCreatedUtc { get; set; }
     public required decimal AverageRating { get; set; }
     public required GetBusinessQueryOutputReviewsDto Reviews { get; set; }

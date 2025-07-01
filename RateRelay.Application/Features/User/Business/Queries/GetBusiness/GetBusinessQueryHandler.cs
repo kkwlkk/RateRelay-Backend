@@ -1,16 +1,18 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using RateRelay.Application.DTOs.Business.UserBusiness.Queries;
+using RateRelay.Application.DTOs.User.Business.UserBusiness.Queries;
+using RateRelay.Application.Features.Business.Queries.GetBusiness;
 using RateRelay.Domain.Enums;
 using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.DataAccess;
 
-namespace RateRelay.Application.Features.Business.Queries.GetBusiness;
+namespace RateRelay.Application.Features.User.Business.Queries.GetBusiness;
 
 public class GetBusinessQueryHandler(
     ICurrentUserDataResolver currentUserDataResolver,
-    IUnitOfWorkFactory unitOfWorkFactory
+    IUnitOfWorkFactory unitOfWorkFactory,
+    IBusinessQueueService businessQueueService
 ) : IRequestHandler<GetBusinessQuery, GetBusinessQueryOutputDto>
 {
     public async Task<GetBusinessQueryOutputDto> Handle(GetBusinessQuery request, CancellationToken cancellationToken)
@@ -34,7 +36,8 @@ public class GetBusinessQueryHandler(
             .ToListAsync(cancellationToken);
 
         var acceptedReviews = businessReviews.Where(r => r.Status == BusinessReviewStatus.Accepted).ToList();
-
+        var isBusinessEligibleForQueue = await businessQueueService.IsBusinessEligibleForQueueAsync(businessEntity.Id, cancellationToken);
+        
         var business = new GetBusinessQueryOutputDto
         {
             Id = businessEntity.Id,
@@ -42,6 +45,7 @@ public class GetBusinessQueryHandler(
             Cid = businessEntity.Cid,
             BusinessName = businessEntity.BusinessName,
             IsVerified = businessEntity.IsVerified,
+            IsEligibleForQueue = isBusinessEligibleForQueue,
             DateCreatedUtc = businessEntity.DateCreatedUtc,
             AverageRating = acceptedReviews.Any() 
                 ? (decimal)acceptedReviews.Average(r => (int)r.Rating)

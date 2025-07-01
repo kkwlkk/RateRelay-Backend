@@ -1,5 +1,4 @@
 using MediatR;
-using RateRelay.Application.DTOs.Business.UserBusiness.Queries;
 using RateRelay.Application.DTOs.User.Business.UserBusiness.Queries;
 using RateRelay.Domain.Common;
 using RateRelay.Domain.Enums;
