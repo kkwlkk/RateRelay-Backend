@@ -18,6 +18,12 @@ public abstract class BaseController : ControllerBase
         return HandleApiResponse(response);
     }
 
+    protected IActionResult Success(int statusCode = 204)
+    {
+        var response = ApiResponse<object>.Create(true, null, statusCode: statusCode);
+        return HandleApiResponse(response);
+    }
+
     protected IActionResult Success<T>(T data, Dictionary<string, object> metadata, int statusCode = 200)
     {
         var response = ApiResponse<T>.Create(true, data, metadata: metadata, statusCode: statusCode);

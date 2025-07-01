@@ -4,11 +4,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RateRelay.Application.DTOs.Tickets.Commands;
 using RateRelay.Application.DTOs.Tickets.Queries;
+using RateRelay.Application.DTOs.User.Tickets.Commands;
+using RateRelay.Application.DTOs.User.Tickets.Queries;
 using RateRelay.Application.Features.Tickets.Commands.AddTicketComment;
 using RateRelay.Application.Features.Tickets.Commands.CreateTicket;
 using RateRelay.Application.Features.Tickets.Queries.GetTicket;
 using RateRelay.Application.Features.Tickets.Queries.GetTicketComments;
-using RateRelay.Application.Features.Tickets.Queries.GetUserTickets;
+using RateRelay.Application.Features.User.Tickets.Commands.CloseTicket;
+using RateRelay.Application.Features.User.Tickets.Queries.GetUserTickets;
 using RateRelay.Domain.Common;
 
 namespace RateRelay.API.Controllers.User.Tickets;
@@ -25,10 +28,10 @@ public class TicketsController(IMediator mediator, IMapper mapper) : UserBaseCon
         var result = await mediator.Send(command, cancellationToken);
         return CreatedAtAction(nameof(CreateTicket), new { id = result.Id }, result);
     }
-    
+
     [HttpGet]
     [ProducesResponseType(typeof(PagedApiResponse<GetUserTicketsOutputDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetUserTickets([FromQuery] GetUserTicketsInputDto input, 
+    public async Task<IActionResult> GetUserTickets([FromQuery] GetUserTicketsInputDto input,
         CancellationToken cancellationToken)
     {
         var query = mapper.Map<GetUserTicketsQuery>(input);
@@ -37,6 +40,7 @@ public class TicketsController(IMediator mediator, IMapper mapper) : UserBaseCon
     }
 
     [HttpGet("{id}")]
+    [ProducesResponseType(typeof(ApiResponse<GetTicketDetailsOutputDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetTicket(long id, [FromQuery] bool includeComments = false,
         [FromQuery] bool includeHistory = false, CancellationToken cancellationToken = default)
     {
@@ -44,7 +48,7 @@ public class TicketsController(IMediator mediator, IMapper mapper) : UserBaseCon
         var result = await mediator.Send(query, cancellationToken);
         return Success(result);
     }
-    
+
     [HttpGet("{id}/comments")]
     public async Task<IActionResult> GetTicketComments(long id, CancellationToken cancellationToken)
     {
@@ -52,7 +56,7 @@ public class TicketsController(IMediator mediator, IMapper mapper) : UserBaseCon
         var result = await mediator.Send(query, cancellationToken);
         return Success(result);
     }
-    
+
     [HttpPost("{id}/comments")]
     public async Task<ActionResult<AddTicketCommentOutputDto>> AddComment(long id, AddTicketCommandInputDto input,
         CancellationToken cancellationToken)
@@ -62,8 +66,18 @@ public class TicketsController(IMediator mediator, IMapper mapper) : UserBaseCon
         var result = await mediator.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetTicket), new { id }, result);
     }
-    
-    
+
+    [HttpPut("{id}/close")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CloseTicket(long id, [FromBody] CloseTicketCommandInputDto input,
+        CancellationToken cancellationToken)
+    {
+        var command = mapper.Map<CloseTicketCommand>(input);
+        command.TicketId = id;
+        await mediator.Send(command, cancellationToken);
+        return Success(statusCode: 204);
+    }
 
     // [HttpPut("{id}/status")]
     // [RequirePermission(Permission.ChangeTicketStatus)]

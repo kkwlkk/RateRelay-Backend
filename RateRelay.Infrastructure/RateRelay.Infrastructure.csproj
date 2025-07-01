@@ -53,6 +53,8 @@
       <EmbeddedResource Include="DataAccess\Migrations\2025\009_INIT_TICKET_SYSTEM.sql" />
       <None Remove="DataAccess\Migrations\2025\010_ADD_TICKET_SUBJECTS.sql" />
       <EmbeddedResource Include="DataAccess\Migrations\2025\010_ADD_TICKET_SUBJECTS.sql" />
+      <None Remove="DataAccess\Migrations\2025\011_ADD_DATE_EDITED_TO_TICKET_COMMENTS.sql" />
+      <EmbeddedResource Include="DataAccess\Migrations\2025\011_ADD_DATE_EDITED_TO_TICKET_COMMENTS.sql" />
     </ItemGroup>
 
 </Project>

@@ -1,11 +1,11 @@
-namespace RateRelay.Application.DTOs.Tickets;
+namespace RateRelay.Application.DTOs.User.Tickets;
 
 public class TicketCommentDto
 {
     public long Id { get; set; }
     public string Content { get; set; } = string.Empty;
-    public DateTime CreatedAt { get; set; }
-    public DateTime? UpdatedAt { get; set; }
+    public DateTime CreatedAtUtc { get; set; }
+    public DateTime? EditedAtUtc { get; set; }
 
     public long AuthorId { get; set; }
     public string AuthorName { get; set; } = string.Empty;

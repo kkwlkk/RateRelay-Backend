@@ -1,6 +1,8 @@
+using RateRelay.Application.DTOs.Tickets;
+using RateRelay.Domain.Common;
 using RateRelay.Domain.Enums;
 
-namespace RateRelay.Application.DTOs.Tickets.Queries;
+namespace RateRelay.Application.DTOs.User.Tickets.Queries;
 
 public class GetTicketDetailsOutputDto
 {
@@ -10,16 +12,17 @@ public class GetTicketDetailsOutputDto
     public TicketType Type { get; set; }
     public TicketStatus Status { get; set; }
 
-    public DateTime CreatedAt { get; set; }
-    public DateTime? LastActivityUtc { get; set; }
+    public DateTime CreatedAtUtc { get; set; }
+    public DateTime? LastActivityAtUtc { get; set; }
 
+    public long ReporterId { get; set; }
     public string ReporterName { get; set; } = string.Empty;
+    public bool IsAssigned { get; set; }
     public string AssignedToName { get; set; } = string.Empty;
-    
-    public bool IsAssigned => !string.IsNullOrEmpty(AssignedToName);
-    public bool IsOpen => Status is TicketStatus.Open or TicketStatus.InProgress or TicketStatus.Reopened;
-    public bool IsResolved => Status is TicketStatus.Resolved or TicketStatus.Closed;
+    public bool IsOpen { get; set; }
+    public bool IsResolved { get; set; }
 
+    public TicketSubjects Subjects { get; set; }
     public List<TicketCommentDto> Comments { get; set; } = [];
     public List<TicketStatusHistoryDto> StatusHistory { get; set; } = [];
 }

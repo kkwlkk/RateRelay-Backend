@@ -1,5 +1,6 @@
 using MediatR;
 using RateRelay.Application.DTOs.Tickets;
+using RateRelay.Application.DTOs.User.Tickets;
 
 namespace RateRelay.Application.Features.Tickets.Queries.GetTicketComments;
 

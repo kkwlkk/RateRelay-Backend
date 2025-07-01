@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using RateRelay.Application.Exceptions;
 using RateRelay.Application.Helpers;
 using RateRelay.Domain.Exceptions;

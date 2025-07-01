@@ -22,6 +22,8 @@ public class TicketCommentEntity : BaseEntity
     
     [MaxLength(2048)]
     public string Content { get; set; } = string.Empty;
+
+    public DateTime? DateEditedUtc { get; set; }
     
     public bool IsInternal { get; set; } = false;
     public bool IsSystemGenerated { get; set; } = false;

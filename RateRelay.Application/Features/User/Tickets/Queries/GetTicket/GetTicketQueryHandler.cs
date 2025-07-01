@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using RateRelay.Application.DTOs.Tickets.Queries;
+using RateRelay.Application.DTOs.User.Tickets.Queries;
 using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 

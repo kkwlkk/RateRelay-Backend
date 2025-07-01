@@ -1,11 +1,11 @@
 using AutoMapper;
 using MediatR;
-using RateRelay.Application.DTOs.Tickets.Queries;
+using RateRelay.Application.DTOs.User.Tickets.Queries;
 using RateRelay.Domain.Common;
 using RateRelay.Domain.Interfaces;
 using Serilog;
 
-namespace RateRelay.Application.Features.Tickets.Queries.GetUserTickets;
+namespace RateRelay.Application.Features.User.Tickets.Queries.GetUserTickets;
 
 public class GetUserTicketsQueryHandler(
     ICurrentUserDataResolver currentUserDataResolver,

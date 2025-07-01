@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using RateRelay.Application.DTOs.Tickets;
+using RateRelay.Application.DTOs.User.Tickets;
 using RateRelay.Domain.Interfaces;
 
 namespace RateRelay.Application.Features.Tickets.Queries.GetTicketComments;

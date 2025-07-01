@@ -1,6 +1,7 @@
+using RateRelay.Domain.Common;
 using RateRelay.Domain.Enums;
 
-namespace RateRelay.Application.DTOs.Tickets.Queries;
+namespace RateRelay.Application.DTOs.User.Tickets.Queries;
 
 public class GetUserTicketsOutputDto
 {
@@ -9,9 +10,11 @@ public class GetUserTicketsOutputDto
     public string Description { get; set; } = string.Empty;
     public TicketType Type { get; set; }
     public TicketStatus Status { get; set; } = TicketStatus.Open;
-    public DateTime CreatedAt { get; set; }
-    public DateTime? LastActivityUtc { get; set; }
-    public long AuthorId { get; set; }
-    public string AuthorName { get; set; } = string.Empty;
-    public string AssignedToName { get; set; } = string.Empty;
+    public DateTime CreatedAtUtc { get; set; }
+    public DateTime? LastActivityAtUtc { get; set; }
+    public long ReporterId { get; set; }
+    public string ReporterName { get; set; } = string.Empty;
+    public bool IsAssigned { get; set; }
+    public string? AssignedToName { get; set; }
+    public TicketSubjects Subjects { get; set; }
 }

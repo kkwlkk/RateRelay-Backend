@@ -1,4 +1,4 @@
-namespace RateRelay.Application.DTOs.Tickets.Commands;
+namespace RateRelay.Application.DTOs.User.Tickets.Commands;
 
 public class AddTicketCommandInputDto
 {
