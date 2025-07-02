@@ -6,6 +6,7 @@ public enum BusinessVerificationErrorType
     AlreadyVerified,
     InvalidPlaceId,
     AlreadyBeingVerified,
+    AlreadyExists,
     BusinessNotFound,
     VerificationNotFound,
     VerificationExpired,

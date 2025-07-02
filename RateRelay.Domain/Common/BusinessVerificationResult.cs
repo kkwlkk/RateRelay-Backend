@@ -44,6 +44,12 @@ public class BusinessVerificationResult
             BusinessVerificationErrorType.AlreadyVerified, metadata);
     }
 
+    public static BusinessVerificationResult AlreadyExists(BusinessEntity business)
+    {
+        return new(false, false, business, null, "Business already exists", "ERR_ALREADY_EXISTS",
+            BusinessVerificationErrorType.AlreadyExists);
+    }
+
     public static BusinessVerificationResult InvalidPlaceId(string placeId)
     {
         var metadata = new Dictionary<string, object>

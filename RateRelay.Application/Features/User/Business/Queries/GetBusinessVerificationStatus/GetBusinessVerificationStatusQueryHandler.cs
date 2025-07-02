@@ -1,14 +1,12 @@
 using AutoMapper;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using RateRelay.Application.DTOs.Business.BusinessVerification.Commands;
-using RateRelay.Application.Exceptions;
-using RateRelay.Domain.Entities;
+using RateRelay.Application.Features.Business.Queries.GetBusinessVerificationStatus;
 using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Infrastructure.Services;
 
-namespace RateRelay.Application.Features.Business.Queries.GetBusinessVerificationStatus;
+namespace RateRelay.Application.Features.User.Business.Queries.GetBusinessVerificationStatus;
 
 public class GetBusinessVerificationStatusQueryHandler(
     CurrentUserContext currentUserContext,
@@ -25,7 +23,7 @@ public class GetBusinessVerificationStatusQueryHandler(
         
         if (activeVerificationChallenge is null)
         {
-            throw new NotFoundException("No active verification challenge found.");
+            throw new NotFoundException("No active verification challenge found.", "NoActiveVerificationChallenge");
         }
 
         var verificationStatus = mapper.Map<BusinessVerificationStatusOutputDto>(activeVerificationChallenge);
