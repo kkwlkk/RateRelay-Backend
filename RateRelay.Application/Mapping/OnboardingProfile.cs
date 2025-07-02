@@ -6,6 +6,7 @@ using RateRelay.Application.DTOs.Onboarding.Queries.GetOnboardingStatus;
 using RateRelay.Application.Features.Onboarding.Commands.CompleteBusinessVerificationStep;
 using RateRelay.Application.Features.Onboarding.Commands.CompleteProfileSetupStep;
 using RateRelay.Application.Features.Onboarding.Commands.CompleteWelcomeStep;
+using RateRelay.Application.Features.User.Onboarding.Commands.CompleteProfileSetupStep;
 using RateRelay.Domain.Entities;
 
 namespace RateRelay.Application.Mapping;

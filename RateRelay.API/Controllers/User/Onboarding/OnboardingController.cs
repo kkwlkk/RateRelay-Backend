@@ -13,6 +13,7 @@ using RateRelay.Application.Features.Onboarding.Commands.CompleteOnboardingStep;
 using RateRelay.Application.Features.Onboarding.Commands.CompleteProfileSetupStep;
 using RateRelay.Application.Features.Onboarding.Commands.CompleteWelcomeStep;
 using RateRelay.Application.Features.Onboarding.Queries.GetOnboardingStatus;
+using RateRelay.Application.Features.User.Onboarding.Commands.CompleteProfileSetupStep;
 using RateRelay.Domain.Enums;
 
 namespace RateRelay.API.Controllers.User.Onboarding;

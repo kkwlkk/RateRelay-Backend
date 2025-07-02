@@ -33,7 +33,6 @@ public class BusinessVerificationController(
 
     [HttpGet("challenge")]
     [ProducesResponseType(typeof(BusinessVerificationChallengeOutputDto), StatusCodes.Status200OK)]
-    [RateLimit(5, 60)]
     public async Task<IActionResult> GetVerificationChallenge()
     {
         var query = new GetBusinessVerificationChallengeQuery();
@@ -55,7 +54,6 @@ public class BusinessVerificationController(
 
     [HttpGet("status")]
     [ProducesResponseType(typeof(BusinessVerificationStatusOutputDto), StatusCodes.Status200OK)]
-    [RateLimit(10, 60)]
     public async Task<IActionResult> GetBusinessVerificationStatus()
     {
         var response = await mediator.Send(new GetBusinessVerificationStatusQuery());

@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RateRelay.Application.DTOs.Onboarding.Commands.CompleteProfileSetup;
+using RateRelay.Application.Features.User.Onboarding.Commands.CompleteProfileSetupStep;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Enums;
 using RateRelay.Domain.Interfaces;
