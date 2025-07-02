@@ -12,8 +12,8 @@ public class GetTicketDetailsOutputDto
     public TicketType Type { get; set; }
     public TicketStatus Status { get; set; }
 
-    public DateTime CreatedAtUtc { get; set; }
-    public DateTime? LastActivityAtUtc { get; set; }
+    public DateTime DateCreatedUtc { get; set; }
+    public DateTime? LastActivityUtc { get; set; }
 
     public long ReporterId { get; set; }
     public string ReporterName { get; set; } = string.Empty;

@@ -1,5 +1,6 @@
 using MediatR;
 using RateRelay.Application.DTOs.Tickets.Commands;
+using RateRelay.Application.DTOs.User.Tickets.Commands;
 
 namespace RateRelay.Application.Features.Tickets.Commands.AddTicketComment;
 

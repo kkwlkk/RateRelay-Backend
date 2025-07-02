@@ -85,15 +85,6 @@ public interface ITicketService
         TicketType? typeFilter = null,
         CancellationToken cancellationToken = default
     );
-    
-    Task<PagedResult<TicketEntity>> GetPagedUserTicketsAsync(
-        int pageNumber,
-        int pageSize,
-        long userId,
-        TicketStatus? statusFilter = null,
-        TicketType? typeFilter = null,
-        CancellationToken cancellationToken = default
-    );
 
     Task<bool> IsUserOnTicketCooldownAsync(
         long userId,

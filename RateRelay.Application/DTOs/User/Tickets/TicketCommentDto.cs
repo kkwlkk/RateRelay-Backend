@@ -5,7 +5,7 @@ public class TicketCommentDto
     public long Id { get; set; }
     public string Content { get; set; } = string.Empty;
     public DateTime CreatedAtUtc { get; set; }
-    public DateTime? EditedAtUtc { get; set; }
+    public DateTime? DateEditedUtc { get; set; }
 
     public long AuthorId { get; set; }
     public string AuthorName { get; set; } = string.Empty;

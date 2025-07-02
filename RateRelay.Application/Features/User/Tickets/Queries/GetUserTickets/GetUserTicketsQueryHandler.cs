@@ -1,45 +1,54 @@
 using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using RateRelay.Application.DTOs.User.Tickets.Queries;
 using RateRelay.Domain.Common;
+using RateRelay.Domain.Entities;
+using RateRelay.Domain.Enums;
 using RateRelay.Domain.Interfaces;
-using Serilog;
+using RateRelay.Domain.Interfaces.DataAccess;
 
 namespace RateRelay.Application.Features.User.Tickets.Queries.GetUserTickets;
 
 public class GetUserTicketsQueryHandler(
     ICurrentUserDataResolver currentUserDataResolver,
-    ITicketService ticketService,
-    IMapper mapper,
-    ILogger logger
+    IUnitOfWorkFactory unitOfWorkFactory,
+    IMapper mapper
 ) : IRequestHandler<GetUserTicketsQuery, PagedApiResponse<GetUserTicketsOutputDto>>
 {
     public async Task<PagedApiResponse<GetUserTicketsOutputDto>> Handle(GetUserTicketsQuery request,
         CancellationToken cancellationToken)
     {
         var userId = currentUserDataResolver.GetAccountId();
-        var tickets = await ticketService.GetPagedUserTicketsAsync(
-            request.Page,
-            request.PageSize,
-            userId,
-            statusFilter: request.Status,
-            typeFilter: request.Type,
-            cancellationToken: cancellationToken
-        );
+        await using var uow = await unitOfWorkFactory.CreateAsync();
+        var ticketRepository = uow.GetRepository<TicketEntity>();
 
-        logger.Information(
-            "Retrieved {Count} tickets for user {UserId} with status {Status} and type {Type}",
-            tickets.TotalCount,
-            userId,
-            request.Status,
-            request.Type
-        );
+        var query = ticketRepository.GetBaseQueryable()
+            .Include(t => t.Reporter)
+            .Include(t => t.AssignedTo)
+            .Where(t => t.ReporterId == userId || t.AssignedToId == userId)
+            .Where(t => t.Status != TicketStatus.Obsolete);
 
-        var mappedTickets = mapper.Map<IEnumerable<GetUserTicketsOutputDto>>(tickets.Items);
+        if (request.Type.HasValue)
+            query = query.Where(t => t.Type == request.Type.Value);
+
+        if (request.Status.HasValue)
+            query = query.Where(t => t.Status == request.Status.Value);
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var tickets = await query
+            .OrderByDescending(t => t.LastActivityUtc)
+            .ApplyPaging(request)
+            .ApplySearch(request, x => x.Title.Contains(request.Search!) || x.Description.Contains(request.Search!))
+            .ApplySorting(request)
+            .ToListAsync(cancellationToken: cancellationToken);
+
+        var mappedTickets = mapper.Map<IEnumerable<GetUserTicketsOutputDto>>(tickets);
 
         return request.ToPagedResponse(
             mappedTickets,
-            tickets.TotalCount
+            totalCount
         );
     }
 }

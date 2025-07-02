@@ -1,7 +1,7 @@
-namespace RateRelay.Application.DTOs.Tickets.Commands;
+namespace RateRelay.Application.DTOs.User.Tickets.Commands;
 
 public class AddTicketCommentOutputDto
 {
     public long Id { get; set; }
-    public DateTime CreatedAt { get; set; }
+    public DateTime DateCreatedUtc { get; set; }
 }

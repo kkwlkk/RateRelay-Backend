@@ -22,8 +22,6 @@ public class TicketsProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
 
         CreateMap<TicketEntity, GetTicketDetailsOutputDto>()
-            .ForMember(dest => dest.CreatedAtUtc, opt => opt.MapFrom(src => src.DateCreatedUtc))
-            .ForMember(dest => dest.LastActivityAtUtc, opt => opt.MapFrom(src => src.LastActivityUtc))
             .ForMember(dest => dest.ReporterName, opt => opt.MapFrom(src => src.Reporter.Username))
             .ForMember(dest => dest.AssignedToName,
                 opt => opt.MapFrom(src => src.AssignedTo != null ? src.AssignedTo.Username : string.Empty))
@@ -36,11 +34,9 @@ public class TicketsProfile : Profile
 
         CreateMap<TicketCommentEntity, TicketCommentDto>()
             .ForMember(dest => dest.CreatedAtUtc, opt => opt.MapFrom(src => src.DateCreatedUtc))
-            .ForMember(dest => dest.EditedAtUtc, opt => opt.MapFrom(src => src.DateEditedUtc))
             .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.Username));
 
         CreateMap<TicketStatusHistoryEntity, TicketStatusHistoryDto>()
-            .ForMember(dest => dest.CreatedAtUtc, opt => opt.MapFrom(src => src.DateCreatedUtc))
             .ForMember(dest => dest.ChangedByName, opt => opt.MapFrom(src => src.ChangedBy.Username));
 
         CreateMap<UpdateTicketStatusInputDto, UpdateTicketStatusCommand>()
@@ -55,11 +51,9 @@ public class TicketsProfile : Profile
 
         CreateMap<TicketCommentEntity, AddTicketCommentOutputDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.DateCreatedUtc));
+            .ForMember(dest => dest.DateCreatedUtc, opt => opt.MapFrom(src => src.DateCreatedUtc));
 
         CreateMap<TicketEntity, GetUserTicketsOutputDto>()
-            .ForMember(dest => dest.CreatedAtUtc, opt => opt.MapFrom(src => src.DateCreatedUtc))
-            .ForMember(dest => dest.LastActivityAtUtc, opt => opt.MapFrom(src => src.LastActivityUtc))
             .ForMember(dest => dest.IsAssigned, opt => opt.MapFrom(src => src.IsAssigned))
             .ForMember(dest => dest.AssignedToName, opt => opt.MapFrom(src => src.AssignedTo.Username))
             .ForMember(dest => dest.ReporterName, opt => opt.MapFrom(src => src.Reporter.Username))
