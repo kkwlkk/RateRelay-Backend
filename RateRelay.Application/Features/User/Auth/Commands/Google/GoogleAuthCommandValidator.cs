@@ -1,4 +1,5 @@
 using FluentValidation;
+using RateRelay.Application.Features.User.Auth.Commands.Google;
 using RateRelay.Infrastructure.Extensions;
 
 namespace RateRelay.Application.Features.Auth.Commands.Google;

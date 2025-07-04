@@ -15,5 +15,6 @@ public static class InfrastructureMiscExtensions
         services.AddScoped<IGoogleMapsService, GoogleMapsService>();
         services.AddScoped<IOnboardingService, OnboardingService>();
         services.AddScoped<ITicketService, TicketService>();
+        services.AddScoped<IReferralService, ReferralService>();
     }
 }

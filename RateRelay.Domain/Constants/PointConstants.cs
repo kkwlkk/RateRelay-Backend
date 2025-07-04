@@ -12,4 +12,6 @@ public static class PointConstants
     
     [Description("Minimum points required for a business owner to receive reviews and maintain platform visibility")]
     public const int MinimumOwnerPointBalanceForBusinessVisibility = 2;
+    
+    public const int ReferralWelcomeBonusPoints = 2;
 }

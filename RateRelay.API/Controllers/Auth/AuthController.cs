@@ -3,8 +3,10 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RateRelay.Application.DTOs.Auth.Commands;
+using RateRelay.Application.DTOs.User.Auth.Commands;
 using RateRelay.Application.Features.Auth.Commands.Google;
 using RateRelay.Application.Features.Auth.Commands.RefreshToken;
+using RateRelay.Application.Features.User.Auth.Commands.Google;
 
 namespace RateRelay.API.Controllers.Auth;
 

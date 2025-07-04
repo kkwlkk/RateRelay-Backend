@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Common;
+using RateRelay.Domain.Enums;
 using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.DataAccess;
@@ -13,16 +14,18 @@ public class BusinessVerificationService(
     IUnitOfWorkFactory unitOfWorkFactory,
     IGooglePlacesService googlePlacesService,
     IPointService pointService,
+    IReferralService referralService,
     ILogger logger)
     : IBusinessVerificationService
 {
     public async Task<BusinessVerificationResult> InitiateVerificationAsync(string placeId, long accountId)
     {
         await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
-        
+
         var existingBusiness = await GetUserBusinessAsync(unitOfWork, accountId);
-        
-        var validationResult = await ValidateBusinessVerificationRequest(unitOfWork, existingBusiness, placeId, accountId);
+
+        var validationResult =
+            await ValidateBusinessVerificationRequest(unitOfWork, existingBusiness, placeId, accountId);
         if (!validationResult.IsValid)
         {
             return validationResult.Result;
@@ -39,13 +42,14 @@ public class BusinessVerificationService(
         await unitOfWork.SaveChangesAsync();
 
         var activeVerification = await GetActiveVerificationAsync(unitOfWork, business.Id);
-        
+
         if (activeVerification != null)
         {
             if (activeVerification.IsVerificationExpired)
             {
                 await ResetExpiredVerificationAsync(unitOfWork, activeVerification);
             }
+
             return BusinessVerificationResult.Success(business, false, activeVerification);
         }
 
@@ -56,7 +60,7 @@ public class BusinessVerificationService(
     public async Task<BusinessVerificationResult> CheckVerificationStatusAsync(long accountId)
     {
         await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
-        
+
         var business = await GetBusinessWithVerificationAsync(unitOfWork, accountId);
 
         if (business == null)
@@ -99,7 +103,7 @@ public class BusinessVerificationService(
     public async Task<BusinessVerificationEntity?> GetActiveVerificationChallengeAsync(long accountId)
     {
         await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
-        
+
         var business = await GetBusinessWithVerificationAsync(unitOfWork, accountId);
 
         if (business == null)
@@ -130,6 +134,7 @@ public class BusinessVerificationService(
             {
                 logger.Warning("No active verification found for business with account ID {AccountId}", accountId);
             }
+
             return null;
         }
 
@@ -154,7 +159,7 @@ public class BusinessVerificationService(
 
     private async Task<(bool IsValid, BusinessVerificationResult Result)> ValidateBusinessVerificationRequest(
         IUnitOfWork unitOfWork,
-        BusinessEntity? existingBusiness, 
+        BusinessEntity? existingBusiness,
         string placeId,
         long accountId)
     {
@@ -162,19 +167,21 @@ public class BusinessVerificationService(
         {
             if (existingBusiness.PlaceId != placeId)
             {
-                logger.Warning("Account {AccountId} already has a business registered and cannot register another one", accountId);
+                logger.Warning("Account {AccountId} already has a business registered and cannot register another one",
+                    accountId);
                 return (false, BusinessVerificationResult.TooManyBusinesses());
             }
 
             if (existingBusiness.IsVerified)
             {
-                logger.Warning("Business with place ID {PlaceId} is already verified by account {AccountId}", placeId, accountId);
+                logger.Warning("Business with place ID {PlaceId} is already verified by account {AccountId}", placeId,
+                    accountId);
                 return (false, BusinessVerificationResult.AlreadyExists(existingBusiness));
             }
         }
 
         var businessWithSamePlaceId = await GetBusinessByPlaceIdAsync(unitOfWork, placeId);
-        
+
         if (businessWithSamePlaceId != null && businessWithSamePlaceId.OwnerAccountId != accountId)
         {
             if (businessWithSamePlaceId.IsVerified)
@@ -184,12 +191,14 @@ public class BusinessVerificationService(
             }
             else
             {
-                logger.Warning("Business with place ID {PlaceId} is already being verified by another account", placeId);
+                logger.Warning("Business with place ID {PlaceId} is already being verified by another account",
+                    placeId);
                 return (false, BusinessVerificationResult.AlreadyExists(businessWithSamePlaceId));
             }
         }
 
-        if (businessWithSamePlaceId != null && businessWithSamePlaceId.OwnerAccountId == accountId && businessWithSamePlaceId.IsVerified)
+        if (businessWithSamePlaceId != null && businessWithSamePlaceId.OwnerAccountId == accountId &&
+            businessWithSamePlaceId.IsVerified)
         {
             logger.Warning("Business with place ID {PlaceId} is already verified by the same account", placeId);
             return (false, BusinessVerificationResult.AlreadyVerified(businessWithSamePlaceId));
@@ -212,7 +221,7 @@ public class BusinessVerificationService(
         long accountId)
     {
         var businessRepository = unitOfWork.GetRepository<BusinessEntity>();
-        
+
         if (existingBusiness != null)
         {
             existingBusiness.BusinessName = place.DisplayName.Text;
@@ -247,8 +256,9 @@ public class BusinessVerificationService(
         IUnitOfWork unitOfWork,
         BusinessVerificationEntity verification)
     {
-        logger.Information("Existing verification for business {BusinessId} is expired. Resetting it.", verification.BusinessId);
-        
+        logger.Information("Existing verification for business {BusinessId} is expired. Resetting it.",
+            verification.BusinessId);
+
         var businessVerificationRepository = unitOfWork.GetRepository<BusinessVerificationEntity>();
         verification.VerificationStartedUtc = DateTime.UtcNow;
         verification.VerificationAttempts = 0;
@@ -285,13 +295,18 @@ public class BusinessVerificationService(
     {
         var businessRepository = unitOfWork.GetRepository<BusinessEntity>();
         var businessVerificationRepository = unitOfWork.GetRepository<BusinessVerificationEntity>();
-        
+
         business.IsVerified = true;
         business.Verification.VerificationCompletedUtc = DateTime.UtcNow;
-        
+
         businessRepository.Update(business);
         businessVerificationRepository.Update(business.Verification);
         await unitOfWork.SaveChangesAsync();
+
+        await referralService.UpdateReferralProgressAsync(
+            business.OwnerAccountId,
+            ReferralGoalType.BusinessVerified
+        );
     }
 
     private async Task IncrementVerificationAttemptsAsync(
@@ -314,7 +329,8 @@ public class BusinessVerificationService(
             return false;
         }
 
-        if (!place.CurrentOpeningHours.BusinessHoursByDay.TryGetValue(verification.VerificationDay, out var placeBusinessHours) 
+        if (!place.CurrentOpeningHours.BusinessHoursByDay.TryGetValue(verification.VerificationDay,
+                out var placeBusinessHours)
             || placeBusinessHours == null)
         {
             logger.Warning("No business hours found for day {DayOfWeek} for place ID {PlaceId}",
@@ -329,14 +345,14 @@ public class BusinessVerificationService(
     private static (TimeSpan opening, TimeSpan closing) GenerateRandomBusinessHours()
     {
         var random = RandomHelper.Random;
-        
+
         var openingHour = random.Next(6, 12);
         var openingMinute = random.Next(0, 4) * 15;
         var operatingHours = random.Next(6, 12);
-        
+
         var openingTime = new TimeSpan(openingHour, openingMinute, 0);
         var closingTime = openingTime.Add(TimeSpan.FromHours(operatingHours));
-        
+
         if (closingTime.Days > 0)
         {
             closingTime = new TimeSpan(23, 45, 0);

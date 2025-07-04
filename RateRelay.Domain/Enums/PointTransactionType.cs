@@ -29,6 +29,14 @@ public enum PointTransactionType
     [Description("Additional points returned to business owner when Google Maps review is rejected")]
     GoogleMapsReviewReturn = 6,
 
+    [Display(Name = "Referral Reward")]
+    [Description("Points earned by referring a user who completed a goal")]
+    ReferralReward = 7,
+
+    [Display(Name = "Referral Welcome Bonus")]
+    [Description("Bonus points given to a new user who was referred")]
+    ReferralWelcomeBonus = 8,
+
     [Display(Name = "Manual Adjustment")]
     [Description("Points manually adjusted by an administrator")]
     ManualAdjustment = 901,

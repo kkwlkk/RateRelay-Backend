@@ -4,12 +4,15 @@ using RateRelay.Domain.Entities;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.DataAccess;
 using RateRelay.Infrastructure.DataAccess.Repositories;
+using Serilog;
 
-namespace RateRelay.Application.Features.Auth.Commands.Google;
+namespace RateRelay.Application.Features.User.Auth.Commands.Google;
 
 public class GoogleAuthCommandHandler(
     IAuthService authService,
-    IUnitOfWorkFactory unitOfWorkFactory
+    IUnitOfWorkFactory unitOfWorkFactory,
+    IReferralService referralService,
+    ILogger logger
 ) : IRequestHandler<GoogleAuthCommand, AuthOutputDto>
 {
     public async Task<AuthOutputDto> Handle(GoogleAuthCommand request, CancellationToken cancellationToken)
@@ -53,6 +56,19 @@ public class GoogleAuthCommandHandler(
             await accountRepository.InsertAsync(account, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
             isNewAccount = true;
+
+            if (!string.IsNullOrWhiteSpace(request.ReferralCode))
+            {
+                try
+                {
+                    await referralService.LinkReferralAsync(account.Id, request.ReferralCode, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    logger.Warning("Failed to link referral code: {Message} for AccountId: {AccountId}", ex.Message,
+                        account.Id);
+                }
+            }
         }
 
         var token = await authService.GenerateJwtTokenAsync(account);

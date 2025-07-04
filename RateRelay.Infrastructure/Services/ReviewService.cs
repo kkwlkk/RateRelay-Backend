@@ -10,7 +10,8 @@ namespace RateRelay.Infrastructure.Services;
 
 public class ReviewService(
     IUnitOfWorkFactory unitOfWorkFactory,
-    IPointService pointService
+    IPointService pointService,
+    IReferralService referralService
 ) : IReviewService
 {
     public async Task<bool> AddUserReviewAsync(
@@ -76,6 +77,7 @@ public class ReviewService(
 
         await reviewRepository.InsertAsync(review, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
         return true;
     }
 
@@ -126,6 +128,22 @@ public class ReviewService(
                 cancellationToken
             );
         }
+
+        await referralService.UpdateReferralProgressAsync(
+            review.ReviewerId,
+            ReferralGoalType.ReviewsCompleted,
+            1,
+            cancellationToken
+        );
+
+        var currentReviewerPoints = await pointService.GetPointBalanceAsync(review.ReviewerId, cancellationToken);
+
+        await referralService.ProcessGoalCompletionAsync(
+            review.ReviewerId,
+            ReferralGoalType.PointsEarned,
+            currentReviewerPoints,
+            cancellationToken
+        );
 
         return true;
     }

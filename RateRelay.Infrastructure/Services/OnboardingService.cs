@@ -10,6 +10,7 @@ namespace RateRelay.Infrastructure.Services;
 
 public class OnboardingService(
     IUnitOfWorkFactory unitOfWorkFactory,
+    IReferralService referralService,
     ILogger logger
 ) : IOnboardingService
 {
@@ -56,6 +57,16 @@ public class OnboardingService(
 
         logger.Information("Updated onboarding step for account {AccountId} from {PreviousStep} to {NewStep}",
             accountId, account.OnboardingStep, step);
+
+        if (step == AccountOnboardingStep.Completed)
+        {
+            await referralService.UpdateReferralProgressAsync(
+                accountId,
+                ReferralGoalType.OnboardingCompleted,
+                1,
+                cancellationToken
+            );
+        }
 
         return true;
     }
