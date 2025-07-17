@@ -12,4 +12,5 @@ public class AccountQueryOutputDto
     public RoleEntityOutputDto? Role { get; set; }
     public bool HasCompletedOnboarding { get; set; }
     public AccountOnboardingStep OnboardingStep { get; set; }
+    public AccountFlags Flags { get; set; }
 }

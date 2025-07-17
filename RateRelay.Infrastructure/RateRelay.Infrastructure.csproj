@@ -57,6 +57,8 @@
       <EmbeddedResource Include="DataAccess\Migrations\2025\011_ADD_DATE_EDITED_TO_TICKET_COMMENTS.sql" />
       <None Remove="DataAccess\Migrations\2025\012_INIT_REFERRALS_SYSTEM.sql" />
       <EmbeddedResource Include="DataAccess\Migrations\2025\012_INIT_REFERRALS_SYSTEM.sql" />
+      <None Remove="DataAccess\Migrations\2025\013_ADD_ACCOUNT_FLAGS.sql" />
+      <EmbeddedResource Include="DataAccess\Migrations\2025\013_ADD_ACCOUNT_FLAGS.sql" />
     </ItemGroup>
 
 </Project>

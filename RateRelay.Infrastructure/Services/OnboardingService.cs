@@ -53,7 +53,6 @@ public class OnboardingService(
         accountRepository.Update(account);
         account.OnboardingStep = step;
         account.OnboardingLastUpdatedUtc = DateTime.UtcNow;
-        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         logger.Information("Updated onboarding step for account {AccountId} from {PreviousStep} to {NewStep}",
             accountId, account.OnboardingStep, step);
@@ -66,8 +65,11 @@ public class OnboardingService(
                 1,
                 cancellationToken
             );
+
+            account.Flags |= AccountFlags.HasSeenLastOnboardingStep;
         }
 
+        await unitOfWork.SaveChangesAsync(cancellationToken);
         return true;
     }
 

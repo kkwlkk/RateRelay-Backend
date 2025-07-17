@@ -41,6 +41,8 @@ public class AccountEntity : BaseEntity
 
     public DateTime? OnboardingLastUpdatedUtc { get; set; }
 
+    public AccountFlags Flags { get; set; }
+
     [NotMapped]
     public bool HasCompletedOnboarding => OnboardingStep == AccountOnboardingStep.Completed;
 
