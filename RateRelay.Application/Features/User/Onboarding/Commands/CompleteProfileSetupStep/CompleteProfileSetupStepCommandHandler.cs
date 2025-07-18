@@ -1,19 +1,20 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RateRelay.Application.DTOs.Onboarding.Commands.CompleteProfileSetup;
-using RateRelay.Application.Features.User.Onboarding.Commands.CompleteProfileSetupStep;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Enums;
+using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.DataAccess;
 using RateRelay.Infrastructure.Services;
 
-namespace RateRelay.Application.Features.Onboarding.Commands.CompleteProfileSetupStep;
+namespace RateRelay.Application.Features.User.Onboarding.Commands.CompleteProfileSetupStep;
 
 public class CompleteProfileSetupCommandHandler(
     CurrentUserContext currentUserContext,
     IUnitOfWorkFactory unitOfWorkFactory,
-    IOnboardingService onboardingService
+    IOnboardingService onboardingService,
+    IUserService userService
 ) : IRequestHandler<CompleteProfileSetupStepCommand, CompleteProfileSetupOutputDto>
 {
     public async Task<CompleteProfileSetupOutputDto> Handle(CompleteProfileSetupStepCommand request,
@@ -28,18 +29,19 @@ public class CompleteProfileSetupCommandHandler(
             throw new KeyNotFoundException("Account not found");
         }
 
-        if (!string.IsNullOrWhiteSpace(request.DisplayName) && request.DisplayName != account.Username)
+        if (!string.IsNullOrWhiteSpace(request.DisplayName) && request.DisplayName != account.GoogleUsername)
         {
-            var isUsernameTaken = await accountRepository.GetBaseQueryable()
-                .AnyAsync(a => a.Id != account.Id && a.Username == request.DisplayName, cancellationToken);
+            var isDisplayNameTaken =
+                await userService.IsDisplayNameTakenAsync(request.DisplayName, account.Id, cancellationToken);
 
-            if (isUsernameTaken)
+            if (isDisplayNameTaken)
             {
-                throw new InvalidOperationException("Username is already taken");
+                throw new AppException("Display name is already taken. Please choose a different one.",
+                    "DisplayNameTaken");
             }
 
             accountRepository.Update(account);
-            account.Username = request.DisplayName;
+            account.DisplayName = request.DisplayName;
             await unitOfWork.SaveChangesAsync(cancellationToken);
         }
 

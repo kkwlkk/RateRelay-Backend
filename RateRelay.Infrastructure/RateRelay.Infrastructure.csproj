@@ -59,6 +59,8 @@
       <EmbeddedResource Include="DataAccess\Migrations\2025\012_INIT_REFERRALS_SYSTEM.sql" />
       <None Remove="DataAccess\Migrations\2025\013_ADD_ACCOUNT_FLAGS.sql" />
       <EmbeddedResource Include="DataAccess\Migrations\2025\013_ADD_ACCOUNT_FLAGS.sql" />
+      <None Remove="DataAccess\Migrations\2025\O14_ADD_ACCOUNT_DISPLAYNAME.sql" />
+      <EmbeddedResource Include="DataAccess\Migrations\2025\O14_ADD_ACCOUNT_DISPLAYNAME.sql" />
     </ItemGroup>
 
 </Project>

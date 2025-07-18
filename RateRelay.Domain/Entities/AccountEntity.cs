@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
@@ -8,11 +9,16 @@ namespace RateRelay.Domain.Entities;
 [Table("accounts")]
 [Index(nameof(Email), IsUnique = true)]
 [Index(nameof(GoogleId), IsUnique = true)]
-[Index(nameof(Username), IsUnique = true)]
+[Index(nameof(GoogleUsername), IsUnique = true)]
 public class AccountEntity : BaseEntity
 {
     [MaxLength(64)]
-    public required string Username { get; set; }
+    [Description("Immutable Google username, used for system purposes and can be changed only by system or administrators.")]
+    public required string GoogleUsername { get; set; }
+
+    [MaxLength(64)]
+    [Description("Display name of the user, can be changed by the user - used to identify the user across the platform publicly.")]
+    public required string DisplayName { get; set; }
 
     [MaxLength(255)]
     public required string Email { get; set; }

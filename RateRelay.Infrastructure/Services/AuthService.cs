@@ -42,7 +42,7 @@ public class AuthService(
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, account.Id.ToString()),
-            new(JwtRegisteredClaimNames.Name, account.Username),
+            new(JwtRegisteredClaimNames.Name, account.GoogleUsername),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new("permissions", effectivePermissions.ToString())
         };

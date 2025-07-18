@@ -10,7 +10,6 @@ using RateRelay.Application.DTOs.Onboarding.Commands.CompleteWelcomeStep;
 using RateRelay.Application.DTOs.Onboarding.Queries.GetOnboardingStatus;
 using RateRelay.Application.Features.Onboarding.Commands.CompleteBusinessVerificationStep;
 using RateRelay.Application.Features.Onboarding.Commands.CompleteOnboardingStep;
-using RateRelay.Application.Features.Onboarding.Commands.CompleteProfileSetupStep;
 using RateRelay.Application.Features.Onboarding.Commands.CompleteWelcomeStep;
 using RateRelay.Application.Features.Onboarding.Queries.GetOnboardingStatus;
 using RateRelay.Application.Features.User.Onboarding.Commands.CompleteProfileSetupStep;

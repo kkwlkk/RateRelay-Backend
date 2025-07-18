@@ -50,7 +50,8 @@ public class GoogleAuthCommandHandler(
             {
                 GoogleId = googleUserInfo.GoogleId,
                 Email = googleUserInfo.Email,
-                Username = googleUserInfo.Name
+                GoogleUsername = googleUserInfo.Name,
+                DisplayName = googleUserInfo.Name
             };
 
             await accountRepository.InsertAsync(account, cancellationToken);

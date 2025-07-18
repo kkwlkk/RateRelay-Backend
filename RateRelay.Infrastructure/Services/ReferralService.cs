@@ -299,7 +299,7 @@ public class ReferralService(
                 RewardPoints = p.Goal.RewardPoints,
                 IsCompleted = p.IsCompleted,
                 DateCompleted = p.DateCompletedUtc,
-                ReferredUserName = p.Referred.Username
+                ReferredUserName = p.Referred.DisplayName
             })
             .ToListAsync(cancellationToken);
 

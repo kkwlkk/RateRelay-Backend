@@ -13,14 +13,14 @@ public class AccountRepository(RateRelayDbContext dbContext) : Repository<Accoun
     {
         return await _dbContext.Set<AccountEntity>()
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Username == username);
+            .FirstOrDefaultAsync(x => x.GoogleUsername == username);
     }
 
     public Task<bool> ExistsByUsernameAsync(string username)
     {
         return _dbContext.Set<AccountEntity>()
             .AsNoTracking()
-            .AnyAsync(x => x.Username == username);
+            .AnyAsync(x => x.GoogleUsername == username);
     }
 
     /// <summary>

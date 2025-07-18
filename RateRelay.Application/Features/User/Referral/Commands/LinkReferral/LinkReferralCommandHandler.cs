@@ -37,7 +37,7 @@ public class LinkReferralCommandHandler(
 
         return new LinkReferralOutputDto
         {
-            ReferrerName = referrerAccount.Username,
+            ReferrerName = referrerAccount.DisplayName,
             WelcomeBonus = PointConstants.ReferralWelcomeBonusPoints
         };
     }

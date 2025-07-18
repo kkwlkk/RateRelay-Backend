@@ -1,6 +1,5 @@
 using FluentValidation;
 using RateRelay.Application.Extensions;
-using RateRelay.Application.Features.Onboarding.Commands.CompleteProfileSetupStep;
 
 namespace RateRelay.Application.Features.User.Onboarding.Commands.CompleteProfileSetupStep;
 

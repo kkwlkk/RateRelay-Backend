@@ -36,4 +36,23 @@ public class UserService(
             throw new AppException("An error occurred while retrieving the account.");
         }
     }
+    
+    public async Task<bool> IsDisplayNameTakenAsync(string displayName,
+        long? excludeAccountId = null,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
+            var accountRepository = unitOfWork.GetRepository<AccountEntity>();
+
+            return await accountRepository.GetBaseQueryable()
+                .AnyAsync(a => a.DisplayName == displayName && a.Id != excludeAccountId, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error occurred while checking if display name {DisplayName} is taken", displayName);
+            throw new AppException("An error occurred while checking the display name.");
+        }
+    }
 }
