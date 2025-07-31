@@ -16,5 +16,6 @@ public static class InfrastructureMiscExtensions
         services.AddScoped<IOnboardingService, OnboardingService>();
         services.AddScoped<ITicketService, TicketService>();
         services.AddScoped<IReferralService, ReferralService>();
+        services.AddScoped<IBusinessBoostService, BusinessBoostService>();
     }
 }

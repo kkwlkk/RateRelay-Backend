@@ -1,7 +1,7 @@
 using MediatR;
 using RateRelay.Application.DTOs.ReviewableBusiness.Queries;
 
-namespace RateRelay.Application.Features.ReviewableBusiness.Queries.GetNextBusinessForReview;
+namespace RateRelay.Application.Features.User.ReviewableBusiness.Queries.GetNextBusinessForReview;
 
 public class GetNextBusinessForReviewQuery : IRequest<GetNextBusinessForReviewOutputDto>
 {

@@ -1,7 +1,7 @@
 using AutoMapper;
 using RateRelay.Application.DTOs.ReviewableBusiness.Queries;
 using RateRelay.Application.Features.ReviewableBusiness.Commands.SubmitBusinessReview;
-using RateRelay.Application.Features.ReviewableBusiness.Queries.GetNextBusinessForReview;
+using RateRelay.Application.Features.User.ReviewableBusiness.Queries.GetNextBusinessForReview;
 
 namespace RateRelay.Application.Mapping;
 

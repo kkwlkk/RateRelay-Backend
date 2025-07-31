@@ -11,7 +11,8 @@ namespace RateRelay.Infrastructure.Services;
 public class ReviewService(
     IUnitOfWorkFactory unitOfWorkFactory,
     IPointService pointService,
-    IReferralService referralService
+    IReferralService referralService,
+    IBusinessBoostService businessBoostService
 ) : IReviewService
 {
     public async Task<bool> AddUserReviewAsync(
@@ -46,6 +47,10 @@ public class ReviewService(
                 $"User with ID {reviewerId} has already reviewed business with ID {businessId}.");
         }
 
+        var businessBoostRepository = unitOfWork.GetRepository<BusinessBoostEntity>();
+        var businessHasActiveBoost = await businessBoostService.IsBusinessBoostedAsync(
+            businessId, cancellationToken);
+
         var review = new BusinessReviewEntity
         {
             BusinessId = businessId,
@@ -56,23 +61,51 @@ public class ReviewService(
             PostedGoogleReview = postedGoogleReview
         };
 
-        await pointService.DeductPointsAsync(
-            business.OwnerAccountId,
-            PointConstants.BasicReviewPoints,
-            PointTransactionType.ReviewSubmissionLock,
-            null,
-            cancellationToken
-        );
-
-        if (postedGoogleReview)
+        if (!businessHasActiveBoost)
         {
             await pointService.DeductPointsAsync(
                 business.OwnerAccountId,
-                PointConstants.GoogleMapsReviewPoints,
-                PointTransactionType.GoogleMapsReviewLock,
+                PointConstants.BasicReviewPoints,
+                PointTransactionType.ReviewSubmissionLock,
                 null,
                 cancellationToken
             );
+
+            if (postedGoogleReview)
+            {
+                await pointService.DeductPointsAsync(
+                    business.OwnerAccountId,
+                    PointConstants.GoogleMapsReviewPoints,
+                    PointTransactionType.GoogleMapsReviewLock,
+                    null,
+                    cancellationToken
+                );
+            }
+        }
+
+        if (businessHasActiveBoost)
+        {
+            var boost = await businessBoostRepository
+                .GetBaseQueryable()
+                .FirstOrDefaultAsync(b => b.BusinessId == businessId && b.IsActive, cancellationToken);
+
+            if (boost is not null)
+            {
+                var pendingBusinessReviews = await reviewRepository
+                    .CountAsync(r => r.BusinessId == businessId && r.Status == BusinessReviewStatus.Pending,
+                        cancellationToken) + 1; // +1 for the current review
+
+                var targetReviews = boost.TargetReviews + boost.ReviewsAtBoostStart;
+                if (pendingBusinessReviews >= targetReviews)
+                {
+                    await businessBoostService.UnboostBusinessAsync(
+                        businessId,
+                        null,
+                        "Osiągnięto wyznaczony cel recenzji.",
+                        cancellationToken
+                    );
+                }
+            }
         }
 
         await reviewRepository.InsertAsync(review, cancellationToken);

@@ -52,4 +52,20 @@ public enum Permission : ulong
     DeleteTickets = 512,
 
     #endregion
+    
+    
+    [Display(Name = "View All Businesses")]
+    ViewAllBusinesses = 1024,
+
+    [Display(Name = "Manage Business")]
+    ManageBusinessPriority = 4096,
+
+    [Display(Name = "Create Business")]
+    CreateBusiness = 2048,
+
+    [Display(Name = "Delete Business")]
+    DeleteBusiness = 16384,
+    
+    [Display(Name = "View All Users")]
+    ViewAllUsers = 8192,
 }

@@ -11,7 +11,6 @@ public class BusinessEntity : BaseEntity
     [MaxLength(255)]
     public required string PlaceId { get; set; }
 
-    // Unique content identifier for the business (used to create reliable URLs on Google Maps)
     [MaxLength(255)]
     public required string Cid { get; set; }
 
@@ -29,4 +28,7 @@ public class BusinessEntity : BaseEntity
 
     [InverseProperty("Business")]
     public BusinessVerificationEntity? Verification { get; set; }
+    
+    [InverseProperty("Business")]
+    public virtual ICollection<BusinessBoostEntity> Boosts { get; set; } = new List<BusinessBoostEntity>();
 }

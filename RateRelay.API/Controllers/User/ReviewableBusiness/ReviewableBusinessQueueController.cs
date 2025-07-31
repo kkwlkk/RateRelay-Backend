@@ -6,8 +6,8 @@ using RateRelay.API.Attributes.RateLimiting;
 using RateRelay.Application.DTOs.ReviewableBusiness.Commands;
 using RateRelay.Application.DTOs.ReviewableBusiness.Queries;
 using RateRelay.Application.Features.ReviewableBusiness.Commands.SubmitBusinessReview;
-using RateRelay.Application.Features.ReviewableBusiness.Queries.GetNextBusinessForReview;
 using RateRelay.Application.Features.ReviewableBusiness.Queries.GetTimeLeftForBusinessReview;
+using RateRelay.Application.Features.User.ReviewableBusiness.Queries.GetNextBusinessForReview;
 
 namespace RateRelay.API.Controllers.User.ReviewableBusiness;
 

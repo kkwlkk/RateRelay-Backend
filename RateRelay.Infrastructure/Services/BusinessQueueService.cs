@@ -151,7 +151,7 @@ public class BusinessQueueService(
             .Where(b => b.IsVerified)
             .Where(b => b.OwnerAccount.PointBalance >= PointConstants.MinimumOwnerPointBalanceForBusinessVisibility)
             .Where(b => !excludedBusinessIds.Contains(b.Id))
-            .OrderBy(b => b.Priority)
+            .OrderByDescending(b => b.Priority)
             .ThenBy(b => b.Id);
     }
 
@@ -428,13 +428,23 @@ public class BusinessQueueService(
             .Where(b => b.Id == businessId)
             .Include(b => b.OwnerAccount)
             .FirstOrDefaultAsync(cancellationToken);
-        
+
         if (business is null)
         {
             logger.Information("Business {BusinessId} not found", businessId);
             return false;
         }
         
+        if (!business.IsVerified) 
+        {
+            if (ApplicationEnvironment.Current().IsDevelopment)
+            {
+                logger.Debug("Business {BusinessId} is not verified", businessId);
+            }
+
+            return false;
+        }
+
         if (business.OwnerAccount?.PointBalance < PointConstants.MinimumOwnerPointBalanceForBusinessVisibility)
         {
             if (ApplicationEnvironment.Current().IsDevelopment)

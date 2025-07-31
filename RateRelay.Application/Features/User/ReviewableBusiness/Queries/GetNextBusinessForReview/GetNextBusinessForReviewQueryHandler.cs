@@ -5,7 +5,7 @@ using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Infrastructure.Services;
 
-namespace RateRelay.Application.Features.ReviewableBusiness.Queries.GetNextBusinessForReview;
+namespace RateRelay.Application.Features.User.ReviewableBusiness.Queries.GetNextBusinessForReview;
 
 public class GetNextBusinessForReviewQueryHandler(
     CurrentUserContext currentUserContext,
