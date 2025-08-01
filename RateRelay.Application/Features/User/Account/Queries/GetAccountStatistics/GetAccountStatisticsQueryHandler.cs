@@ -23,18 +23,18 @@ public class GetAccountStatisticsQueryHandler(
 
         var totalBusinesses = await businessRepository.CountAsync(b => b.OwnerAccountId == userId, cancellationToken);
         var totalTickets = await ticketRepository.CountAsync(t => t.ReporterId == userId, cancellationToken);
-        var totalAwaitingBusinessReviews = await businessReviewsRepository.CountAsync(
+        var totalAwaitingBusinessReviewsForUser = await businessReviewsRepository.CountAsync(
             br => br.Status == BusinessReviewStatus.Pending && br.Business.OwnerAccountId == userId, cancellationToken);
-        var totalCompletedBusinessReviews = await businessReviewsRepository.CountAsync(
-            br => br.Status == BusinessReviewStatus.Accepted && br.Business.OwnerAccountId == userId,
+        var totalCompletedBusinessReviewsByUser = await businessReviewsRepository.CountAsync(
+            br => br.ReviewerId == userContext.AccountId && br.Status == BusinessReviewStatus.Accepted,
             cancellationToken);
 
         return new AccountStatisticsQueryOutputDto
         {
             TotalBusinesses = totalBusinesses,
             TotalTickets = totalTickets,
-            TotalAwaitingBusinessReviews = totalAwaitingBusinessReviews,
-            TotalCompletedBusinessReviews = totalCompletedBusinessReviews
+            TotalAwaitingBusinessReviews = totalAwaitingBusinessReviewsForUser,
+            TotalCompletedBusinessReviews = totalCompletedBusinessReviewsByUser
         };
     }
 }
