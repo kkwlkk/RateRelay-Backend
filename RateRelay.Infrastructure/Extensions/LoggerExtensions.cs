@@ -1,58 +1,48 @@
+using RateRelay.Domain.Enums;
 using Serilog;
-using RateRelay.Infrastructure.Constants;
+using Serilog.Events;
 
 namespace RateRelay.Infrastructure.Extensions;
 
 public static class LoggerExtensions
 {
-    public static void LogWithPrefix(this ILogger logger, string prefix, string message, params object[] args)
+    public static void Verbose(this ILogger logger, LogPrefix prefix, string messageTemplate, params object[] propertyValues)
+        => LogWithPrefix(logger, LogEventLevel.Verbose, prefix, messageTemplate, propertyValues);
+
+    public static void Debug(this ILogger logger, LogPrefix prefix, string messageTemplate, params object[] propertyValues)
+        => LogWithPrefix(logger, LogEventLevel.Debug, prefix, messageTemplate, propertyValues);
+
+    public static void Information(this ILogger logger, LogPrefix prefix, string messageTemplate, params object[] propertyValues)
+        => LogWithPrefix(logger, LogEventLevel.Information, prefix, messageTemplate, propertyValues);
+
+    public static void Warning(this ILogger logger, LogPrefix prefix, string messageTemplate, params object[] propertyValues)
+        => LogWithPrefix(logger, LogEventLevel.Warning, prefix, messageTemplate, propertyValues);
+
+    public static void Error(this ILogger logger, LogPrefix prefix, string messageTemplate, params object[] propertyValues)
+        => LogWithPrefix(logger, LogEventLevel.Error, prefix, messageTemplate, propertyValues);
+
+    public static void Error(this ILogger logger, LogPrefix prefix, Exception exception, string messageTemplate, params object[] propertyValues)
+        => LogWithPrefix(logger, LogEventLevel.Error, prefix, exception, messageTemplate, propertyValues);
+
+    public static void Fatal(this ILogger logger, LogPrefix prefix, string messageTemplate, params object[] propertyValues)
+        => LogWithPrefix(logger, LogEventLevel.Fatal, prefix, messageTemplate, propertyValues);
+
+    public static void Fatal(this ILogger logger, LogPrefix prefix, Exception exception, string messageTemplate, params object[] propertyValues)
+        => LogWithPrefix(logger, LogEventLevel.Fatal, prefix, exception, messageTemplate, propertyValues);
+
+    private static void LogWithPrefix(ILogger logger, LogEventLevel logLevel, LogPrefix prefix, string messageTemplate, params object[] propertyValues)
     {
-        if (LoggingConstants.PrefixColorMapping.TryGetValue(prefix, out var color) && IsConsoleAvailable())
+        using (Serilog.Context.LogContext.PushProperty("Prefix", prefix.ToString()))
         {
-            LogWithColor(logger, prefix, color, message, args);
-        }
-        else
-        {
-            logger.Information("[{Prefix}] {Message}", prefix, string.Format(message, args));
+            logger.Write(logLevel, messageTemplate, propertyValues);
         }
     }
 
-    public static void LogWithColor(this ILogger logger, string prefix, ConsoleColor color, string message,
-        params object[] args)
+    private static void LogWithPrefix(ILogger logger, LogEventLevel logLevel, LogPrefix prefix, Exception exception, string messageTemplate, params object[] propertyValues)
     {
-        if (IsConsoleAvailable())
+        using (Serilog.Context.LogContext.PushProperty("Prefix", prefix.ToString()))
         {
-            var originalColor = Console.ForegroundColor;
-
-            try
-            {
-                Console.ForegroundColor = color;
-                Console.Write($"[{prefix}] ");
-                Console.ForegroundColor = originalColor;
-
-                logger.Information(message, args);
-            }
-            finally
-            {
-                Console.ForegroundColor = originalColor;
-            }
-        }
-        else
-        {
-            logger.Information("[{Prefix}] {Message}", prefix, string.Format(message, args));
-        }
-    }
-
-    private static bool IsConsoleAvailable()
-    {
-        try
-        {
-            _ = Console.ForegroundColor;
-            return true;
-        }
-        catch
-        {
-            return false;
+            logger.Write(logLevel, exception, messageTemplate, propertyValues);
         }
     }
 }

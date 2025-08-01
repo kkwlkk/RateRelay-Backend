@@ -68,4 +68,10 @@ public enum Permission : ulong
     
     [Display(Name = "View All Users")]
     ViewAllUsers = 8192,
+    
+    [Display(Name = "Can access Hangfire Dashboard")]
+    AccessHangfireDashboard = 32768,
+    
+    [Display(Name = "Manage Hangfire Jobs")]
+    ManageHangfireJobs = 65536,
 }

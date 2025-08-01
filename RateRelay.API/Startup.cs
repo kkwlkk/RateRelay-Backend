@@ -1,10 +1,9 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using RateRelay.API.Extensions;
 using RateRelay.API.Middleware;
-using RateRelay.Domain.Common;
+using RateRelay.Infrastructure.DependencyInjection.Extensions;
 using RateRelay.Infrastructure.Logging;
 using Serilog;
 
@@ -98,9 +97,15 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
         app.UseRouting();
         app.UseExceptionHandling();
         app.UseRateLimiting();
-        app.UseHttpsRedirection();
+
+        if (env.IsProduction())
+        {
+            app.UseHttpsRedirection();
+        }
+
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        app.UseHangfireDashboard();
     }
 }

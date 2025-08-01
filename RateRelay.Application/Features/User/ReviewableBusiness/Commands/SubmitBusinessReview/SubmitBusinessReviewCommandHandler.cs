@@ -1,12 +1,12 @@
 using AutoMapper;
 using MediatR;
 using RateRelay.Application.DTOs.ReviewableBusiness.Commands;
-using RateRelay.Application.Exceptions;
+using RateRelay.Application.Features.ReviewableBusiness.Commands.SubmitBusinessReview;
 using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Infrastructure.Services;
 
-namespace RateRelay.Application.Features.ReviewableBusiness.Commands.SubmitBusinessReview;
+namespace RateRelay.Application.Features.User.ReviewableBusiness.Commands.SubmitBusinessReview;
 
 public class SubmitBusinessReviewCommandHandler(
     CurrentUserContext currentUserContext,

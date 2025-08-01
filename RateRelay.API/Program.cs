@@ -39,6 +39,11 @@ public static class Program
                 }
             }
 
+            using (var hangfireService = new HangfireService(configuration, host.Services))
+            {
+                await hangfireService.StartAsync();
+            }
+
             await host.RunAsync();
         }
         catch (Exception ex)
@@ -70,11 +75,6 @@ public static class Program
                 webBuilder.ConfigureKestrel(options =>
                 {
                     var configuration = LoadConfiguration(args, environment);
-                    var certificateSettings = configuration.GetSection("Certificate");
-
-                    var certificatePath = certificateSettings.GetValue<string>("Path");
-                    var certificatePassword = certificateSettings.GetValue<string>("Password");
-
                     var httpPort = configuration.GetValue("Kestrel:HttpPort", 5000);
                     var httpsPort = configuration.GetValue("Kestrel:HttpsPort", 5001);
 
@@ -87,6 +87,10 @@ public static class Program
 
                     options.ListenAnyIP(httpsPort, listenOptions =>
                     {
+                        var certificateSettings = configuration.GetSection("Certificate");
+                        var certificatePath = certificateSettings.GetValue<string>("Path");
+                        var certificatePassword = certificateSettings.GetValue<string>("Password");
+
                         try
                         {
                             if (!string.IsNullOrEmpty(certificatePath) && !string.IsNullOrEmpty(certificatePassword) &&
@@ -102,18 +106,34 @@ public static class Program
                                 catch (CryptographicException ex)
                                 {
                                     Log.Error(ex,
-                                        "Failed to load certificate from {CertificatePath} with the provided password",
+                                        "Failed to load certificate from {CertificatePath}, falling back to development certificate",
                                         certificatePath);
-                                    throw new InvalidOperationException(
-                                        $"Cannot load certificate from {certificatePath}. Please check the password is correct.",
-                                        ex);
+                                    listenOptions.UseHttps();
                                 }
                             }
                             else
                             {
-                                listenOptions.UseHttps();
-                                Log.Information("Using development certificate for HTTPS on port {HttpsPort}",
-                                    httpsPort);
+                                if (environment.IsDevelopment)
+                                {
+                                    try
+                                    {
+                                        listenOptions.UseHttps();
+                                        Log.Information("Using development certificate for HTTPS on port {HttpsPort}",
+                                            httpsPort);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Log.Warning(ex,
+                                            "Could not configure HTTPS with development certificate, HTTPS will be unavailable");
+                                        return;
+                                    }
+                                }
+                                else
+                                {
+                                    listenOptions.UseHttps();
+                                    Log.Information("Using development certificate for HTTPS on port {HttpsPort}",
+                                        httpsPort);
+                                }
                             }
 
                             listenOptions.Protocols =
@@ -121,8 +141,8 @@ public static class Program
                         }
                         catch (Exception ex)
                         {
-                            Log.Error(ex, "Error configuring HTTPS");
-                            throw;
+                            Log.Warning(ex, "Error configuring HTTPS on port {HttpsPort}, HTTPS will be unavailable",
+                                httpsPort);
                         }
                     });
                 });

@@ -48,7 +48,7 @@ public static class DataAccessExtensions
         return $"{databaseOptions.ConnectionString};password={databaseOptions.Password}";
     }
 
-    private static string GetRedisConnectionString(this IConfiguration configuration)
+    public static string GetRedisConnectionString(this IConfiguration configuration)
     {
         var redisOptions = configuration.GetSection(RedisOptions.SectionName).Get<RedisOptions>();
 

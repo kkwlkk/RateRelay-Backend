@@ -42,6 +42,7 @@ public static class LoggingConfiguration
         return new LoggerConfiguration()
             .MinimumLevel.Debug()
             .ConfigureMinimumLevels()
+            .ConfigureFilters()
             .ConfigureEnrichment()
             .ConfigureOutputSinks(logsDirectory, rollingInterval);
     }
@@ -53,6 +54,15 @@ public static class LoggingConfiguration
             .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
             .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
             .MinimumLevel.Override("Hangfire", LogEventLevel.Warning);
+    }
+
+    private static LoggerConfiguration ConfigureFilters(this LoggerConfiguration loggerConfiguration)
+    {
+        return loggerConfiguration
+            .Filter.ByExcluding(logEvent =>
+                logEvent.Properties.TryGetValue("RequestPath", out var requestPath) &&
+                requestPath.ToString().Contains("/hangfire/") &&
+                logEvent.Level == LogEventLevel.Information);
     }
 
     private static LoggerConfiguration ConfigureOutputSinks(
@@ -76,6 +86,7 @@ public static class LoggingConfiguration
     {
         return loggerConfiguration
             .Enrich.FromLogContext()
-            .Enrich.With<ClientIpEnricher>();
+            .Enrich.With<ClientIpEnricher>()
+            .Enrich.With(new PrefixFormatterEnricher(LoggingConstants.PrefixColorMapping));
     }
 }
