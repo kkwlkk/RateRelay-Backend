@@ -24,9 +24,10 @@ public class GetAccountStatisticsQueryHandler(
         var totalBusinesses = await businessRepository.CountAsync(b => b.OwnerAccountId == userId, cancellationToken);
         var totalTickets = await ticketRepository.CountAsync(t => t.ReporterId == userId, cancellationToken);
         var totalAwaitingBusinessReviews = await businessReviewsRepository.CountAsync(
-            br => br.ReviewerId == userId && br.Status == BusinessReviewStatus.Pending, cancellationToken);
+            br => br.Status == BusinessReviewStatus.Pending && br.Business.OwnerAccountId == userId, cancellationToken);
         var totalCompletedBusinessReviews = await businessReviewsRepository.CountAsync(
-            br => br.ReviewerId == userId && br.Status == BusinessReviewStatus.Accepted, cancellationToken);
+            br => br.Status == BusinessReviewStatus.Accepted && br.Business.OwnerAccountId == userId,
+            cancellationToken);
 
         return new AccountStatisticsQueryOutputDto
         {
