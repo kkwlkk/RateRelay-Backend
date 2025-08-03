@@ -5,5 +5,5 @@ namespace RateRelay.Application.Features.User.Account.Commands.UpdateAccountSett
 
 public class UpdateAccountSettingsCommand : IRequest<IActionResult>
 {
-    public string? DisplayName { get; set; }
+
 }

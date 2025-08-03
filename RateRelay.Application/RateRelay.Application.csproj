@@ -24,17 +24,4 @@
       <ProjectReference Include="..\RateRelay.Domain\RateRelay.Domain.csproj" />
       <ProjectReference Include="..\RateRelay.Infrastructure\RateRelay.Infrastructure.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Compile Remove="DependencyInjection\MediatRConfiguration\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <EmbeddedResource Remove="DependencyInjection\MediatRConfiguration\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Remove="DependencyInjection\MediatRConfiguration\**" />
-    </ItemGroup>
-
 </Project>

@@ -1,18 +1,15 @@
 using MediatR;
 using RateRelay.Application.DTOs.Onboarding.Commands.CompleteOnboardingStep;
-using RateRelay.Domain.Entities;
+using RateRelay.Application.Features.Onboarding.Commands.CompleteOnboardingStep;
 using RateRelay.Domain.Enums;
-using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
-using RateRelay.Domain.Interfaces.DataAccess;
 using RateRelay.Infrastructure.Services;
 
-namespace RateRelay.Application.Features.Onboarding.Commands.CompleteOnboardingStep;
+namespace RateRelay.Application.Features.User.Onboarding.Commands.CompleteOnboardingStep;
 
 public class CompleteOnboardingCommandHandler(
     CurrentUserContext currentUserContext,
-    IOnboardingService onboardingService,
-    IUnitOfWorkFactory unitOfWorkFactory
+    IOnboardingService onboardingService
 ) : IRequestHandler<CompleteOnboardingStepCommand, CompleteOnboardingStepOutputDto>
 {
     public async Task<CompleteOnboardingStepOutputDto> Handle(CompleteOnboardingStepCommand request,

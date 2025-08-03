@@ -37,7 +37,7 @@ public class LinkReferralCommandHandler(
 
         return new LinkReferralOutputDto
         {
-            ReferrerName = referrerAccount.DisplayName,
+            ReferrerName = referrerAccount.GoogleUsername,
             WelcomeBonus = PointConstants.ReferralWelcomeBonusPoints
         };
     }

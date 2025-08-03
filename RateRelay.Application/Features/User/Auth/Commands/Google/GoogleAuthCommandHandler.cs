@@ -1,6 +1,7 @@
 using MediatR;
 using RateRelay.Application.DTOs.Auth.Commands;
 using RateRelay.Domain.Entities;
+using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.DataAccess;
 using RateRelay.Infrastructure.DataAccess.Repositories;
@@ -27,6 +28,14 @@ public class GoogleAuthCommandHandler(
             throw new UnauthorizedAccessException("Invalid OAuth token.");
         }
 
+        var accountExistsDeleted = accountRepository.GetBaseQueryable(true)
+            .Where(x => x.GoogleId == googleUserInfo.GoogleId || x.Email == googleUserInfo.Email);
+
+        if (accountExistsDeleted.Any())
+            throw new AppException(
+                "An account with this Google ID or email already exists, but is deleted. Please contact support to restore your account.",
+                "AccountAlreadyExisted");
+
         var account = await accountRepository.GetByGoogleIdAsync(googleUserInfo.GoogleId);
         var isNewAccount = false;
 
@@ -50,8 +59,7 @@ public class GoogleAuthCommandHandler(
             {
                 GoogleId = googleUserInfo.GoogleId,
                 Email = googleUserInfo.Email,
-                GoogleUsername = googleUserInfo.Name,
-                DisplayName = googleUserInfo.Name
+                GoogleUsername = googleUserInfo.Name
             };
 
             await accountRepository.InsertAsync(account, cancellationToken);

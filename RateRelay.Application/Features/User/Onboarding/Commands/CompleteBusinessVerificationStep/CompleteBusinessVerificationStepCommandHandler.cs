@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RateRelay.Application.DTOs.Onboarding.Commands.CompleteBusinessVerificationStep;
+using RateRelay.Application.Features.Onboarding.Commands.CompleteBusinessVerificationStep;
 using RateRelay.Domain.Common;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Enums;
@@ -9,7 +10,7 @@ using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.DataAccess;
 using RateRelay.Infrastructure.Services;
 
-namespace RateRelay.Application.Features.Onboarding.Commands.CompleteBusinessVerificationStep;
+namespace RateRelay.Application.Features.User.Onboarding.Commands.CompleteBusinessVerificationStep;
 
 public class CompleteBusinessVerificationStepCommandHandler(
     CurrentUserContext currentUserContext,

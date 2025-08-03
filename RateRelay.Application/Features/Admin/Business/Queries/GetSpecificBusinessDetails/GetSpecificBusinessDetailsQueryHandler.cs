@@ -54,7 +54,7 @@ public class GetSpecificBusinessDetailsQueryHandler(
                 OldPriority = h.OldPriority,
                 NewPriority = h.NewPriority,
                 Reason = h.Reason ?? "",
-                ChangedByDisplayName = h.ChangedBy.DisplayName,
+                ChangedByDisplayName = h.ChangedBy.GoogleUsername,
                 ChangedAt = h.DateCreatedUtc,
                 WasBoosted = h.NewPriority > h.OldPriority
             })
@@ -74,7 +74,7 @@ public class GetSpecificBusinessDetailsQueryHandler(
             Cid = business.Cid,
             MapUrl = googleMapsService.GenerateMapUrlFromCid(business.Cid),
             OwnerAccountId = business.OwnerAccount?.Id ?? 0,
-            OwnerDisplayName = business.OwnerAccount?.DisplayName ?? "",
+            OwnerDisplayName = business.OwnerAccount?.GoogleUsername ?? "",
             OwnerEmail = business.OwnerAccount?.Email ?? "",
             OwnerPointBalance = business.OwnerAccount?.PointBalance ?? 0,
             Priority = business.Priority,

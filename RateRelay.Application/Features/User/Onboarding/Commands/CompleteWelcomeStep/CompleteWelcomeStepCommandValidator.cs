@@ -1,5 +1,6 @@
 using FluentValidation;
 using RateRelay.Application.Extensions;
+using RateRelay.Application.Features.User.Onboarding.Commands.CompleteWelcomeStep;
 
 namespace RateRelay.Application.Features.Onboarding.Commands.CompleteWelcomeStep;
 

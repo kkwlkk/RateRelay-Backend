@@ -27,7 +27,7 @@ public class GetReferralStatsQueryHandler(
                 GoalName = r.Goal.Name,
                 RewardPoints = r.RewardPoints,
                 DateAwarded = r.DateAwardedUtc,
-                ReferredUserName = r.Referred.DisplayName
+                ReferredUserName = r.Referred.GoogleUsername
             })
             .ToList();
 

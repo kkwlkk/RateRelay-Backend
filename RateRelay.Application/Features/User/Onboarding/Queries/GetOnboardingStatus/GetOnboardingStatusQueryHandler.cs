@@ -1,12 +1,12 @@
 using MediatR;
-using RateRelay.Application.DTOs.Onboarding;
 using RateRelay.Application.DTOs.Onboarding.Queries.GetOnboardingStatus;
+using RateRelay.Application.Features.Onboarding.Queries.GetOnboardingStatus;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Enums;
 using RateRelay.Domain.Interfaces.DataAccess;
 using RateRelay.Infrastructure.Services;
 
-namespace RateRelay.Application.Features.Onboarding.Queries.GetOnboardingStatus;
+namespace RateRelay.Application.Features.User.Onboarding.Queries.GetOnboardingStatus;
 
 public class GetOnboardingStatusQueryHandler(
     CurrentUserContext currentUserContext,
@@ -42,7 +42,7 @@ public class GetOnboardingStatusQueryHandler(
         return step switch
         {
             AccountOnboardingStep.Welcome => "Welcome",
-            AccountOnboardingStep.ProfileSetup => "Profile Setup",
+            // AccountOnboardingStep.ProfileSetup => "Profile Setup",
             AccountOnboardingStep.BusinessVerification => "Business Verification",
             AccountOnboardingStep.Completed => "Completed",
             _ => "Unknown"

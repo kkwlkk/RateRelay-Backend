@@ -22,9 +22,9 @@ public class TicketsProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
 
         CreateMap<TicketEntity, GetTicketDetailsOutputDto>()
-            .ForMember(dest => dest.ReporterName, opt => opt.MapFrom(src => src.Reporter.DisplayName))
+            .ForMember(dest => dest.ReporterName, opt => opt.MapFrom(src => src.Reporter.GoogleUsername))
             .ForMember(dest => dest.AssignedToName,
-                opt => opt.MapFrom(src => src.AssignedTo != null ? src.AssignedTo.DisplayName : string.Empty))
+                opt => opt.MapFrom(src => src.AssignedTo != null ? src.AssignedTo.GoogleUsername : string.Empty))
             .ForMember(dest => dest.IsAssigned, opt => opt.MapFrom(src => src.IsAssigned))
             .ForMember(dest => dest.IsOpen, opt => opt.MapFrom(src => src.IsOpen))
             .ForMember(dest => dest.IsResolved, opt => opt.MapFrom(src => src.IsResolved))
@@ -34,10 +34,10 @@ public class TicketsProfile : Profile
 
         CreateMap<TicketCommentEntity, TicketCommentDto>()
             .ForMember(dest => dest.CreatedAtUtc, opt => opt.MapFrom(src => src.DateCreatedUtc))
-            .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.DisplayName));
+            .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.GoogleUsername));
 
         CreateMap<TicketStatusHistoryEntity, TicketStatusHistoryDto>()
-            .ForMember(dest => dest.ChangedByName, opt => opt.MapFrom(src => src.ChangedBy.DisplayName));
+            .ForMember(dest => dest.ChangedByName, opt => opt.MapFrom(src => src.ChangedBy.GoogleUsername));
 
         CreateMap<UpdateTicketStatusInputDto, UpdateTicketStatusCommand>()
             .ForMember(dest => dest.TicketId, opt => opt.Ignore())
@@ -55,8 +55,8 @@ public class TicketsProfile : Profile
 
         CreateMap<TicketEntity, GetUserTicketsOutputDto>()
             .ForMember(dest => dest.IsAssigned, opt => opt.MapFrom(src => src.IsAssigned))
-            .ForMember(dest => dest.AssignedToName, opt => opt.MapFrom(src => src.AssignedTo.DisplayName))
-            .ForMember(dest => dest.ReporterName, opt => opt.MapFrom(src => src.Reporter.DisplayName))
+            .ForMember(dest => dest.AssignedToName, opt => opt.MapFrom(src => src.AssignedTo.GoogleUsername))
+            .ForMember(dest => dest.ReporterName, opt => opt.MapFrom(src => src.Reporter.GoogleUsername))
             .ForMember(dest => dest.Subjects, opt => opt.MapFrom(src => TicketSubjects.FromTicket(src)));
 
         CreateMap<GetUserTicketsInputDto, GetUserTicketsQuery>();

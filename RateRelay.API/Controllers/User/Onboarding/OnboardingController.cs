@@ -12,7 +12,7 @@ using RateRelay.Application.Features.Onboarding.Commands.CompleteBusinessVerific
 using RateRelay.Application.Features.Onboarding.Commands.CompleteOnboardingStep;
 using RateRelay.Application.Features.Onboarding.Commands.CompleteWelcomeStep;
 using RateRelay.Application.Features.Onboarding.Queries.GetOnboardingStatus;
-using RateRelay.Application.Features.User.Onboarding.Commands.CompleteProfileSetupStep;
+using RateRelay.Application.Features.User.Onboarding.Commands.CompleteWelcomeStep;
 using RateRelay.Domain.Enums;
 
 namespace RateRelay.API.Controllers.User.Onboarding;
@@ -39,18 +39,6 @@ public class OnboardingController(IMediator mediator, IMapper mapper) : UserBase
         CancellationToken cancellationToken)
     {
         var command = mapper.Map<CompleteWelcomeStepCommand>(input);
-        var result = await mediator.Send(command, cancellationToken);
-        return Success(result);
-    }
-
-    [HttpPost("profile-setup")]
-    [RequireOnboardingStep(AccountOnboardingStep.ProfileSetup)]
-    [ProducesResponseType(typeof(CompleteProfileSetupOutputDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> CompleteProfileSetupStep(
-        [FromBody] CompleteProfileSetupInputDto input,
-        CancellationToken cancellationToken)
-    {
-        var command = mapper.Map<CompleteProfileSetupStepCommand>(input);
         var result = await mediator.Send(command, cancellationToken);
         return Success(result);
     }

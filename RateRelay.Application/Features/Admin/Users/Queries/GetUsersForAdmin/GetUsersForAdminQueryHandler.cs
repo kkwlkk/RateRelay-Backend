@@ -29,7 +29,7 @@ public class GetUsersForAdminQueryHandler(IUnitOfWorkFactory unitOfWorkFactory)
             x.Email.Contains(request.Search!) ||
             x.Id.ToString().Contains(request.Search!) ||
             x.GoogleUsername.Contains(request.Search!) ||
-            x.DisplayName.Contains(request.Search!));
+            x.GoogleUsername.Contains(request.Search!));
 
         var totalCount = await usersQueryable.CountAsync(cancellationToken);
 
@@ -42,7 +42,7 @@ public class GetUsersForAdminQueryHandler(IUnitOfWorkFactory unitOfWorkFactory)
         {
             Id = user.Id,
             Email = user.Email,
-            DisplayName = user.DisplayName,
+            DisplayName = user.GoogleUsername,
             GoogleUsername = user.GoogleUsername,
             IsVerified = user.HasCompletedOnboarding,
             DateCreatedUtc = user.DateCreatedUtc

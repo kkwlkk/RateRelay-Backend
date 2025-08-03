@@ -35,7 +35,7 @@ public class GetBusinessesForAdminQueryHandler(
 
         query = query.ApplySearch(request, b =>
             b.BusinessName.Contains(request.Search!) ||
-            b.OwnerAccount!.DisplayName.Contains(request.Search!) ||
+            b.OwnerAccount!.GoogleUsername.Contains(request.Search!) ||
             b.OwnerAccount!.Email.Contains(request.Search!));
 
         var totalCount = await query.CountAsync(cancellationToken);
@@ -95,7 +95,7 @@ public class GetBusinessesForAdminQueryHandler(
             {
                 Id = business.Id,
                 BusinessName = business.BusinessName,
-                OwnerDisplayName = business.OwnerAccount?.DisplayName ?? "Unknown",
+                OwnerDisplayName = business.OwnerAccount?.GoogleUsername ?? "Unknown",
                 OwnerEmail = business.OwnerAccount?.Email ?? "Unknown",
                 CurrentReviews = currentReviews,
                 PendingReviews = stats?.PendingReviews ?? 0,

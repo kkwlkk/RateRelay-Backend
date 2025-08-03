@@ -50,14 +50,7 @@ public class OnboardingService(
             throw new InvalidOperationException("Invalid onboarding step transition.");
         }
 
-        accountRepository.Update(account);
-        account.OnboardingStep = step;
-        account.OnboardingLastUpdatedUtc = DateTime.UtcNow;
-
-        logger.Information("Updated onboarding step for account {AccountId} from {PreviousStep} to {NewStep}",
-            accountId, account.OnboardingStep, step);
-
-        if (step == AccountOnboardingStep.Completed)
+        if (step is AccountOnboardingStep.Completed && account.OnboardingStep is AccountOnboardingStep.Completed)
         {
             await referralService.UpdateReferralProgressAsync(
                 accountId,
@@ -68,6 +61,13 @@ public class OnboardingService(
 
             account.Flags |= AccountFlags.HasSeenLastOnboardingStep;
         }
+
+        accountRepository.Update(account);
+        account.OnboardingStep = step;
+        account.OnboardingLastUpdatedUtc = DateTime.UtcNow;
+
+        logger.Information("Updated onboarding step for account {AccountId} from {PreviousStep} to {NewStep}",
+            accountId, account.OnboardingStep, step);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return true;

@@ -16,10 +16,6 @@ public class AccountEntity : BaseEntity
     [Description("Immutable Google username, used for system purposes and can be changed only by system or administrators.")]
     public required string GoogleUsername { get; set; }
 
-    [MaxLength(64)]
-    [Description("Display name of the user, can be changed by the user - used to identify the user across the platform publicly.")]
-    public required string DisplayName { get; set; }
-
     [MaxLength(255)]
     public required string Email { get; set; }
 

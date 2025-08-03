@@ -29,11 +29,6 @@ public class UpdateAccountSettingsCommandHandler (
 
         accountRepository.Update(account);
         
-        if (!string.IsNullOrEmpty(request.DisplayName))
-        {
-            account.DisplayName = request.DisplayName;
-        }
-        
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         var accountDto = mapper.Map<AccountQueryOutputDto>(account);

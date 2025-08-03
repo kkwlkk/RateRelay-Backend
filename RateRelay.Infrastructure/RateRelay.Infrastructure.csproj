@@ -66,6 +66,8 @@
       <EmbeddedResource Include="DataAccess\Migrations\2025\O14_ADD_ACCOUNT_DISPLAYNAME.sql" />
       <None Remove="DataAccess\Migrations\2025\015_ADD_ADMIN_BUSINESS_MANAGEMENT.sql" />
       <EmbeddedResource Include="DataAccess\Migrations\2025\015_ADD_ADMIN_BUSINESS_MANAGEMENT.sql" />
+      <None Remove="DataAccess\Migrations\2025\016_DEL_ACCOUNT_DISPLAYNAME.sql" />
+      <EmbeddedResource Include="DataAccess\Migrations\2025\016_DEL_ACCOUNT_DISPLAYNAME.sql" />
     </ItemGroup>
 
     <ItemGroup>

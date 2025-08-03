@@ -4,7 +4,7 @@ using RateRelay.Domain.Enums;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Infrastructure.Services;
 
-namespace RateRelay.Application.Features.Onboarding.Commands.CompleteWelcomeStep;
+namespace RateRelay.Application.Features.User.Onboarding.Commands.CompleteWelcomeStep;
 
 public class WelcomeStepCommandHandler(
     CurrentUserContext currentUserContext,
@@ -16,12 +16,12 @@ public class WelcomeStepCommandHandler(
     {
         await onboardingService.UpdateStepAsync(
             currentUserContext.AccountId,
-            AccountOnboardingStep.ProfileSetup,
+            AccountOnboardingStep.Completed,
             cancellationToken);
 
         return new CompleteWelcomeStepOutputDto
         {
-            NextStep = AccountOnboardingStep.ProfileSetup
+            NextStep = AccountOnboardingStep.Completed
         };
     }
 }
