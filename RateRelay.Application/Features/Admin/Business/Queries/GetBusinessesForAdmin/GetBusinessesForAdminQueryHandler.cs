@@ -95,7 +95,7 @@ public class GetBusinessesForAdminQueryHandler(
             {
                 Id = business.Id,
                 BusinessName = business.BusinessName,
-                OwnerDisplayName = business.OwnerAccount?.GoogleUsername ?? "Unknown",
+                OwnerName = business.OwnerAccount?.GoogleUsername ?? "Unknown",
                 OwnerEmail = business.OwnerAccount?.Email ?? "Unknown",
                 CurrentReviews = currentReviews,
                 PendingReviews = stats?.PendingReviews ?? 0,

@@ -36,7 +36,7 @@ public class AdminBusinessListDto
 {
     public long Id { get; set; }
     public required string BusinessName { get; set; }
-    public required string OwnerDisplayName { get; set; }
+    public required string OwnerName { get; set; }
     public required string OwnerEmail { get; set; }
     public int CurrentReviews { get; set; }
     public int PendingReviews { get; set; }
@@ -58,7 +58,7 @@ public class AdminBusinessDetailDto
     public required string Cid { get; set; }
     public required string MapUrl { get; set; }
     public long OwnerAccountId { get; set; }
-    public required string OwnerDisplayName { get; set; }
+    public required string OwnerName { get; set; }
     public required string OwnerEmail { get; set; }
     public int OwnerPointBalance { get; set; }
     public byte Priority { get; set; }
@@ -81,7 +81,7 @@ public class BusinessBoostHistoryDto
     public byte OldPriority { get; set; }
     public byte NewPriority { get; set; }
     public required string Reason { get; set; }
-    public required string ChangedByDisplayName { get; set; }
+    public required string ChangedByName { get; set; }
     public DateTime ChangedAt { get; set; }
     public bool WasBoosted { get; set; }
 }

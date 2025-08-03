@@ -42,8 +42,7 @@ public class GetUsersForAdminQueryHandler(IUnitOfWorkFactory unitOfWorkFactory)
         {
             Id = user.Id,
             Email = user.Email,
-            DisplayName = user.GoogleUsername,
-            GoogleUsername = user.GoogleUsername,
+            Username = user.GoogleUsername,
             IsVerified = user.HasCompletedOnboarding,
             DateCreatedUtc = user.DateCreatedUtc
         }).ToList();

@@ -5,8 +5,7 @@ namespace RateRelay.Application.DTOs.User.Account.Queries;
 public class AccountQueryOutputDto
 {
     public long Id { get; set; }
-    public string GoogleUsername { get; set; } = string.Empty;
-    public string DisplayName { get; set; } = string.Empty;
+    public string Username { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public ulong Permissions { get; set; }
     public int PointBalance { get; set; }
