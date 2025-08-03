@@ -1,5 +1,5 @@
 using MediatR;
-using RateRelay.Application.DTOs.Admin.Business;
+using RateRelay.Application.DTOs.Admin.Business.Queries.GetSpecificBusinessDetails;
 
 namespace RateRelay.Application.Features.Admin.Business.Queries.GetSpecificBusinessDetails;
 

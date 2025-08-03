@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using RateRelay.API.Attributes.Auth;
-using RateRelay.Application.DTOs.Admin.Users;
+using RateRelay.Application.DTOs.Admin.Users.Queries.GetUsersForAdmin;
 using RateRelay.Application.Features.Admin.Users.Queries.GetUsersForAdmin;
 using RateRelay.Domain.Common;
 using RateRelay.Domain.Enums;

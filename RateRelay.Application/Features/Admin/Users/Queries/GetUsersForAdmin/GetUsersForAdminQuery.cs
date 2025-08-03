@@ -1,5 +1,5 @@
 using MediatR;
-using RateRelay.Application.DTOs.Admin.Users;
+using RateRelay.Application.DTOs.Admin.Users.Queries.GetUsersForAdmin;
 using RateRelay.Domain.Common;
 
 namespace RateRelay.Application.Features.Admin.Users.Queries.GetUsersForAdmin;

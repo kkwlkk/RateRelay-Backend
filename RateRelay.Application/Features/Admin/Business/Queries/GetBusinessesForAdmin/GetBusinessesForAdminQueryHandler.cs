@@ -1,6 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using RateRelay.Application.DTOs.Admin.Business;
+using RateRelay.Application.DTOs.Admin.Business.Queries.GetBusinessesForAdmin;
 using RateRelay.Domain.Common;
 using RateRelay.Domain.Constants;
 using RateRelay.Domain.Entities;

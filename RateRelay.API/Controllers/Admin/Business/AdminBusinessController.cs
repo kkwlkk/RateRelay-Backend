@@ -1,8 +1,12 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using RateRelay.API.Attributes.Auth;
-using RateRelay.Application.DTOs.Admin.Business;
+using RateRelay.Application.DTOs.Admin.Business.Commands.BoostBusiness;
 using RateRelay.Application.DTOs.Admin.Business.Commands.CreateBusiness;
+using RateRelay.Application.DTOs.Admin.Business.Commands.UnboostBusiness;
+using RateRelay.Application.DTOs.Admin.Business.Queries.GetBusinessesForAdmin;
+using RateRelay.Application.DTOs.Admin.Business.Queries.GetBusinessForAdmin;
+using RateRelay.Application.DTOs.Admin.Business.Queries.GetSpecificBusinessDetails;
 using RateRelay.Application.Features.Admin.Business.Commands.BoostSpecificBusiness;
 using RateRelay.Application.Features.Admin.Business.Commands.CreateBusiness;
 using RateRelay.Application.Features.Admin.Business.Commands.DeleteBusiness;

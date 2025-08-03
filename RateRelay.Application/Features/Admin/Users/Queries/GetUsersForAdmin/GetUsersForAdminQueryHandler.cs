@@ -1,6 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using RateRelay.Application.DTOs.Admin.Users;
+using RateRelay.Application.DTOs.Admin.Users.Queries.GetUsersForAdmin;
 using RateRelay.Domain.Common;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Enums;

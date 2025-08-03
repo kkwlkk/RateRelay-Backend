@@ -1,6 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using RateRelay.Application.DTOs.Admin.Business;
+using RateRelay.Application.DTOs.Admin.Business.Commands.CreateBusiness;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;

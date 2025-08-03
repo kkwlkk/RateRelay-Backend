@@ -1,5 +1,5 @@
 using MediatR;
-using RateRelay.Application.DTOs.Admin.Business;
+using RateRelay.Application.DTOs.Admin.Business.Commands.CreateBusiness;
 
 namespace RateRelay.Application.Features.Admin.Business.Commands.CreateBusiness;
 
