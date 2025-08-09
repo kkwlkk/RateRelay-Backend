@@ -8,6 +8,7 @@ public class AccountProfile : Profile
     public AccountProfile()
     {
         CreateMap<Domain.Entities.AccountEntity, AccountQueryOutputDto>()
+            .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.GoogleUsername))
             .ForMember(dest => dest.Role, opt => opt.Ignore());
     }
 }
