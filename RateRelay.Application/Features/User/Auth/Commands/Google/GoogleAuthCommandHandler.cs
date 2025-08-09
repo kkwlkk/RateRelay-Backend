@@ -29,11 +29,11 @@ public class GoogleAuthCommandHandler(
         }
 
         var accountExistsDeleted = accountRepository.GetBaseQueryable(true)
-            .Where(x => x.GoogleId == googleUserInfo.GoogleId || x.Email == googleUserInfo.Email && x.DateDeletedUtc != null);
+            .Where(x => (x.GoogleId == googleUserInfo.GoogleId || x.Email == googleUserInfo.Email) && x.DateDeletedUtc != null);
 
         if (accountExistsDeleted.Any())
             throw new AppException(
-                "An account with this Google ID or email already exists, but is deleted. Please contact support to restore your account.",
+                "A deleted account with this Google ID or email already exists. Please contact support to restore your account.",
                 "AccountAlreadyExisted");
 
         var account = await accountRepository.GetByGoogleIdAsync(googleUserInfo.GoogleId);
