@@ -29,7 +29,7 @@ public class GoogleAuthCommandHandler(
         }
 
         var accountExistsDeleted = accountRepository.GetBaseQueryable(true)
-            .Where(x => x.GoogleId == googleUserInfo.GoogleId || x.Email == googleUserInfo.Email);
+            .Where(x => x.GoogleId == googleUserInfo.GoogleId || x.Email == googleUserInfo.Email && x.DateDeletedUtc != null);
 
         if (accountExistsDeleted.Any())
             throw new AppException(
