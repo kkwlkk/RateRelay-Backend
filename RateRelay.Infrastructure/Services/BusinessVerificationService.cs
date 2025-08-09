@@ -123,6 +123,13 @@ public class BusinessVerificationService(
         }
 
         var verification = business.Verification;
+        
+        if (verification is null && !business.IsVerified)
+        {
+            logger.Information("No active verification found for business with account ID {AccountId}. Starting new verification.", accountId);
+            verification = await CreateNewVerificationAsync(unitOfWork, business.Id);
+            return verification;
+        }
 
         if (verification?.IsVerificationExpired != false)
         {
