@@ -1,5 +1,6 @@
 using MediatR;
-using RateRelay.Application.DTOs.Auth.Commands;
+using RateRelay.Application.DTOs.User.Auth.Commands;
+using RateRelay.Domain.Constants.ErrorCodes;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
@@ -25,35 +26,54 @@ public class GoogleAuthCommandHandler(
 
         if (googleUserInfo is null)
         {
-            throw new UnauthorizedAccessException("Invalid OAuth token.");
+            throw new AppException("Invalid OAuth token.", AuthErrorCodes.InvalidToken);
         }
 
         var accountExistsDeleted = accountRepository.GetBaseQueryable(true)
             .Where(x => (x.GoogleId == googleUserInfo.GoogleId || x.Email == googleUserInfo.Email) && x.DateDeletedUtc != null);
 
         if (accountExistsDeleted.Any())
+        {
             throw new AppException(
-                "A deleted account with this Google ID or email already exists. Please contact support to restore your account.",
-                "AccountAlreadyExisted");
+                "An account with this Google ID or email already exists, but is deleted. Please contact support to restore your account.",
+                AuthErrorCodes.AccountDeleted);
+        }
 
         var account = await accountRepository.GetByGoogleIdAsync(googleUserInfo.GoogleId);
         var isNewAccount = false;
+        var isReferralLinked = false;
 
         if (account is null)
         {
             var existingEmailAccount = await accountRepository.GetByEmailAsync(googleUserInfo.Email);
 
             if (existingEmailAccount is not null)
-                throw new InvalidOperationException("Account with this email already exists.");
+            {
+                throw new AppException(
+                    "Account with this email already exists.", 
+                    AuthErrorCodes.AccountExists);
+            }
 
             if (string.IsNullOrEmpty(googleUserInfo.Name))
-                throw new InvalidOperationException("Google account name is required.");
+            {
+                throw new AppException(
+                    "Google account name is required.", 
+                    AuthErrorCodes.MissingGoogleData);
+            }
 
             if (string.IsNullOrEmpty(googleUserInfo.GoogleId))
-                throw new InvalidOperationException("Google account ID is required.");
+            {
+                throw new AppException(
+                    "Google account ID is required.", 
+                    AuthErrorCodes.MissingGoogleData);
+            }
 
             if (string.IsNullOrEmpty(googleUserInfo.Email))
-                throw new InvalidOperationException("Google account email is required.");
+            {
+                throw new AppException(
+                    "Google account email is required.", 
+                    AuthErrorCodes.MissingGoogleData);
+            }
 
             account = new AccountEntity
             {
@@ -71,11 +91,13 @@ public class GoogleAuthCommandHandler(
                 try
                 {
                     await referralService.LinkReferralAsync(account.Id, request.ReferralCode, cancellationToken);
+                    isReferralLinked = true;
                 }
                 catch (Exception ex)
                 {
                     logger.Warning("Failed to link referral code: {Message} for AccountId: {AccountId}", ex.Message,
                         account.Id);
+                    isReferralLinked = false;
                 }
             }
         }
@@ -87,7 +109,8 @@ public class GoogleAuthCommandHandler(
         {
             AccessToken = token,
             RefreshToken = refreshToken,
-            IsNewUser = isNewAccount
+            IsNewUser = isNewAccount,
+            IsReferralLinked = isReferralLinked,
         };
 
         return response;

@@ -1,5 +1,6 @@
 using MediatR;
 using RateRelay.Application.DTOs.Auth.Commands;
+using RateRelay.Application.DTOs.User.Auth.Commands;
 
 namespace RateRelay.Application.Features.User.Auth.Commands.Google;
 
