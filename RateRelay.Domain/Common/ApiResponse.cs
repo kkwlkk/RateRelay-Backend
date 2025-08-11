@@ -1,4 +1,7 @@
 using System.Text.Json.Serialization;
+using RateRelay.Domain.Common.Json;
+
+namespace RateRelay.Domain.Common;
 
 public class ApiResponse<T>
 {
@@ -15,6 +18,7 @@ public class ApiResponse<T>
 
     [JsonPropertyName("metadata")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonConverter(typeof(CamelCaseDictionaryConverter))]
     public Dictionary<string, object> Metadata { get; init; }
 
     [JsonIgnore]

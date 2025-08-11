@@ -1,8 +1,10 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using RateRelay.API.Extensions;
 using RateRelay.API.Middleware;
+using RateRelay.Domain.Common;
 using RateRelay.Infrastructure.DependencyInjection.Extensions;
 using RateRelay.Infrastructure.Logging;
 using Serilog;
@@ -69,6 +71,8 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
             options.IncludeSubDomains = true;
             options.MaxAge = TimeSpan.FromDays(60);
         });
+
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(BannedAccountMiddleware<,>));
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -97,6 +101,7 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
         app.UseRouting();
         app.UseExceptionHandling();
         app.UseRateLimiting();
+        app.UseResponseCaching();
 
         if (env.IsProduction())
         {

@@ -74,4 +74,10 @@ public enum Permission : ulong
     
     [Display(Name = "Manage Hangfire Jobs")]
     ManageHangfireJobs = 65536,
+    
+    [Display(Name = "View All Accounts")]
+    ViewAllAccounts = 131072,
+
+    [Display(Name = "Manage Accounts")]
+    ManageAccounts = 262144
 }

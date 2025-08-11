@@ -64,4 +64,7 @@ public class AccountEntity : BaseEntity
 
     [InverseProperty("Referred")]
     public virtual ICollection<ReferralRewardEntity> ReceivedRewards { get; set; } = new List<ReferralRewardEntity>();
+
+    [InverseProperty("Account")]
+    public virtual ICollection<AccountBanEntity> Bans { get; set; } = new List<AccountBanEntity>();
 }

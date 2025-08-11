@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using RateRelay.Application.Exceptions;
 using RateRelay.Application.Helpers;
+using RateRelay.Domain.Common;
 using RateRelay.Domain.Exceptions;
 using ValidationException = RateRelay.Application.Exceptions.ValidationException;
 
@@ -88,13 +89,15 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
                     false,
                     errorMessage: notFoundException.Message,
                     errorCode: notFoundException.ErrorCode,
+                    metadata: notFoundException.Metadata,
                     statusCode: statusCode);
-            
+
             case ForbiddenException forbiddenException:
                 return ApiResponse<object>.Create(
                     false,
                     errorMessage: forbiddenException.Message,
                     errorCode: forbiddenException.ErrorCode,
+                    metadata: forbiddenException.Metadata,
                     statusCode: statusCode);
 
             default:
