@@ -6,15 +6,15 @@ namespace RateRelay.Domain.Interfaces;
 public interface IReviewService
 {
     Task<bool> AddUserReviewAsync(long businessId, long reviewerId, BusinessRating rating, string comment,
-        bool postedGoogleReview, CancellationToken cancellationToken);
+        bool postedGoogleReview, CancellationToken cancellationToken = default);
 
-    Task<bool> AcceptUserReviewAsync(long reviewId, CancellationToken cancellationToken);
-    Task<bool> RejectUserReviewAsync(long reviewId, CancellationToken cancellationToken);
+    Task<bool> AcceptUserReviewAsync(long reviewId, CancellationToken cancellationToken = default);
+    Task<bool> RejectUserReviewAsync(long reviewId, CancellationToken cancellationToken = default);
     
     Task<bool> UpdateReviewStatusAsync(long reviewId, BusinessReviewStatus status,
         CancellationToken cancellationToken);
 
-    Task<IEnumerable<BusinessReviewEntity>> GetUserReviewsAsync(long reviewerId, CancellationToken cancellationToken);
+    Task<IEnumerable<BusinessReviewEntity>> GetUserReviewsAsync(long reviewerId, CancellationToken cancellationToken = default);
 
     Task<IEnumerable<BusinessReviewEntity>> GetBusinessReviewsAsync(long businessId,
         CancellationToken cancellationToken);
