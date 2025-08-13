@@ -4,7 +4,7 @@ public sealed class ApplicationEnvironment
 {
     private const string AspNetCoreEnvironmentVariable = "ASPNETCORE_ENVIRONMENT";
     private const string DefaultEnvironment = "Production";
-    private string Name { get; }
+    public string Name { get; }
 
     public bool IsDevelopment => Name.Equals("Development", StringComparison.OrdinalIgnoreCase);
     public bool IsProduction => Name.Equals("Production", StringComparison.OrdinalIgnoreCase);

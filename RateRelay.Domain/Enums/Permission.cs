@@ -53,7 +53,6 @@ public enum Permission : ulong
 
     #endregion
     
-    
     [Display(Name = "View All Businesses")]
     ViewAllBusinesses = 1024,
 
@@ -65,19 +64,16 @@ public enum Permission : ulong
 
     [Display(Name = "Delete Business")]
     DeleteBusiness = 16384,
-    
+
     [Display(Name = "View All Users")]
     ViewAllUsers = 8192,
-    
+
+    [Display(Name = "Manage Users")]
+    ManageUsers = 131072,
+
     [Display(Name = "Can access Hangfire Dashboard")]
     AccessHangfireDashboard = 32768,
-    
+
     [Display(Name = "Manage Hangfire Jobs")]
     ManageHangfireJobs = 65536,
-    
-    [Display(Name = "View All Accounts")]
-    ViewAllAccounts = 131072,
-
-    [Display(Name = "Manage Accounts")]
-    ManageAccounts = 262144
 }
