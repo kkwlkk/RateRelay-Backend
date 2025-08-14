@@ -11,18 +11,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy to server
+      - name: Deploy backend
         run: |
-          DEPLOYMENT_DIR="/home/$(whoami)/raterelay-deployment"
+          cd /home/$USER/raterelay-deployment
           
-          cd $DEPLOYMENT_DIR
+          cp -r $GITHUB_WORKSPACE/* backend/
           
-          # Update code
-          git -C backend pull origin main
+          docker-compose build --no-cache backend
+          docker-compose up -d backend nginx
           
-          # Rebuild and restart
-          docker-compose build backend
-          docker-compose up -d backend
-          
-          # Clean up old images
           docker image prune -f
