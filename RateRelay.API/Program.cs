@@ -19,6 +19,9 @@ public static class Program
         var environment = EnvironmentService.ConfigureEnvironment();
 
         var configuration = LoadConfiguration(args, environment);
+        
+        Log.Logger.Debug("Configuration: {Configuration}", JsonConvert.SerializeObject(configuration, Formatting.Indented));
+        Log.Logger.Debug($"JWT Secret Key: {configuration["Jwt:Secret"]}");
 
         Log.Logger = LoggingConfiguration.CreateLoggerConfiguration(configuration).CreateLogger();
 
