@@ -69,7 +69,8 @@
       <None Remove="DataAccess\Migrations\2025\016_DEL_ACCOUNT_DISPLAYNAME.sql" />
       <EmbeddedResource Include="DataAccess\Migrations\2025\016_DEL_ACCOUNT_DISPLAYNAME.sql" />
       <None Remove="DataAccess\Migrations\2025\015_INIT_ACCOUNT_BANS.sql" />
-      <EmbeddedResource Include="DataAccess\Migrations\2025\015_INIT_ACCOUNT_BANS.sql" />
+      <None Remove="DataAccess\Migrations\2025\017_INIT_ACCOUNT_BANS.sql" />
+      <EmbeddedResource Include="DataAccess\Migrations\2025\017_INIT_ACCOUNT_BANS.sql" />
     </ItemGroup>
 
     <ItemGroup>
