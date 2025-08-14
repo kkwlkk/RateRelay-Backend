@@ -18,11 +18,6 @@ public static class Program
     {
         var environment = EnvironmentService.ConfigureEnvironment();
 
-        if (!environment.IsProduction)
-        {
-            LoadEnvironmentVariables();
-        }
-
         var configuration = LoadConfiguration(args, environment);
 
         Log.Logger = LoggingConfiguration.CreateLoggerConfiguration(configuration).CreateLogger();
@@ -63,12 +58,14 @@ public static class Program
         var basePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
                        ?? AppContext.BaseDirectory;
 
-        Env.LoadMulti([
-            Path.Combine(basePath, ".env"),
-            Path.Combine(basePath, ".env.local"),
-            Path.Combine(basePath, $".env.{environment.Name}"),
-            Path.Combine(basePath, ".env.production")
-        ]);
+        if (!environment.IsProduction)
+        {
+            Env.LoadMulti([
+                Path.Combine(basePath, ".env"),
+                Path.Combine(basePath, ".env.local"),
+                Path.Combine(basePath, $".env.{environment.Name}")
+            ]);
+        }
 
         var builder = new ConfigurationBuilder()
             .SetBasePath(basePath)
@@ -89,23 +86,11 @@ public static class Program
                 services.AddSingleton(environment);
                 services.ConfigureOptions(hostContext.Configuration);
                 services.ConfigureServices(hostContext.Configuration);
-            })
-            .ConfigureAppConfiguration((_, config) =>
-            {
-                config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-                config.AddJsonFile(environment.GetSettingsFileName(), optional: true, reloadOnChange: true);
-                config.AddEnvironmentVariables();
-                config.AddCommandLine(args);
             });
 
     private static async Task<bool> PerformMigrationAsync(IServiceProvider serviceProvider)
     {
         var migrationService = serviceProvider.GetRequiredService<MigrationService>();
         return await migrationService.UpdateDatabaseAsync();
-    }
-
-    private static void LoadEnvironmentVariables()
-    {
-        DotNetEnv.Env.Load();
     }
 }
