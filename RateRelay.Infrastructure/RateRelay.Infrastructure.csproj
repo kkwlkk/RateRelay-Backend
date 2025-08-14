@@ -8,79 +8,79 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AutoMapper" Version="14.0.0" />
-      <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-      <PackageReference Include="dbup-mysql" Version="6.0.4" />
-      <PackageReference Include="DistributedLock.Redis" Version="1.0.3" />
-      <PackageReference Include="Google.Apis.Auth" Version="1.69.0" />
-      <PackageReference Include="Hangfire" Version="1.8.20" />
-      <PackageReference Include="Hangfire.Redis.StackExchange" Version="1.12.0" />
-      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.15" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.3" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.3" />
-      <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0-preview.2.25163.2" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.3" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0-preview.2.25163.2" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0-preview.2.25163.2" />
-      <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.3.efcore.9.0.0" />
-      <PackageReference Include="Serilog" Version="4.2.1-dev-02352" />
-      <PackageReference Include="Serilog.Sinks.Console" Version="6.0.1-dev-00953" />
-      <PackageReference Include="Serilog.Sinks.File" Version="7.0.0-dev-02301" />
-      <PackageReference Include="StackExchange.Redis" Version="2.8.31" />
-      <PackageReference Include="System.Security.Claims" Version="4.3.0" />
+        <PackageReference Include="AutoMapper" Version="14.0.0"/>
+        <PackageReference Include="BCrypt.Net-Next" Version="4.0.3"/>
+        <PackageReference Include="dbup-mysql" Version="6.0.4"/>
+        <PackageReference Include="DistributedLock.Redis" Version="1.0.3"/>
+        <PackageReference Include="Google.Apis.Auth" Version="1.69.0"/>
+        <PackageReference Include="Hangfire" Version="1.8.20"/>
+        <PackageReference Include="Hangfire.Redis.StackExchange" Version="1.12.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.15"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.3"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.3"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0-preview.2.25163.2"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.3"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0-preview.2.25163.2"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0-preview.2.25163.2"/>
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.3.efcore.9.0.0"/>
+        <PackageReference Include="Serilog" Version="4.2.1-dev-02352"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.1-dev-00953"/>
+        <PackageReference Include="Serilog.Sinks.File" Version="7.0.0-dev-02301"/>
+        <PackageReference Include="StackExchange.Redis" Version="2.8.31"/>
+        <PackageReference Include="System.Security.Claims" Version="4.3.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\RateRelay.Domain\RateRelay.Domain.csproj" />
+        <ProjectReference Include="..\RateRelay.Domain\RateRelay.Domain.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="DataAccess\Migrations\2025\001_INITIALIZE_DATABASE.sql" />
-      <EmbeddedResource Include="DataAccess\Migrations\2025\001_INITIALIZE_DATABASE.sql" />
-      <None Remove="DataAccess\Migrations\2025\002_ADD_AUTH.sql" />
-      <EmbeddedResource Include="DataAccess\Migrations\2025\002_ADD_AUTH.sql" />
-      <None Remove="DataAccess\Migrations\2025\003_INIT_REFRESH_TOKEN_TABLE.sql" />
-      <EmbeddedResource Include="DataAccess\Migrations\2025\003_INIT_REFRESH_TOKEN_TABLE.sql" />
-      <None Remove="DataAccess\Migrations\2025\004_INIT_GOOGLE_BUSINESSES.sql" />
-      <EmbeddedResource Include="DataAccess\Migrations\2025\004_INIT_GOOGLE_BUSINESSES.sql" />
-      <None Remove="DataAccess\Migrations\2025\005_INIT_POINT_SYSTEM.sql" />
-      <EmbeddedResource Include="DataAccess\Migrations\2025\005_INIT_POINT_SYSTEM.sql" />
-      <None Remove="DataAccess\Migrations\2025\006_INIT_BUSINESS_REVIEWS.sql" />
-      <EmbeddedResource Include="DataAccess\Migrations\2025\006_INIT_BUSINESS_REVIEWS.sql" />
-      <None Remove="DataAccess\Migrations\2025\007_ADD_ACCOUNT_ONBOARDING.sql" />
-      <EmbeddedResource Include="DataAccess\Migrations\2025\007_ADD_ACCOUNT_ONBOARDING.sql" />
-      <None Remove="DataAccess\Migrations\2025\008_ADJUST_BUSINESS_REVIEWS.sql" />
-      <EmbeddedResource Include="DataAccess\Migrations\2025\008_ADJUST_BUSINESS_REVIEWS.sql" />
-      <None Remove="DataAccess\Migrations\2025\009_INIT_TICKET_SYSTEM.sql" />
-      <EmbeddedResource Include="DataAccess\Migrations\2025\009_INIT_TICKET_SYSTEM.sql" />
-      <None Remove="DataAccess\Migrations\2025\010_ADD_TICKET_SUBJECTS.sql" />
-      <EmbeddedResource Include="DataAccess\Migrations\2025\010_ADD_TICKET_SUBJECTS.sql" />
-      <None Remove="DataAccess\Migrations\2025\011_ADD_DATE_EDITED_TO_TICKET_COMMENTS.sql" />
-      <EmbeddedResource Include="DataAccess\Migrations\2025\011_ADD_DATE_EDITED_TO_TICKET_COMMENTS.sql" />
-      <None Remove="DataAccess\Migrations\2025\012_INIT_REFERRALS_SYSTEM.sql" />
-      <EmbeddedResource Include="DataAccess\Migrations\2025\012_INIT_REFERRALS_SYSTEM.sql" />
-      <None Remove="DataAccess\Migrations\2025\013_ADD_ACCOUNT_FLAGS.sql" />
-      <EmbeddedResource Include="DataAccess\Migrations\2025\013_ADD_ACCOUNT_FLAGS.sql" />
-      <None Remove="DataAccess\Migrations\2025\O14_ADD_ACCOUNT_DISPLAYNAME.sql" />
-      <EmbeddedResource Include="DataAccess\Migrations\2025\O14_ADD_ACCOUNT_DISPLAYNAME.sql" />
-      <None Remove="DataAccess\Migrations\2025\015_ADD_ADMIN_BUSINESS_MANAGEMENT.sql" />
-      <EmbeddedResource Include="DataAccess\Migrations\2025\015_ADD_ADMIN_BUSINESS_MANAGEMENT.sql" />
-      <None Remove="DataAccess\Migrations\2025\016_DEL_ACCOUNT_DISPLAYNAME.sql" />
-      <EmbeddedResource Include="DataAccess\Migrations\2025\016_DEL_ACCOUNT_DISPLAYNAME.sql" />
-      <None Remove="DataAccess\Migrations\2025\015_INIT_ACCOUNT_BANS.sql" />
-      <None Remove="DataAccess\Migrations\2025\017_INIT_ACCOUNT_BANS.sql" />
-      <EmbeddedResource Include="DataAccess\Migrations\2025\017_INIT_ACCOUNT_BANS.sql" />
+        <None Remove="DataAccess\Migrations\2025\001_INITIALIZE_DATABASE.sql"/>
+        <EmbeddedResource Include="DataAccess\Migrations\2025\001_INITIALIZE_DATABASE.sql"/>
+        <None Remove="DataAccess\Migrations\2025\002_ADD_AUTH.sql"/>
+        <EmbeddedResource Include="DataAccess\Migrations\2025\002_ADD_AUTH.sql"/>
+        <None Remove="DataAccess\Migrations\2025\003_INIT_REFRESH_TOKEN_TABLE.sql"/>
+        <EmbeddedResource Include="DataAccess\Migrations\2025\003_INIT_REFRESH_TOKEN_TABLE.sql"/>
+        <None Remove="DataAccess\Migrations\2025\004_INIT_GOOGLE_BUSINESSES.sql"/>
+        <EmbeddedResource Include="DataAccess\Migrations\2025\004_INIT_GOOGLE_BUSINESSES.sql"/>
+        <None Remove="DataAccess\Migrations\2025\005_INIT_POINT_SYSTEM.sql"/>
+        <EmbeddedResource Include="DataAccess\Migrations\2025\005_INIT_POINT_SYSTEM.sql"/>
+        <None Remove="DataAccess\Migrations\2025\006_INIT_BUSINESS_REVIEWS.sql"/>
+        <EmbeddedResource Include="DataAccess\Migrations\2025\006_INIT_BUSINESS_REVIEWS.sql"/>
+        <None Remove="DataAccess\Migrations\2025\007_ADD_ACCOUNT_ONBOARDING.sql"/>
+        <EmbeddedResource Include="DataAccess\Migrations\2025\007_ADD_ACCOUNT_ONBOARDING.sql"/>
+        <None Remove="DataAccess\Migrations\2025\008_ADJUST_BUSINESS_REVIEWS.sql"/>
+        <EmbeddedResource Include="DataAccess\Migrations\2025\008_ADJUST_BUSINESS_REVIEWS.sql"/>
+        <None Remove="DataAccess\Migrations\2025\009_INIT_TICKET_SYSTEM.sql"/>
+        <EmbeddedResource Include="DataAccess\Migrations\2025\009_INIT_TICKET_SYSTEM.sql"/>
+        <None Remove="DataAccess\Migrations\2025\010_ADD_TICKET_SUBJECTS.sql"/>
+        <EmbeddedResource Include="DataAccess\Migrations\2025\010_ADD_TICKET_SUBJECTS.sql"/>
+        <None Remove="DataAccess\Migrations\2025\011_ADD_DATE_EDITED_TO_TICKET_COMMENTS.sql"/>
+        <EmbeddedResource Include="DataAccess\Migrations\2025\011_ADD_DATE_EDITED_TO_TICKET_COMMENTS.sql"/>
+        <None Remove="DataAccess\Migrations\2025\012_INIT_REFERRALS_SYSTEM.sql"/>
+        <EmbeddedResource Include="DataAccess\Migrations\2025\012_INIT_REFERRALS_SYSTEM.sql"/>
+        <None Remove="DataAccess\Migrations\2025\013_ADD_ACCOUNT_FLAGS.sql"/>
+        <EmbeddedResource Include="DataAccess\Migrations\2025\013_ADD_ACCOUNT_FLAGS.sql"/>
+        <None Remove="DataAccess\Migrations\2025\014_ADD_ACCOUNT_DISPLAYNAME.sql"/>
+        <EmbeddedResource Include="DataAccess\Migrations\2025\014_ADD_ACCOUNT_DISPLAYNAME.sql"/>
+        <None Remove="DataAccess\Migrations\2025\015_ADD_ADMIN_BUSINESS_MANAGEMENT.sql"/>
+        <EmbeddedResource Include="DataAccess\Migrations\2025\015_ADD_ADMIN_BUSINESS_MANAGEMENT.sql"/>
+        <None Remove="DataAccess\Migrations\2025\016_DEL_ACCOUNT_DISPLAYNAME.sql"/>
+        <EmbeddedResource Include="DataAccess\Migrations\2025\016_DEL_ACCOUNT_DISPLAYNAME.sql"/>
+        <None Remove="DataAccess\Migrations\2025\015_INIT_ACCOUNT_BANS.sql"/>
+        <None Remove="DataAccess\Migrations\2025\017_INIT_ACCOUNT_BANS.sql"/>
+        <EmbeddedResource Include="DataAccess\Migrations\2025\017_INIT_ACCOUNT_BANS.sql"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+        <Content Include="..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Interfaces\" />
+        <Folder Include="Interfaces\"/>
     </ItemGroup>
 
 </Project>
