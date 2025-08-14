@@ -61,8 +61,8 @@ public static class Program
     private static IConfiguration LoadConfiguration(string[] args, ApplicationEnvironment environment)
     {
         var basePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
-                        ?? AppContext.BaseDirectory;
-        
+                       ?? AppContext.BaseDirectory;
+
         Env.LoadMulti([
             Path.Combine(basePath, ".env"),
             Path.Combine(basePath, ".env.local"),
@@ -83,91 +83,14 @@ public static class Program
     private static IHostBuilder CreateHostBuilder(string[] args, ApplicationEnvironment environment) =>
         Host.CreateDefaultBuilder(args)
             .UseSerilog()
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-                webBuilder.ConfigureKestrel(options =>
-                {
-                    var configuration = LoadConfiguration(args, environment);
-                    var httpPort = configuration.GetValue("Kestrel:HttpPort", 5000);
-                    var httpsPort = configuration.GetValue("Kestrel:HttpsPort", 5001);
-
-                    options.ListenAnyIP(httpPort,
-                        listenOptions =>
-                        {
-                            listenOptions.Protocols =
-                                Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
-                        });
-
-                    options.ListenAnyIP(httpsPort, listenOptions =>
-                    {
-                        var certificateSettings = configuration.GetSection("Certificate");
-                        var certificatePath = certificateSettings.GetValue<string>("Path");
-                        var certificatePassword = certificateSettings.GetValue<string>("Password");
-
-                        try
-                        {
-                            if (!string.IsNullOrEmpty(certificatePath) && !string.IsNullOrEmpty(certificatePassword) &&
-                                File.Exists(certificatePath))
-                            {
-                                try
-                                {
-                                    using var cert = new X509Certificate2(certificatePath, certificatePassword);
-                                    listenOptions.UseHttps(certificatePath, certificatePassword);
-                                    Log.Information("Using custom certificate for HTTPS on port {HttpsPort}",
-                                        httpsPort);
-                                }
-                                catch (CryptographicException ex)
-                                {
-                                    Log.Error(ex,
-                                        "Failed to load certificate from {CertificatePath}, falling back to development certificate",
-                                        certificatePath);
-                                    listenOptions.UseHttps();
-                                }
-                            }
-                            else
-                            {
-                                if (environment.IsDevelopment)
-                                {
-                                    try
-                                    {
-                                        listenOptions.UseHttps();
-                                        Log.Information("Using development certificate for HTTPS on port {HttpsPort}",
-                                            httpsPort);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Log.Warning(ex,
-                                            "Could not configure HTTPS with development certificate, HTTPS will be unavailable");
-                                        return;
-                                    }
-                                }
-                                else
-                                {
-                                    listenOptions.UseHttps();
-                                    Log.Information("Using development certificate for HTTPS on port {HttpsPort}",
-                                        httpsPort);
-                                }
-                            }
-
-                            listenOptions.Protocols =
-                                Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Warning(ex, "Error configuring HTTPS on port {HttpsPort}, HTTPS will be unavailable",
-                                httpsPort);
-                        }
-                    });
-                });
-            })
+            .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
             .ConfigureServices((hostContext, services) =>
             {
                 services.AddSingleton(environment);
                 services.ConfigureOptions(hostContext.Configuration);
                 services.ConfigureServices(hostContext.Configuration);
             })
-            .ConfigureAppConfiguration((hostingContext, config) =>
+            .ConfigureAppConfiguration((_, config) =>
             {
                 config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
                 config.AddJsonFile(environment.GetSettingsFileName(), optional: true, reloadOnChange: true);
