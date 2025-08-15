@@ -22,9 +22,6 @@ public static class Program
 
         Log.Logger = LoggingConfiguration.CreateLoggerConfiguration(configuration).CreateLogger();
 
-        Log.Information("Configuration: {Configuration}", JsonConvert.SerializeObject(configuration, Formatting.Indented));
-        Log.Information($"JWT Secret Key: {configuration["Jwt:Secret"]}");
-
         try
         {
             Log.Information("Starting web host in {Environment} environment", environment);
