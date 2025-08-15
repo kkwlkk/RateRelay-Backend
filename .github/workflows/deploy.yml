@@ -13,7 +13,7 @@ jobs:
 
       - name: Deploy backend
         run: |
-          cd /home/$USER/raterelay-deployment
+          cd /root/raterelay-deployment
           
           cp -r $GITHUB_WORKSPACE/* backend/
           
