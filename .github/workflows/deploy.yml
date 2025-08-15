@@ -13,11 +13,18 @@ jobs:
 
       - name: Deploy backend
         run: |
+          set -e
           cd /root/raterelay-deployment
           
-          cp -r $GITHUB_WORKSPACE/* backend/
+          rm -rf backend/*
           
-          docker-compose build --no-cache backend
+          cp -r $GITHUB_WORKSPACE/* backend/ 2>/dev/null || true
+          cp $GITHUB_WORKSPACE/.dockerignore backend/ 2>/dev/null || true
+          cp $GITHUB_WORKSPACE/.gitignore backend/ 2>/dev/null || true
+          
+          docker-compose build backend
+          
+          docker-compose stop backend
           docker-compose up -d backend nginx
           
           docker image prune -f
