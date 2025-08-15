@@ -3,19 +3,15 @@ WORKDIR /app
 EXPOSE 5000
 
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
-
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-
+COPY .sln ./
+COPY **/.csproj ./
+RUN dotnet restore
 COPY . .
 
-RUN dotnet restore RateRelay.sln
-RUN dotnet build RateRelay.API/RateRelay.API.csproj -c Release -o /app/build
-
-FROM build AS publish
-RUN dotnet publish RateRelay.API/RateRelay.API.csproj -c Release -o /app/publish /p:UseAppHost=false
-
+RUN dotnet publish "RateRelay.API/RateRelay.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "RateRelay.API.dll"]
