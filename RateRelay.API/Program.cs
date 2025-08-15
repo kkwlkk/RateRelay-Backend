@@ -19,11 +19,11 @@ public static class Program
         var environment = EnvironmentService.ConfigureEnvironment();
 
         var configuration = LoadConfiguration(args, environment);
-        
-        Log.Information("Configuration: {Configuration}", JsonConvert.SerializeObject(configuration, Formatting.Indented));
-        Log.Information($"JWT Secret Key: {configuration["Jwt:Secret"]}");
 
         Log.Logger = LoggingConfiguration.CreateLoggerConfiguration(configuration).CreateLogger();
+
+        Log.Information("Configuration: {Configuration}", JsonConvert.SerializeObject(configuration, Formatting.Indented));
+        Log.Information($"JWT Secret Key: {configuration["Jwt:Secret"]}");
 
         try
         {
