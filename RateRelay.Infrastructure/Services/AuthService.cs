@@ -44,8 +44,12 @@ public class AuthService(
             new(JwtRegisteredClaimNames.Sub, account.Id.ToString()),
             new(JwtRegisteredClaimNames.Name, account.GoogleUsername),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new("permissions", effectivePermissions.ToString())
+            new("permissions", effectivePermissions.ToString()),
+            new("account_flags", ((long)account.Flags).ToString()),
         };
+
+        Log.Debug("Generating JWT for account {AccountId} with permissions {Permissions} and flags {Flags}",
+            account.Id, effectivePermissions, account.Flags);
 
         if (account.Role != null)
         {

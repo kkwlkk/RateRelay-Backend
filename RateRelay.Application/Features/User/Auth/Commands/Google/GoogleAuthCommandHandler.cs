@@ -41,7 +41,7 @@ public class GoogleAuthCommandHandler(
 
         var account = await accountRepository.GetByGoogleIdAsync(googleUserInfo.GoogleId);
         var isNewAccount = false;
-        var isReferralLinked = false;
+        bool? isReferralLinked = null;
 
         if (account is null)
         {

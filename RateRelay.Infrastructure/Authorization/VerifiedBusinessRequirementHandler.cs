@@ -1,16 +1,16 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using RateRelay.Domain.Entities;
+using RateRelay.Domain.Enums;
 using RateRelay.Domain.Exceptions;
-using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.DataAccess;
-using RateRelay.Infrastructure.DataAccess.Context;
+using RateRelay.Infrastructure.Services;
+using Serilog;
 
 namespace RateRelay.Infrastructure.Authorization;
 
 public class VerifiedBusinessAuthorizationHandler(
-    IDbContextFactory<RateRelayDbContext> dbContextFactory,
-    ICurrentUserDataResolver currentUserDataResolver,
+    CurrentUserContext currentUserContext,
     IUnitOfWorkFactory unitOfWorkFactory)
     : AuthorizationHandler<VerifiedBusinessRequirement>
 {
@@ -18,10 +18,19 @@ public class VerifiedBusinessAuthorizationHandler(
         AuthorizationHandlerContext context,
         VerifiedBusinessRequirement requirement)
     {
-        if (!currentUserDataResolver.TryGetAccountId(out var accountId))
+        if (!currentUserContext.IsAuthenticated)
         {
+            context.Fail();
             return;
         }
+
+        if (currentUserContext.AccountFlags.HasFlag(AccountFlags.BypassVerifiedBusinessRequirement)) 
+        {
+            context.Succeed(requirement);
+            return;
+        }
+
+        var accountId = currentUserContext.AccountId;
 
         await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
         var businessRepository = unitOfWork.GetRepository<BusinessEntity>();

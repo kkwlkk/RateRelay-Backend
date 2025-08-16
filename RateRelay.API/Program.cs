@@ -1,10 +1,6 @@
 using System.Reflection;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using DotNetEnv;
-using Newtonsoft.Json;
 using RateRelay.Application.DependencyInjection;
-using RateRelay.Domain.Interfaces;
 using RateRelay.Infrastructure.Environment;
 using RateRelay.Infrastructure.Logging;
 using RateRelay.Infrastructure.Services;
@@ -58,6 +54,11 @@ public static class Program
         var basePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
                        ?? AppContext.BaseDirectory;
 
+        var builder = new ConfigurationBuilder()
+            .SetBasePath(basePath)
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile(environment.GetSettingsFileName(), optional: true, reloadOnChange: true);
+
         if (!environment.IsProduction)
         {
             Env.LoadMulti([
@@ -67,11 +68,7 @@ public static class Program
             ]);
         }
 
-        var builder = new ConfigurationBuilder()
-            .SetBasePath(basePath)
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile(environment.GetSettingsFileName(), optional: true, reloadOnChange: true)
-            .AddEnvironmentVariables()
+        builder.AddEnvironmentVariables()
             .AddCommandLine(args);
 
         return builder.Build();

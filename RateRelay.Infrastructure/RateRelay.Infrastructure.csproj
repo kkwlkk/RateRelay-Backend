@@ -71,6 +71,8 @@
         <None Remove="DataAccess\Migrations\2025\015_INIT_ACCOUNT_BANS.sql"/>
         <None Remove="DataAccess\Migrations\2025\017_INIT_ACCOUNT_BANS.sql"/>
         <EmbeddedResource Include="DataAccess\Migrations\2025\017_INIT_ACCOUNT_BANS.sql"/>
+        <None Remove="DataAccess\Migrations\2025\018_ADJUST_REFRESH_TOKENS.sql" />
+        <EmbeddedResource Include="DataAccess\Migrations\2025\018_ADJUST_REFRESH_TOKENS.sql" />
     </ItemGroup>
 
     <ItemGroup>

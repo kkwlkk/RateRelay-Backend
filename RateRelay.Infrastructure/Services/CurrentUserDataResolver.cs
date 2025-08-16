@@ -1,17 +1,20 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
+using RateRelay.Domain.Entities;
+using RateRelay.Domain.Enums;
 using RateRelay.Domain.Interfaces;
+using RateRelay.Domain.Interfaces.DataAccess;
 
 namespace RateRelay.Infrastructure.Services;
 
 public class CurrentUserDataResolver(
     IHttpContextAccessor httpContextAccessor,
+    IUnitOfWorkFactory unitOfWorkFactory,
     IMemoryCache memoryCache)
     : ICurrentUserDataResolver
 {
-    private readonly IMemoryCache _memoryCache = memoryCache;
-    private const string AccountCacheKeyPrefix = "UserAccount_";
-    private const int CacheExpirationMinutes = 5;
+    private const string UserDataCacheKeyPrefix = "UserData_";
+    private const int CacheExpirationMinutes = 1;
 
     public long GetAccountId()
     {
@@ -21,6 +24,97 @@ public class CurrentUserDataResolver(
         }
 
         throw new InvalidOperationException("Account ID not found in claims or user is not authenticated.");
+    }
+
+    public async Task<AccountFlags> GetAccountFlagsAsync()
+    {
+        if (!TryGetAccountId(out var accountId))
+        {
+            return AccountFlags.None;
+        }
+
+        var userData = await GetCachedUserDataAsync(accountId);
+        return userData.AccountFlags;
+    }
+
+    public AccountFlags GetAccountFlags()
+    {
+        return GetAccountFlagsAsync().GetAwaiter().GetResult();
+    }
+
+    public async Task<string> GetUsernameAsync()
+    {
+        if (!TryGetAccountId(out var accountId))
+        {
+            throw new InvalidOperationException("User is not authenticated.");
+        }
+
+        var userData = await GetCachedUserDataAsync(accountId);
+        return userData.Username;
+    }
+
+    public string GetUsername()
+    {
+        return GetUsernameAsync().GetAwaiter().GetResult();
+    }
+
+    public async Task<ulong> GetPermissionsAsync()
+    {
+        if (!TryGetAccountId(out var accountId))
+        {
+            return 0;
+        }
+
+        var userData = await GetCachedUserDataAsync(accountId);
+        return userData.Permissions;
+    }
+
+    public ulong GetPermissions()
+    {
+        return GetPermissionsAsync().GetAwaiter().GetResult();
+    }
+
+    private async Task<CachedUserData> GetCachedUserDataAsync(long accountId)
+    {
+        var cacheKey = $"{UserDataCacheKeyPrefix}{accountId}";
+
+        await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
+        var userRepository = unitOfWork.GetRepository<AccountEntity>();
+
+        if (memoryCache.TryGetValue(cacheKey, out CachedUserData cachedData))
+        {
+            var user = await userRepository.GetByIdAsync(accountId);
+            if (user != null && user.DateModifiedUtc > DateTime.UtcNow.AddMinutes(CacheExpirationMinutes))
+            {
+                return cachedData;
+            }
+
+            memoryCache.Remove(cacheKey);
+        }
+
+        var freshUser = await userRepository.GetByIdAsync(accountId);
+        if (freshUser == null)
+        {
+            throw new InvalidOperationException("User not found.");
+        }
+
+        var userData = new CachedUserData
+        {
+            Username = freshUser.GoogleUsername,
+            Email = freshUser.Email,
+            Permissions = freshUser.Permissions,
+            AccountFlags = freshUser.Flags,
+            CachedAt = DateTime.UtcNow
+        };
+
+        memoryCache.Set(cacheKey, userData, TimeSpan.FromMinutes(CacheExpirationMinutes));
+        return userData;
+    }
+
+    public void InvalidateUserCache(long accountId)
+    {
+        var cacheKey = $"{UserDataCacheKeyPrefix}{accountId}";
+        memoryCache.Remove(cacheKey);
     }
 
     public bool TryGetAccountId(out long accountId)
@@ -42,33 +136,15 @@ public class CurrentUserDataResolver(
         return true;
     }
 
-    public string GetUsername()
-    {
-        var username = GetClaimValue<string>("name");
-
-        if (string.IsNullOrEmpty(username))
-        {
-            throw new InvalidOperationException("Username not found in claims or user is not authenticated.");
-        }
-
-        return username;
-    }
-
     public string GetEmail()
     {
-        return GetClaimValue<string>("email", string.Empty);
-    }
-
-    public ulong GetPermissions()
-    {
-        var permissionsString = GetClaimValue<string>("permissions");
-
-        if (string.IsNullOrEmpty(permissionsString) || !ulong.TryParse(permissionsString, out var permissions))
+        if (!TryGetAccountId(out var accountId))
         {
-            return 0;
+            return string.Empty;
         }
 
-        return permissions;
+        var userData = GetCachedUserDataAsync(accountId).GetAwaiter().GetResult();
+        return userData.Email;
     }
 
     public bool IsAuthenticated()
@@ -103,5 +179,14 @@ public class CurrentUserDataResolver(
         {
             return defaultValue;
         }
+    }
+
+    private class CachedUserData
+    {
+        public string Username { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public ulong Permissions { get; set; }
+        public AccountFlags AccountFlags { get; set; }
+        public DateTime CachedAt { get; set; }
     }
 }

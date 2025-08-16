@@ -1,3 +1,4 @@
+using RateRelay.Domain.Enums;
 using RateRelay.Domain.Extensions.Account;
 using RateRelay.Domain.Interfaces;
 
@@ -12,6 +13,8 @@ public class CurrentUserContext(ICurrentUserDataResolver currentUserDataResolver
     public string Username => currentUserDataResolver.GetUsername();
     
     public string Email => currentUserDataResolver.GetEmail();
+    
+    public AccountFlags AccountFlags => currentUserDataResolver.GetAccountFlags();
 
     private ulong Permissions => currentUserDataResolver.GetPermissions();
     
