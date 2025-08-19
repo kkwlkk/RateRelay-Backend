@@ -10,7 +10,7 @@ using RateRelay.Infrastructure.Services;
 
 namespace RateRelay.Application.Features.User.Account.Commands.UpdateAccountSettings;
 
-public class UpdateAccountSettingsCommandHandler (
+public class UpdateAccountSettingsCommandHandler(
     CurrentUserContext userContext,
     IUnitOfWorkFactory unitOfWorkFactory,
     IMapper mapper
@@ -28,8 +28,8 @@ public class UpdateAccountSettingsCommandHandler (
         }
 
         accountRepository.Update(account);
-        
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
 
         var accountDto = mapper.Map<AccountQueryOutputDto>(account);
         return new OkObjectResult(accountDto);

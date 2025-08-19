@@ -10,11 +10,26 @@ public interface IRepository<T> where T : BaseEntity
     Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
     Task InsertAsync(T entity, CancellationToken cancellationToken = default);
     void Update(T entity);
+    /// <summary>
+    /// Soft delete the entity by setting DateDeletedUtc to current time.
+    /// </summary>
     void Remove(T entity);
+    /// <summary>
+    /// Hard delete the entity from the database.
+    /// This method does not respect soft delete filters and will permanently remove the entity.
+    /// </summary>
+    void HardRemove(T entity);
+    /// <summary>
+    /// Hard delete entities matching the predicate from the database.
+    /// This method does not respect soft delete filters and will permanently remove the entities.
+    /// </summary>
+    Task<int> HardRemoveAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
     Task<int> CountAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
+
     Task<IEnumerable<TResult>> QueryAsync<TResult>(
         Expression<Func<T, bool>> predicate,
         Expression<Func<T, TResult>> selector,
         CancellationToken cancellationToken = default);
+
     public IQueryable<T> GetBaseQueryable(bool includeDeleted = false);
 }

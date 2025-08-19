@@ -48,9 +48,6 @@ public class AuthService(
             new("account_flags", ((long)account.Flags).ToString()),
         };
 
-        Log.Debug("Generating JWT for account {AccountId} with permissions {Permissions} and flags {Flags}",
-            account.Id, effectivePermissions, account.Flags);
-
         if (account.Role != null)
         {
             claims.Add(new Claim(ClaimTypes.Role, account.Role.Name));
@@ -132,6 +129,9 @@ public class AuthService(
             effectivePermissions |= account.Role.Permissions;
         }
 
+        Log.Information("Effective permissions for account {AccountId}: {Permissions}", accountId, effectivePermissions);
+        Log.Debug("User permissions: {Permissions}", account.Permissions);
+        Log.Debug("Role permissions: {Permissions}", account.Role?.Permissions);
         return effectivePermissions;
     }
 

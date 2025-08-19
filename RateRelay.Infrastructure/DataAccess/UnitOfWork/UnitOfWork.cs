@@ -76,7 +76,7 @@ internal class UnitOfWork(RateRelayDbContext dbContext, ILogger logger) : IUnitO
 
         try
         {
-            await SaveChangesAsync(cancellationToken);
+            await SaveChangesAsync(cancellationToken: cancellationToken);
             await _currentTransaction.CommitAsync(cancellationToken);
         }
         catch (Exception ex)
@@ -122,16 +122,25 @@ internal class UnitOfWork(RateRelayDbContext dbContext, ILogger logger) : IUnitO
         }
     }
 
-    public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
+    public async Task SaveChangesAsync(bool allowHardDeletes = false, CancellationToken cancellationToken = default)
     {
         try
         {
+            _dbContext.SetHardDeleteMode(allowHardDeletes);
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
         catch (Exception ex)
         {
             _logger.Error(ex, "An error occurred while saving changes to the database.");
+            if (_currentTransaction is not null)
+            {
+                await RollbackTransactionAsync(cancellationToken);
+            }
             throw;
+        }
+        finally
+        {
+            _dbContext.SetHardDeleteMode(false);
         }
     }
 

@@ -22,7 +22,8 @@ public class Repository<T>(RateRelayDbContext dbContext) : IRepository<T>
         return await _dbSet.FindAsync([id], cancellationToken);
     }
 
-    public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
         return await _dbSet.AsNoTracking().Where(predicate).ToListAsync(cancellationToken);
     }
@@ -42,7 +43,26 @@ public class Repository<T>(RateRelayDbContext dbContext) : IRepository<T>
         _dbSet.Remove(entity);
     }
 
-    public async Task<int> CountAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+    public void HardRemove(T entity)
+    {
+        var entry = dbContext.Entry(entity);
+    
+        if (entry.State == EntityState.Detached)
+        {
+            _dbSet.Attach(entity);
+        }
+    
+        dbContext.Remove(entity);
+    }
+
+    public async Task<int> HardRemoveAsync(Expression<Func<T, bool>> predicate,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbSet.IgnoreQueryFilters().Where(predicate).ExecuteDeleteAsync(cancellationToken);
+    }
+
+    public async Task<int> CountAsync(Expression<Func<T, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
         return await _dbSet.CountAsync(predicate, cancellationToken);
     }

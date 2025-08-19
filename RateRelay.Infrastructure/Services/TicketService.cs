@@ -51,7 +51,7 @@ public class TicketService(
         var ticketRepository = uow.GetRepository<TicketEntity>();
 
         await ticketRepository.InsertAsync(ticket, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        await uow.SaveChangesAsync(cancellationToken: cancellationToken);
 
         return ticket;
     }
@@ -101,7 +101,7 @@ public class TicketService(
 
         await ticketStatusHistoryRepository.InsertAsync(statusHistory, cancellationToken);
 
-        await uow.SaveChangesAsync(cancellationToken);
+        await uow.SaveChangesAsync(cancellationToken: cancellationToken);
 
         return true;
     }
@@ -160,7 +160,7 @@ public class TicketService(
             await commentRepository.InsertAsync(assignmentComment, cancellationToken);
         }
 
-        await uow.SaveChangesAsync(cancellationToken);
+        await uow.SaveChangesAsync(cancellationToken: cancellationToken);
         return true;
     }
 
@@ -266,7 +266,7 @@ public class TicketService(
         ticket.LastActivityUtc = DateTime.UtcNow;
         ticketRepository.Update(ticket);
 
-        await uow.SaveChangesAsync(cancellationToken);
+        await uow.SaveChangesAsync(cancellationToken: cancellationToken);
 
         return comment;
     }
@@ -389,7 +389,7 @@ public class TicketService(
         ticketRepository.Update(ticket);
         await ticketStatusHistoryRepository.InsertAsync(statusHistory, cancellationToken);
 
-        await uow.SaveChangesAsync(cancellationToken);
+        await uow.SaveChangesAsync(cancellationToken: cancellationToken);
         return true;
     }
 

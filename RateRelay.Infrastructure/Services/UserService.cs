@@ -76,7 +76,7 @@ public class UserService(
             };
 
             await accountBanRepository.InsertAsync(newBan, cancellationToken);
-            await unitOfWork.SaveChangesAsync(cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
         }
         catch (Exception ex)
         {

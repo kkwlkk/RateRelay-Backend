@@ -56,7 +56,7 @@ public class ReferralService(
 
         accountRepository.Update(account);
         account.ReferralCode = referralCode;
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
 
         logger.Information("Generated referral code {ReferralCode} for account {AccountId}",
             referralCode, accountId);
@@ -132,7 +132,7 @@ public class ReferralService(
                 cancellationToken
             );
 
-            await unitOfWork.SaveChangesAsync(cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
             await unitOfWork.CommitTransactionAsync(cancellationToken);
 
             logger.Information("Successfully linked referral: Referrer {ReferrerId} -> Referred {ReferredId}",
@@ -210,7 +210,7 @@ public class ReferralService(
             progressRepository.Update(progress);
         }
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
     }
 
     public async Task<IEnumerable<ReferralProgressEntity>> GetReferralProgressAsync(long referrerAccountId,

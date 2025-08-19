@@ -57,7 +57,7 @@ public class PointService(
                 Description = description
             };
             await pointTransactionRepository.InsertAsync(pointTransaction, cancellationToken);
-            await unitOfWork.SaveChangesAsync(cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
             await unitOfWork.CommitTransactionAsync(cancellationToken);
 
             logger.Information("Added {Amount} points to account {AccountId} for {TransactionType} transaction.",
@@ -105,7 +105,7 @@ public class PointService(
                 Description = description
             };
             await pointTransactionRepository.InsertAsync(pointTransaction, cancellationToken);
-            await unitOfWork.SaveChangesAsync(cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
             await unitOfWork.CommitTransactionAsync(cancellationToken);
 
             logger.Information("Deducted {Amount} points from account {AccountId} for {TransactionType} transaction.",

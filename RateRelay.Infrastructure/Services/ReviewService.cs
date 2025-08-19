@@ -109,7 +109,7 @@ public class ReviewService(
         }
 
         await reviewRepository.InsertAsync(review, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
 
         return true;
     }
@@ -141,7 +141,7 @@ public class ReviewService(
         reviewRepository.Update(review);
         review.Status = BusinessReviewStatus.Accepted;
         review.DateAcceptedUtc = DateTime.UtcNow;
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
 
         await pointService.AddPointsAsync(
             review.ReviewerId,
@@ -211,7 +211,7 @@ public class ReviewService(
         reviewRepository.Update(review);
         review.Status = BusinessReviewStatus.Rejected;
         review.DateRejectedUtc = DateTime.UtcNow;
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
 
         await pointService.AddPointsAsync(
             review.Business.OwnerAccountId,
@@ -255,7 +255,7 @@ public class ReviewService(
 
         reviewRepository.Update(review);
         review.UpdateStatus(status);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
 
         return true;
     }

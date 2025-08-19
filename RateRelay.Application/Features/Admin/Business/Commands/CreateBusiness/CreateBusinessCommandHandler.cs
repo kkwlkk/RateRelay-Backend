@@ -49,7 +49,7 @@ public class CreateBusinessCommandHandler(IUnitOfWorkFactory unitOfWorkFactory, 
         };
         
         await businessRepository.InsertAsync(newBusiness, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
         
         return new CreateBusinessOutputDto
         {

@@ -8,6 +8,13 @@ namespace RateRelay.Infrastructure.DataAccess.Context;
 
 public class RateRelayDbContext(DbContextOptions<RateRelayDbContext> options) : DbContext(options)
 {
+    private bool _allowHardDeletes = false;
+
+    public void SetHardDeleteMode(bool allowHardDeletes)
+    {
+        _allowHardDeletes = allowHardDeletes;
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -50,7 +57,7 @@ public class RateRelayDbContext(DbContextOptions<RateRelayDbContext> options) : 
                 case EntityState.Modified:
                     entry.Entity.DateModifiedUtc = DateTime.UtcNow;
                     break;
-                case EntityState.Deleted:
+                case EntityState.Deleted when !_allowHardDeletes:
                     entry.Entity.DateDeletedUtc = DateTime.UtcNow;
                     entry.State = EntityState.Modified;
                     break;

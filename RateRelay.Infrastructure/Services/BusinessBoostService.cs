@@ -66,7 +66,7 @@ public class BusinessBoostService(
 
         await historyRepository.InsertAsync(historyEntry, cancellationToken);
         await boostRepository.InsertAsync(boost, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
 
         return new BusinessBoostResultDto
         {
@@ -142,7 +142,7 @@ public class BusinessBoostService(
         boostRepository.Update(activeBoost);
 
         await historyRepository.InsertAsync(historyEntry, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
 
         return new BusinessBoostResultDto
         {

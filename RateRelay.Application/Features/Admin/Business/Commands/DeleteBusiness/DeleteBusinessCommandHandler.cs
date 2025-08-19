@@ -20,7 +20,7 @@ public class DeleteBusinessCommandHandler(IUnitOfWorkFactory unitOfWorkFactory)
         }
 
         businessRepository.Remove(business);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
 
         return Unit.Value;
     }

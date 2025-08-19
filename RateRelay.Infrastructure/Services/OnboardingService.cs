@@ -69,7 +69,7 @@ public class OnboardingService(
         logger.Information("Updated onboarding step for account {AccountId} from {PreviousStep} to {NewStep}",
             accountId, account.OnboardingStep, step);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
         return true;
     }
 

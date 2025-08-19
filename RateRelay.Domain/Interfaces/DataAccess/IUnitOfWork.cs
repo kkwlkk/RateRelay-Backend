@@ -5,7 +5,7 @@ namespace RateRelay.Domain.Interfaces.DataAccess;
 
 public interface IUnitOfWork : IAsyncDisposable
 {
-    Task SaveChangesAsync(CancellationToken cancellationToken = default);
+    Task SaveChangesAsync(bool allowHardDeletes = false, CancellationToken cancellationToken = default);
     IRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity;
     TRepository GetExtendedRepository<TRepository>() where TRepository : class;
 

@@ -83,7 +83,7 @@ public class GoogleAuthCommandHandler(
             };
 
             await accountRepository.InsertAsync(account, cancellationToken);
-            await unitOfWork.SaveChangesAsync(cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
             isNewAccount = true;
 
             if (!string.IsNullOrWhiteSpace(request.ReferralCode))
