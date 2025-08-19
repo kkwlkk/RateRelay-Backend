@@ -129,9 +129,6 @@ public class AuthService(
             effectivePermissions |= account.Role.Permissions;
         }
 
-        Log.Information("Effective permissions for account {AccountId}: {Permissions}", accountId, effectivePermissions);
-        Log.Debug("User permissions: {Permissions}", account.Permissions);
-        Log.Debug("Role permissions: {Permissions}", account.Role?.Permissions);
         return effectivePermissions;
     }
 
