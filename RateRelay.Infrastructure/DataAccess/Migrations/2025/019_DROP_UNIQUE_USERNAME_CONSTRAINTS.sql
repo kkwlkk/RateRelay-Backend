@@ -1,0 +1,2 @@
+ALTER TABLE accounts DROP CONSTRAINT Username;
+ALTER TABLE accounts DROP CONSTRAINT IX_Accounts_Username;

@@ -73,6 +73,8 @@
         <EmbeddedResource Include="DataAccess\Migrations\2025\017_INIT_ACCOUNT_BANS.sql"/>
         <None Remove="DataAccess\Migrations\2025\018_ADJUST_REFRESH_TOKENS.sql" />
         <EmbeddedResource Include="DataAccess\Migrations\2025\018_ADJUST_REFRESH_TOKENS.sql" />
+        <None Remove="DataAccess\Migrations\2025\019_DROP_UNIQUE_USERNAME_CONSTRAINTS.sql" />
+        <EmbeddedResource Include="DataAccess\Migrations\2025\019_DROP_UNIQUE_USERNAME_CONSTRAINTS.sql" />
     </ItemGroup>
 
 </Project>
