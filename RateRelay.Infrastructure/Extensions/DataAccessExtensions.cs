@@ -6,9 +6,11 @@ using RateRelay.Domain.Interfaces.DataAccess;
 using RateRelay.Domain.Interfaces.DataAccess.Redis;
 using RateRelay.Infrastructure.Configuration;
 using RateRelay.Infrastructure.DataAccess.Context;
+using RateRelay.Infrastructure.DataAccess.Converters;
 using RateRelay.Infrastructure.DataAccess.Redis;
 using RateRelay.Infrastructure.DataAccess.Repositories;
 using RateRelay.Infrastructure.DataAccess.UnitOfWork;
+using RateRelay.Infrastructure.Interfaces;
 using RateRelay.Infrastructure.Services;
 using StackExchange.Redis;
 
@@ -27,6 +29,10 @@ public static class DataAccessExtensions
         services.AddSingleton<MigrationService>();
         services.AddSingleton<IUnitOfWorkFactory, UnitOfWorkFactory>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped<IEncryptionService, EncryptionService>();
+
+        var encryptionService = services.BuildServiceProvider().GetRequiredService<IEncryptionService>();
+        EncryptedStringConverter.Configure(encryptionService);
     }
 
     public static void AddRedis(this IServiceCollection services, IConfiguration configuration)

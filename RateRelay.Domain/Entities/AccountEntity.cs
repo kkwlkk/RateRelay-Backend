@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using RateRelay.Domain.Attributes;
 using RateRelay.Domain.Enums;
 
 namespace RateRelay.Domain.Entities;
@@ -16,6 +17,7 @@ public class AccountEntity : BaseEntity
     [Description("Immutable Google username, used for system purposes and can be changed only by system or administrators.")]
     public required string GoogleUsername { get; set; }
 
+    [Encrypted]
     [MaxLength(255)]
     public required string Email { get; set; }
 

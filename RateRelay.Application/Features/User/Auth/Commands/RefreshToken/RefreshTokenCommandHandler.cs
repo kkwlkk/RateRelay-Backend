@@ -1,10 +1,12 @@
 using MediatR;
 using RateRelay.Application.DTOs.Auth.Commands;
+using RateRelay.Application.Features.Auth.Commands.RefreshToken;
+using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.DataAccess;
 using RateRelay.Infrastructure.DataAccess.Repositories;
 
-namespace RateRelay.Application.Features.Auth.Commands.RefreshToken;
+namespace RateRelay.Application.Features.User.Auth.Commands.RefreshToken;
 
 public class RefreshTokenCommandHandler(
     IAuthService authService,
@@ -23,7 +25,7 @@ public class RefreshTokenCommandHandler(
         
         if (account is null)
         {
-            throw new UnauthorizedAccessException("Invalid refresh token.");
+            throw new ForbiddenException("Invalid refresh token.", "INVALID_REFRESH_TOKEN");
         }
 
         await authService.InvalidateRefreshTokenAsync(request.RefreshToken);

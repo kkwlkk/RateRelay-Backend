@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Interfaces.DataAccess;
 using RateRelay.Infrastructure.DataAccess.Context;
+using RateRelay.Infrastructure.Utilities;
 
 namespace RateRelay.Infrastructure.DataAccess.Repositories;
 
@@ -28,10 +29,11 @@ public class AccountRepository(RateRelayDbContext dbContext) : Repository<Accoun
     /// </summary>
     public async Task<AccountEntity?> GetByRefreshTokenAsync(string refreshToken)
     {
+        var hashedToken = HashingUtility.HashToken(refreshToken);
+
         return await _dbContext.Set<RefreshTokenEntity>()
             .AsNoTracking()
-            .Where(rt => rt.Token == refreshToken && rt.ExpirationDate > DateTime.UtcNow)
-            .Include(rt => rt.Account)
+            .Where(rt => rt.Token == hashedToken && rt.ExpirationDate > DateTime.UtcNow)
             .Select(rt => rt.Account)
             .FirstOrDefaultAsync();
     }

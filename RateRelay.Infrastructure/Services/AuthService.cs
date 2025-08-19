@@ -1,18 +1,15 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using BCrypt.Net;
 using Google.Apis.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using RateRelay.Domain.Common;
 using RateRelay.Domain.Entities;
-using RateRelay.Domain.Enums;
-using RateRelay.Domain.Extensions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Infrastructure.Configuration;
 using RateRelay.Infrastructure.DataAccess.Context;
+using RateRelay.Infrastructure.Utilities;
 using Serilog;
 
 namespace RateRelay.Infrastructure.Services;
@@ -68,12 +65,12 @@ public class AuthService(
 
     public async Task<string> GenerateRefreshTokenAsync(AccountEntity account)
     {
-        var refreshToken = GenerateRefreshToken();
+        var refreshToken = HashingUtility.GenerateSecureRandomString(64);
 
         var refreshTokenEntity = new RefreshTokenEntity
         {
             AccountId = account.Id,
-            Token = refreshToken,
+            Token = HashingUtility.HashToken(refreshToken),
             ExpirationDate = DateTime.UtcNow.Add(_jwtAuthOptions.RefreshExpiration),
         };
 
@@ -85,32 +82,11 @@ public class AuthService(
 
     public async Task InvalidateRefreshTokenAsync(string refreshToken)
     {
-        var tokenEntity = await dbContext.Set<RefreshTokenEntity>()
-            .FirstOrDefaultAsync(t => t.Token == refreshToken);
+        var hashedToken = HashingUtility.HashToken(refreshToken);
 
-        if (tokenEntity is not null)
-        {
-            dbContext.Set<RefreshTokenEntity>().Remove(tokenEntity);
-            await dbContext.SaveChangesAsync();
-        }
-    }
-
-    public bool VerifyPassword(string passwordHash, string password)
-    {
-        try
-        {
-            return BCrypt.Net.BCrypt.Verify(password, passwordHash);
-        }
-        catch (SaltParseException ex)
-        {
-            Log.Error(ex, "Password hash verification failed due to invalid hash format.");
-            return false;
-        }
-    }
-
-    public string HashPassword(string password)
-    {
-        return BCrypt.Net.BCrypt.HashPassword(password, BCrypt.Net.BCrypt.GenerateSalt(12));
+        await dbContext.Set<RefreshTokenEntity>()
+            .Where(t => t.Token == hashedToken && t.ExpirationDate > DateTime.UtcNow)
+            .ExecuteDeleteAsync();
     }
 
     public async Task<ulong> GetEffectivePermissionsAsync(long accountId)
@@ -130,14 +106,6 @@ public class AuthService(
         }
 
         return effectivePermissions;
-    }
-
-    private string GenerateRefreshToken()
-    {
-        var randomBytes = new byte[32];
-        using var rng = RandomNumberGenerator.Create();
-        rng.GetBytes(randomBytes);
-        return Convert.ToBase64String(randomBytes);
     }
 
     public async Task<GoogleUserInfo> ValidateGoogleTokenAsync(string token)

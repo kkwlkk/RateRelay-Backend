@@ -1,8 +1,9 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using RateRelay.Domain.Attributes;
 using RateRelay.Domain.Entities;
 using RateRelay.Infrastructure.DataAccess.Attributes;
-using Serilog;
+using RateRelay.Infrastructure.DataAccess.Converters;
 
 namespace RateRelay.Infrastructure.DataAccess.Context;
 
@@ -32,6 +33,31 @@ public class RateRelayDbContext(DbContextOptions<RateRelayDbContext> options) : 
             }
         }
 
+        ApplyEncryptionToProperties(modelBuilder);
+        ApplySoftDeleteFilters(modelBuilder);
+    }
+
+    private static void ApplyEncryptionToProperties(ModelBuilder modelBuilder)
+    {
+        var entityTypes = modelBuilder.Model.GetEntityTypes();
+        
+        foreach (var entityType in entityTypes)
+        {
+            var encryptedProperties = entityType.ClrType.GetProperties()
+                .Where(p => p.PropertyType == typeof(string) && 
+                           p.GetCustomAttribute<EncryptedAttribute>() != null);
+
+            foreach (var property in encryptedProperties)
+            {
+                modelBuilder.Entity(entityType.ClrType)
+                    .Property(property.Name)
+                    .HasConversion<EncryptedStringConverter>();
+            }
+        }
+    }
+
+    private void ApplySoftDeleteFilters(ModelBuilder modelBuilder)
+    {
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
             if (!typeof(BaseEntity).IsAssignableFrom(entityType.ClrType)) continue;
