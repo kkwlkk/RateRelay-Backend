@@ -14,7 +14,6 @@ namespace RateRelay.Domain.Entities;
 public class AccountEntity : BaseEntity
 {
     [MaxLength(64)]
-    [Description("Immutable Google username, used for system purposes and can be changed only by system or administrators.")]
     public required string GoogleUsername { get; set; }
 
     [Encrypted]
@@ -46,6 +45,8 @@ public class AccountEntity : BaseEntity
     public DateTime? OnboardingLastUpdatedUtc { get; set; }
 
     public AccountFlags Flags { get; set; }
+
+    public EmailPreferencesFlags EmailPreferences { get; set; }
 
     [NotMapped]
     public bool HasCompletedOnboarding => OnboardingStep == AccountOnboardingStep.Completed;

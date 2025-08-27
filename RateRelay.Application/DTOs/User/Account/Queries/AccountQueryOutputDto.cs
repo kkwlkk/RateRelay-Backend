@@ -13,4 +13,5 @@ public class AccountQueryOutputDto
     public bool HasCompletedOnboarding { get; set; }
     public AccountOnboardingStep OnboardingStep { get; set; }
     public AccountFlags Flags { get; set; }
+    public EmailPreferencesFlags EmailPreferences { get; set; }
 }

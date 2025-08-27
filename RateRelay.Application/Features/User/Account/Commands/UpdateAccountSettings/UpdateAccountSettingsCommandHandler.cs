@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using RateRelay.Application.DTOs.User.Account.Queries;
 using RateRelay.Domain.Entities;
+using RateRelay.Domain.Enums;
 using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.DataAccess;
@@ -28,6 +29,11 @@ public class UpdateAccountSettingsCommandHandler(
         }
 
         accountRepository.Update(account);
+
+        if (request.EmailPreferences.HasValue) 
+        {
+            account.EmailPreferences = request.EmailPreferences.Value | EmailPreferencesFlags.Essential;
+        }
 
         await unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
 

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gotowy na następny krok? - {{ Company.Name }}</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px #828282;
+        }
+
+        .header {
+            padding: 35px 0;
+        }
+
+        .content {
+            padding: 50px 36px 0 36px;
+            background-color: #ffffff;
+        }
+
+        .logo {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .intro-title {
+            font-family: Arial, serif;
+            font-weight: bold;
+            color: #111523;
+            font-size: 18pt;
+            margin-bottom: 10px;
+            line-height: 1.15;
+        }
+
+        .user-name {
+            font-family: Arial, serif;
+            color: #18CB96;
+            font-size: 15pt;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        .body-text {
+            font-family: Arial, serif;
+            color: #111523;
+            font-size: 11.5pt;
+            line-height: 1.4;
+            margin-bottom: 20px;
+        }
+
+        .highlight-text {
+            color: #18CB96;
+            font-weight: bold;
+        }
+
+        .benefits-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            border-left: 4px solid #18CB96;
+        }
+
+        .benefits-title {
+            font-family: Arial, serif;
+            font-weight: bold;
+            color: #111523;
+            font-size: 13pt;
+            margin-bottom: 15px;
+        }
+
+        .benefit-item {
+            font-family: Arial, serif;
+            color: #111523;
+            font-size: 10.5pt;
+            margin-bottom: 8px;
+        }
+
+        .concerns-section {
+            background-color: #fff8e1;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            border-left: 4px solid #ffa726;
+        }
+
+        .concerns-title {
+            font-family: Arial, serif;
+            font-weight: bold;
+            color: #111523;
+            font-size: 13pt;
+            margin-bottom: 15px;
+        }
+
+        .concern-item {
+            font-family: Arial, serif;
+            color: #111523;
+            font-size: 10.5pt;
+            margin-bottom: 8px;
+        }
+
+        .icon {
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .check-icon {
+            color: #18CB96;
+        }
+
+        .lightbulb-icon {
+            color: #ffa726;
+        }
+
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: #18CB96;
+            color: #101011 !important;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            margin: 0 10px 10px 0;
+        }
+
+        .secondary-button {
+            display: inline-block;
+            background-color: transparent;
+            color: #18CB96;
+            padding: 15px 30px;
+            text-decoration: none;
+            border: 2px solid #18CB96;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            margin: 0 10px 10px 0;
+        }
+
+        .support-section {
+            background-color: #e8f5e8;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .support-text {
+            font-family: Arial, serif;
+            color: #111523;
+            font-size: 10.5pt;
+            margin-bottom: 10px;
+        }
+
+        .support-link {
+            color: #18CB96;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .closing {
+            font-family: Arial, serif;
+            color: #111523;
+            font-size: 11.5pt;
+            margin: 30px 0 20px 0;
+        }
+
+        .footer {
+            background-color: #111523;
+            color: #FEFEFF;
+            padding: 20px 36px;
+        }
+
+        .company-info {
+            font-family: Arial, serif;
+            font-weight: bold;
+            color: #FEFEFF;
+            font-size: 7.5pt;
+            margin-bottom: 15px;
+            white-space: pre-line;
+        }
+
+        .social-links {
+            margin: 15px 0;
+        }
+
+        .social-link {
+            color: #FEFEFF;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 8pt;
+        }
+
+        .legal-text {
+            font-family: Arial, serif;
+            color: #FEFEFF;
+            font-size: 7.5pt;
+            line-height: 1.3;
+            margin-bottom: 15px;
+        }
+
+        .unsubscribe {
+            font-family: Arial, serif;
+            color: #FEFEFF;
+            font-size: 7pt;
+            text-align: center;
+        }
+
+        .unsubscribe a {
+            color: #FEFEFF;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <div class="content">
+        <div class="logo">
+            <img src="{{ Company.LogoUrl }}" alt="{{ Company.Name }} Logo" width="{{ Company.LogoWidth | default: 120 }}" height="{{ Company.LogoHeight | default: 40 }}">
+        </div>
+
+        <div class="intro-title">
+            Gotowy na następny krok?
+        </div>
+
+        <div class="user-name">
+            {{ User.Name }}!
+        </div>
+
+        <div class="body-text">
+            Cieszymy się, że dołączyłeś do {{ Company.Name }} {{ DaysFromRegistration }} {% if DaysFromRegistration == 1 %}dzień{% elsif DaysFromRegistration < 5 %}dni{% else %}dni{% endif %} temu! Zauważyliśmy jednak, że jeszcze nie rozpocząłeś procesu <span class="highlight-text">weryfikacji biznesu</span>.
+        </div>
+
+        <div class="body-text">
+            Ten krok odblokuje pełny potencjał {{ Company.Name }} i pozwoli Ci wykorzystać wszystkie nasze zaawansowane funkcje do zarządzania opiniami online.
+        </div>
+
+        <div class="benefits-section">
+            <div class="benefits-title">Co zyskujesz po weryfikacji:</div>
+            {% for benefit in Benefits %}
+                <div class="benefit-item">
+                    <span class="icon check-icon">✓</span>{{ benefit }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="concerns-section">
+            <div class="concerns-title">Być może zastanawiasz się:</div>
+            {% for reason in Reasons %}
+                <div class="concern-item">
+                    <span class="icon lightbulb-icon">💡</span>{{ reason }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="body-text">
+            <strong>Dobra wiadomość!</strong> Proces weryfikacji jest prostszy niż myślisz i zajmuje tylko kilka minut. Nasz zespół przygotował go tak, aby był maksymalnie przyjazny i intuicyjny.
+        </div>
+
+        <div class="button-container">
+            <a href="{{ VerificationUrl }}" class="cta-button">{{ Cta.PrimaryText }}</a>
+            {% if Cta.SecondaryText and Cta.SecondaryText != "" %}
+                <a href="{{ SecondaryUrl }}" class="secondary-button">{{ Cta.SecondaryText }}</a>
+            {% endif %}
+        </div>
+
+        <div class="support-section">
+            <div class="support-text">
+                <strong>Potrzebujesz pomocy?</strong> Nasz zespół wsparcia jest dostępny, aby przeprowadzić Cię przez każdy krok procesu weryfikacji.
+            </div>
+            <a href="{{ Links.Support }}" class="support-link">Skontaktuj się z nami</a>
+        </div>
+
+        <div class="closing">
+            Nie możemy się doczekać, aby zobaczyć, jak {{ Company.Name }} pomoże Ci rozwijać Twój biznes!<br><br>
+            Do zobaczenia w panelu,<br>
+            Zespół {{ Company.Name }}
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="company-info">
+            {{ Company.Name | upcase }}<br>
+            {{ Company.Address }}<br>
+            {{ Company.Website }}
+        </div>
+
+        {% if Company.SocialLinks and Company.SocialLinks.size > 0 %}
+            <div class="social-links">
+                {% for social in Company.SocialLinks %}
+                    {% if social.Url and social.Url != "" %}
+                        <a href="{{ social.Url }}" class="social-link">{{ social.Platform }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="legal-text">
+            Otrzymujesz tę wiadomość, ponieważ zarejestrowałeś się w {{ Company.Name }}, ale jeszcze nie rozpocząłeś procesu weryfikacji biznesu. Chcemy pomóc Ci w pełni wykorzystać potencjał naszej platformy. W przypadku pytań prosimy o kontakt pod adresem {{ Company.Emails.PrivacyEmail }}.
+        </div>
+
+        <div class="unsubscribe">
+            <a href="{{ Links.Unsubscribe }}?email={{ User.Email | url_encode }}">Wypisz się z newslettera</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

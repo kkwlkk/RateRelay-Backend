@@ -3,12 +3,14 @@ using RateRelay.Application.BackgroundJobs.Common;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Interfaces.DataAccess;
 using RateRelay.Infrastructure.Hangfire;
+using RateRelay.Infrastructure.Interfaces;
 
 namespace RateRelay.Application.BackgroundJobs;
 
 [HangfireRecurringJob(nameof(ExpiredBusinessVerificationsCleanupJob), "5 */6 * * *")]
 public class ExpiredBusinessVerificationsCleanupJob(
-    IUnitOfWorkFactory unitOfWorkFactory
+    IUnitOfWorkFactory unitOfWorkFactory,
+    IEmailService emailService
 ) : BaseHangfireJob
 {
     public override async Task ExecuteAsync()
@@ -82,6 +84,20 @@ public class ExpiredBusinessVerificationsCleanupJob(
             }
 
             businessRepository.Remove(business);
+
+            var accountRepository = unitOfWork.GetRepository<AccountEntity>();
+            var ownerAccount = await accountRepository.GetBaseQueryable()
+                .FirstOrDefaultAsync(a => a.Id == business.OwnerAccountId);
+
+            if (ownerAccount is not null)
+            {
+                _ = emailService.SendIncompleteVerificationEmailAsync(
+                    ownerAccount,
+                    business.BusinessName,
+                    DateTime.Now
+                );
+            }
+
             removedBusinessesCount++;
         }
 

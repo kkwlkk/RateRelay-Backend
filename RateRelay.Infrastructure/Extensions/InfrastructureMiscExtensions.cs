@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Infrastructure.DependencyInjection.Extensions;
+using RateRelay.Infrastructure.Interfaces;
 using RateRelay.Infrastructure.Services;
 
 namespace RateRelay.Infrastructure.Extensions;
@@ -19,6 +20,7 @@ public static class InfrastructureMiscExtensions
         services.AddScoped<ITicketService, TicketService>();
         services.AddScoped<IReferralService, ReferralService>();
         services.AddScoped<IBusinessBoostService, BusinessBoostService>();
+        services.AddEmailServices();
         services.AddHangfire(configuration);
     }
 }

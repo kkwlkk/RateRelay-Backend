@@ -12,9 +12,11 @@
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3"/>
         <PackageReference Include="dbup-mysql" Version="6.0.4"/>
         <PackageReference Include="DistributedLock.Redis" Version="1.0.3"/>
+        <PackageReference Include="Fluid.Core" Version="2.25.0" />
         <PackageReference Include="Google.Apis.Auth" Version="1.69.0"/>
         <PackageReference Include="Hangfire" Version="1.8.20"/>
         <PackageReference Include="Hangfire.Redis.StackExchange" Version="1.12.0"/>
+        <PackageReference Include="MailKit" Version="4.13.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.15"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.3"/>
@@ -28,11 +30,19 @@
         <PackageReference Include="Serilog.Sinks.Console" Version="6.0.1-dev-00953"/>
         <PackageReference Include="Serilog.Sinks.File" Version="7.0.0-dev-02301"/>
         <PackageReference Include="StackExchange.Redis" Version="2.8.31"/>
+        <PackageReference Include="System.Reflection" Version="4.3.0" />
         <PackageReference Include="System.Security.Claims" Version="4.3.0"/>
+        <PackageReference Include="WebMarkupMin.Core" Version="2.19.0" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\RateRelay.Domain\RateRelay.Domain.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="EmailTemplates\**\*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>
@@ -75,6 +85,8 @@
         <EmbeddedResource Include="DataAccess\Migrations\2025\018_ADJUST_REFRESH_TOKENS.sql" />
         <None Remove="DataAccess\Migrations\2025\019_DROP_UNIQUE_USERNAME_CONSTRAINTS.sql" />
         <EmbeddedResource Include="DataAccess\Migrations\2025\019_DROP_UNIQUE_USERNAME_CONSTRAINTS.sql" />
+        <None Remove="DataAccess\Migrations\2025\020_ADD_EMAIL_PREFERENCES.sql" />
+        <EmbeddedResource Include="DataAccess\Migrations\2025\020_ADD_EMAIL_PREFERENCES.sql" />
     </ItemGroup>
 
 </Project>

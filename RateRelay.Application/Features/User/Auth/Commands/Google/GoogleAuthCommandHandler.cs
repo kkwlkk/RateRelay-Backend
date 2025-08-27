@@ -2,10 +2,12 @@ using MediatR;
 using RateRelay.Application.DTOs.User.Auth.Commands;
 using RateRelay.Domain.Constants.ErrorCodes;
 using RateRelay.Domain.Entities;
+using RateRelay.Domain.Enums;
 using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Domain.Interfaces.DataAccess;
 using RateRelay.Infrastructure.DataAccess.Repositories;
+using RateRelay.Infrastructure.Interfaces;
 using Serilog;
 
 namespace RateRelay.Application.Features.User.Auth.Commands.Google;
@@ -14,6 +16,7 @@ public class GoogleAuthCommandHandler(
     IAuthService authService,
     IUnitOfWorkFactory unitOfWorkFactory,
     IReferralService referralService,
+    IEmailService emailService,
     ILogger logger
 ) : IRequestHandler<GoogleAuthCommand, AuthOutputDto>
 {
@@ -30,7 +33,8 @@ public class GoogleAuthCommandHandler(
         }
 
         var accountExistsDeleted = accountRepository.GetBaseQueryable(true)
-            .Where(x => (x.GoogleId == googleUserInfo.GoogleId || x.Email == googleUserInfo.Email) && x.DateDeletedUtc != null);
+            .Where(x => (x.GoogleId == googleUserInfo.GoogleId || x.Email == googleUserInfo.Email) &&
+                        x.DateDeletedUtc != null);
 
         if (accountExistsDeleted.Any())
         {
@@ -50,28 +54,28 @@ public class GoogleAuthCommandHandler(
             if (existingEmailAccount is not null)
             {
                 throw new AppException(
-                    "Account with this email already exists.", 
+                    "Account with this email already exists.",
                     AuthErrorCodes.AccountExists);
             }
 
             if (string.IsNullOrEmpty(googleUserInfo.Name))
             {
                 throw new AppException(
-                    "Google account name is required.", 
+                    "Google account name is required.",
                     AuthErrorCodes.MissingGoogleData);
             }
 
             if (string.IsNullOrEmpty(googleUserInfo.GoogleId))
             {
                 throw new AppException(
-                    "Google account ID is required.", 
+                    "Google account ID is required.",
                     AuthErrorCodes.MissingGoogleData);
             }
 
             if (string.IsNullOrEmpty(googleUserInfo.Email))
             {
                 throw new AppException(
-                    "Google account email is required.", 
+                    "Google account email is required.",
                     AuthErrorCodes.MissingGoogleData);
             }
 
@@ -79,12 +83,15 @@ public class GoogleAuthCommandHandler(
             {
                 GoogleId = googleUserInfo.GoogleId,
                 Email = googleUserInfo.Email,
-                GoogleUsername = googleUserInfo.Name
+                GoogleUsername = googleUserInfo.Name,
+                EmailPreferences = EmailPreferencesFlags.All
             };
 
             await accountRepository.InsertAsync(account, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
             isNewAccount = true;
+
+            _ = emailService.SendWelcomeEmailAsync(account);
 
             if (!string.IsNullOrWhiteSpace(request.ReferralCode))
             {
@@ -104,6 +111,8 @@ public class GoogleAuthCommandHandler(
 
         var token = await authService.GenerateJwtTokenAsync(account);
         var refreshToken = await authService.GenerateRefreshTokenAsync(account);
+
+        await emailService.SendIncompleteVerificationEmailAsync(account, "Kebab Habiba", DateTime.UtcNow);
 
         var response = new AuthOutputDto
         {
