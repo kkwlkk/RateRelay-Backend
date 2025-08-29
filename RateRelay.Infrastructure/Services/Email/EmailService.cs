@@ -1,16 +1,16 @@
-using Microsoft.Extensions.Options;
-using RateRelay.Infrastructure.Configuration;
-using RateRelay.Infrastructure.Interfaces;
-using MimeKit;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.Extensions.Options;
+using MimeKit;
 using RateRelay.Domain.Entities;
 using RateRelay.Domain.Enums;
 using RateRelay.Domain.Interfaces.DataAccess;
+using RateRelay.Infrastructure.Configuration;
 using RateRelay.Infrastructure.Constants;
 using RateRelay.Infrastructure.DataAccess.Repositories;
+using RateRelay.Infrastructure.Interfaces;
 
-namespace RateRelay.Infrastructure.Services;
+namespace RateRelay.Infrastructure.Services.Email;
 
 public class EmailService(
     IOptions<EmailOptions> options,

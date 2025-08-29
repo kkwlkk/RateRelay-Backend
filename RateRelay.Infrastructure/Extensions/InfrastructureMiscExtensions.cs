@@ -20,7 +20,7 @@ public static class InfrastructureMiscExtensions
         services.AddScoped<ITicketService, TicketService>();
         services.AddScoped<IReferralService, ReferralService>();
         services.AddScoped<IBusinessBoostService, BusinessBoostService>();
-        services.AddEmailServices();
+        services.AddEmailServices(configuration);
         services.AddHangfire(configuration);
     }
 }
