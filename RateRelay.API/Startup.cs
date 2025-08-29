@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using RateRelay.API.Extensions;
+using RateRelay.API.Filters;
 using RateRelay.API.Middleware;
 using RateRelay.Domain.Common;
 using RateRelay.Infrastructure.DependencyInjection.Extensions;
@@ -73,6 +74,7 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
         });
 
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(BannedAccountMiddleware<,>));
+        services.AddScoped<MaintenanceModeFilter>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

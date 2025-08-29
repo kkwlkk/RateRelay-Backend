@@ -29,6 +29,12 @@ public abstract class BaseController : ControllerBase
         var response = ApiResponse<T>.Create(true, data, metadata: metadata, statusCode: statusCode);
         return HandleApiResponse(response);
     }
+    
+    protected IActionResult Error(string message, string code = null, int statusCode = 400)
+    {
+        var response = ApiResponse<object>.Create(false, errorMessage: message, errorCode: code, statusCode: statusCode);
+        return HandleApiResponse(response);
+    }
 
     protected IActionResult Error<T>(string message, string code = null, int statusCode = 400)
     {

@@ -76,4 +76,7 @@ public enum Permission : ulong
 
     [Display(Name = "Manage Hangfire Jobs")]
     ManageHangfireJobs = 65536,
+
+    [Display(Name = "Can bypass Maintenance Mode restrictions")]
+    BypassMaintenanceMode = 262144,
 }

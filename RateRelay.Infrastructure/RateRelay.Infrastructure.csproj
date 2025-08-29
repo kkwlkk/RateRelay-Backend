@@ -87,6 +87,8 @@
         <EmbeddedResource Include="DataAccess\Migrations\2025\019_DROP_UNIQUE_USERNAME_CONSTRAINTS.sql" />
         <None Remove="DataAccess\Migrations\2025\020_ADD_EMAIL_PREFERENCES.sql" />
         <EmbeddedResource Include="DataAccess\Migrations\2025\020_ADD_EMAIL_PREFERENCES.sql" />
+        <None Remove="DataAccess\Migrations\2025\021_ADD_MAINTENANCE_MODE.sql" />
+        <EmbeddedResource Include="DataAccess\Migrations\2025\021_ADD_MAINTENANCE_MODE.sql" />
     </ItemGroup>
 
 </Project>

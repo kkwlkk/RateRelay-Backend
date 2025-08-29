@@ -4,44 +4,74 @@ public class AppException : Exception
 {
     public string? ErrorCode { get; }
     public Dictionary<string, object> Metadata { get; }
+    public int? StatusCode { get; }
+    private const string DefaultMessage = "An application error occurred.";
 
-    public AppException(string? message) : base(message)
+    public AppException(string? message = null) : base(message ?? DefaultMessage)
     {
         Metadata = new Dictionary<string, object>();
     }
 
-    public AppException(string? message, string? errorCode) : base(message)
+    public AppException(string? message, string? errorCode) : base(message ?? DefaultMessage)
     {
         ErrorCode = errorCode;
         Metadata = new Dictionary<string, object>();
     }
 
-    public AppException(string? message, Dictionary<string, object>? metadata) : base(message)
+    public AppException(string? message, int statusCode) : base(message ?? DefaultMessage)
+    {
+        StatusCode = statusCode;
+        Metadata = new Dictionary<string, object>();
+    }
+
+    public AppException(string? message, string? errorCode, int statusCode) : base(message ?? DefaultMessage)
+    {
+        ErrorCode = errorCode;
+        StatusCode = statusCode;
+        Metadata = new Dictionary<string, object>();
+    }
+
+    public AppException(string? message, Dictionary<string, object>? metadata) : base(message ?? DefaultMessage)
     {
         Metadata = metadata ?? new Dictionary<string, object>();
     }
 
-    public AppException(string? message, string? errorCode, Dictionary<string, object>? metadata) : base(message)
+    public AppException(string? message, string? errorCode, Dictionary<string, object>? metadata) : base(message ?? DefaultMessage)
     {
         ErrorCode = errorCode;
         Metadata = metadata ?? new Dictionary<string, object>();
     }
 
-    public AppException(string? message, Exception innerException) : base(message, innerException)
+    public AppException(string? message, string? errorCode, int statusCode, Dictionary<string, object>? metadata) : base(message ?? DefaultMessage)
+    {
+        ErrorCode = errorCode;
+        StatusCode = statusCode;
+        Metadata = metadata ?? new Dictionary<string, object>();
+    }
+
+    public AppException(string? message, Exception innerException) : base(message ?? DefaultMessage, innerException)
     {
         Metadata = new Dictionary<string, object>();
     }
 
-    public AppException(string? message, string? errorCode, Exception innerException) : base(message, innerException)
+    public AppException(string? message, string? errorCode, Exception innerException) : base(message ?? DefaultMessage, innerException)
     {
         ErrorCode = errorCode;
         Metadata = new Dictionary<string, object>();
     }
 
-    public AppException(string? message, string? errorCode, Dictionary<string, object>? metadata, Exception innerException) 
-        : base(message, innerException)
+    public AppException(string? message, string? errorCode, int statusCode, Exception innerException) : base(message ?? DefaultMessage, innerException)
     {
         ErrorCode = errorCode;
+        StatusCode = statusCode;
+        Metadata = new Dictionary<string, object>();
+    }
+
+    public AppException(string? message, string? errorCode, int statusCode, Dictionary<string, object>? metadata, Exception innerException) 
+        : base(message ?? DefaultMessage, innerException)
+    {
+        ErrorCode = errorCode;
+        StatusCode = statusCode;
         Metadata = metadata ?? new Dictionary<string, object>();
     }
 }

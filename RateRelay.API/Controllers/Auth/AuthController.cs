@@ -2,6 +2,7 @@ using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RateRelay.API.Filters;
 using RateRelay.Application.DTOs.Auth.Commands;
 using RateRelay.Application.DTOs.User.Auth.Commands;
 using RateRelay.Application.Features.Auth.Commands.Google;
@@ -13,6 +14,7 @@ namespace RateRelay.API.Controllers.Auth;
 [ApiController]
 [Area("Auth")]
 [Route("api/[controller]")]
+[DisableDuringMaintenance]
 public class AuthController(IMediator mediator, IMapper mapper) : BaseController
 {
     [HttpPost("google")]

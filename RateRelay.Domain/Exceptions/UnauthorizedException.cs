@@ -24,7 +24,7 @@ public class UnauthorizedException : AppException
     }
 
     public UnauthorizedException(string? message, Dictionary<string, object>? metadata, Exception innerException)
-        : base(message, DefaultErrorCode, metadata, innerException)
+        : base(message, DefaultErrorCode, metadata)
     {
     }
 }
