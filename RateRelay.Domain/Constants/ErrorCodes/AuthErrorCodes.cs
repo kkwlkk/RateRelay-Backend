@@ -7,4 +7,5 @@ public static class AuthErrorCodes
     public const string AccountBanned = "ACCOUNT_BANNED";
     public const string InvalidToken = "INVALID_TOKEN";
     public const string MissingGoogleData = "MISSING_GOOGLE_DATA";
+    public const string UnknownError = "UNKNOWN_ERROR";
 }

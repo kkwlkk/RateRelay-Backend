@@ -22,104 +22,116 @@ public class GoogleAuthCommandHandler(
 {
     public async Task<AuthOutputDto> Handle(GoogleAuthCommand request, CancellationToken cancellationToken)
     {
-        await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
-        var accountRepository = unitOfWork.GetExtendedRepository<AccountRepository>();
-
-        var googleUserInfo = await authService.ValidateGoogleTokenAsync(request.OAuthIdToken);
-
-        if (googleUserInfo is null)
+        try
         {
-            throw new AppException("Invalid OAuth token.", AuthErrorCodes.InvalidToken);
-        }
+            await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
+            var accountRepository = unitOfWork.GetExtendedRepository<AccountRepository>();
 
-        var accountExistsDeleted = accountRepository.GetBaseQueryable(true)
-            .Where(x => (x.GoogleId == googleUserInfo.GoogleId || x.Email == googleUserInfo.Email) &&
-                        x.DateDeletedUtc != null);
+            var googleUserInfo = await authService.ValidateGoogleTokenAsync(request.OAuthIdToken);
 
-        if (accountExistsDeleted.Any())
-        {
-            throw new AppException(
-                "An account with this Google ID or email already exists, but is deleted. Please contact support to restore your account.",
-                AuthErrorCodes.AccountDeleted);
-        }
-
-        var account = await accountRepository.GetByGoogleIdAsync(googleUserInfo.GoogleId);
-        var isNewAccount = false;
-        bool? isReferralLinked = null;
-
-        if (account is null)
-        {
-            var existingEmailAccount = await accountRepository.GetByEmailAsync(googleUserInfo.Email);
-
-            if (existingEmailAccount is not null)
+            if (googleUserInfo is null)
             {
-                throw new AppException(
-                    "Account with this email already exists.",
-                    AuthErrorCodes.AccountExists);
+                throw new AppException("Invalid OAuth token.", AuthErrorCodes.InvalidToken);
             }
 
-            if (string.IsNullOrEmpty(googleUserInfo.Name))
+            var accountExistsDeleted = accountRepository.GetBaseQueryable(true)
+                .Where(x => (x.GoogleId == googleUserInfo.GoogleId || x.Email == googleUserInfo.Email) &&
+                            x.DateDeletedUtc != null);
+
+            if (accountExistsDeleted.Any())
             {
                 throw new AppException(
-                    "Google account name is required.",
-                    AuthErrorCodes.MissingGoogleData);
+                    "An account with this Google ID or email already exists, but is deleted. Please contact support to restore your account.",
+                    AuthErrorCodes.AccountDeleted);
             }
 
-            if (string.IsNullOrEmpty(googleUserInfo.GoogleId))
+            var account = await accountRepository.GetByGoogleIdAsync(googleUserInfo.GoogleId);
+            var isNewAccount = false;
+            bool? isReferralLinked = null;
+
+            if (account is null)
             {
-                throw new AppException(
-                    "Google account ID is required.",
-                    AuthErrorCodes.MissingGoogleData);
+                var existingEmailAccount = await accountRepository.GetByEmailAsync(googleUserInfo.Email);
+
+                if (existingEmailAccount is not null)
+                {
+                    throw new AppException(
+                        "Account with this email already exists.",
+                        AuthErrorCodes.AccountExists);
+                }
+
+                if (string.IsNullOrEmpty(googleUserInfo.Name))
+                {
+                    throw new AppException(
+                        "Google account name is required.",
+                        AuthErrorCodes.MissingGoogleData);
+                }
+
+                if (string.IsNullOrEmpty(googleUserInfo.GoogleId))
+                {
+                    throw new AppException(
+                        "Google account ID is required.",
+                        AuthErrorCodes.MissingGoogleData);
+                }
+
+                if (string.IsNullOrEmpty(googleUserInfo.Email))
+                {
+                    throw new AppException(
+                        "Google account email is required.",
+                        AuthErrorCodes.MissingGoogleData);
+                }
+
+                account = new AccountEntity
+                {
+                    GoogleId = googleUserInfo.GoogleId,
+                    Email = googleUserInfo.Email,
+                    GoogleUsername = googleUserInfo.Name,
+                    EmailPreferences = EmailPreferencesFlags.All
+                };
+
+                await accountRepository.InsertAsync(account, cancellationToken);
+                await unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
+                isNewAccount = true;
+
+                _ = emailService.SendWelcomeEmailAsync(account);
+
+                if (!string.IsNullOrWhiteSpace(request.ReferralCode))
+                {
+                    try
+                    {
+                        await referralService.LinkReferralAsync(account.Id, request.ReferralCode, cancellationToken);
+                        isReferralLinked = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Warning("Failed to link referral code: {Message} for AccountId: {AccountId}", ex.Message,
+                            account.Id);
+                        isReferralLinked = false;
+                    }
+                }
             }
 
-            if (string.IsNullOrEmpty(googleUserInfo.Email))
-            {
-                throw new AppException(
-                    "Google account email is required.",
-                    AuthErrorCodes.MissingGoogleData);
-            }
+            var token = await authService.GenerateJwtTokenAsync(account);
+            var refreshToken = await authService.GenerateRefreshTokenAsync(account);
 
-            account = new AccountEntity
+            var response = new AuthOutputDto
             {
-                GoogleId = googleUserInfo.GoogleId,
-                Email = googleUserInfo.Email,
-                GoogleUsername = googleUserInfo.Name,
-                EmailPreferences = EmailPreferencesFlags.All
+                AccessToken = token,
+                RefreshToken = refreshToken,
+                IsNewUser = isNewAccount,
+                IsReferralLinked = isReferralLinked,
             };
 
-            await accountRepository.InsertAsync(account, cancellationToken);
-            await unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
-            isNewAccount = true;
-
-            _ = emailService.SendWelcomeEmailAsync(account);
-
-            if (!string.IsNullOrWhiteSpace(request.ReferralCode))
-            {
-                try
-                {
-                    await referralService.LinkReferralAsync(account.Id, request.ReferralCode, cancellationToken);
-                    isReferralLinked = true;
-                }
-                catch (Exception ex)
-                {
-                    logger.Warning("Failed to link referral code: {Message} for AccountId: {AccountId}", ex.Message,
-                        account.Id);
-                    isReferralLinked = false;
-                }
-            }
+            return response;
         }
-
-        var token = await authService.GenerateJwtTokenAsync(account);
-        var refreshToken = await authService.GenerateRefreshTokenAsync(account);
-
-        var response = new AuthOutputDto
+        catch (AppException)
         {
-            AccessToken = token,
-            RefreshToken = refreshToken,
-            IsNewUser = isNewAccount,
-            IsReferralLinked = isReferralLinked,
-        };
-
-        return response;
+            throw;
+        }
+        catch (Exception ex)
+        {
+            logger.Error(ex, "Error during Google authentication");
+            throw new AppException("An error occurred during Google authentication.", AuthErrorCodes.UnknownError);
+        }
     }
 }
