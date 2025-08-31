@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
         if (emailOptions is null || !emailOptions.Enabled)
         {
             Log.Warning("EmailService is disabled in configuration. Using FakeEmailService.");
-            services.AddSingleton<IEmailService, FakeEmailService>();
+            services.AddTransient<IEmailService, FakeEmailService>();
         }
         else
         {

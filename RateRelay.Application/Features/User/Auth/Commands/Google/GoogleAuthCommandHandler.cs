@@ -112,8 +112,6 @@ public class GoogleAuthCommandHandler(
         var token = await authService.GenerateJwtTokenAsync(account);
         var refreshToken = await authService.GenerateRefreshTokenAsync(account);
 
-        await emailService.SendIncompleteVerificationEmailAsync(account, "Kebab Habiba", DateTime.UtcNow);
-
         var response = new AuthOutputDto
         {
             AccessToken = token,
