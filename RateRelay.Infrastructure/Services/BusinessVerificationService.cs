@@ -69,6 +69,14 @@ public class BusinessVerificationService(
             logger.Information("Business with account ID {AccountId} is already verified", accountId);
             return BusinessVerificationResult.AlreadyVerified(business);
         }
+        
+        // FIXME: Remove after Demo - this auto-verifies any business with a specific CID
+        if (business.Cid == "14490658852607445184") 
+        {
+            await CompleteVerificationAsync(unitOfWork, business);
+            logger.Information("Business with ID {BusinessId} has been auto-verified for demo purposes", business.Id);
+            return BusinessVerificationResult.Success(business, true, business.Verification);
+        }
 
         if (business.Verification == null)
         {
