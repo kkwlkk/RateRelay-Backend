@@ -1,12 +1,13 @@
 using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using RateRelay.Application.DTOs.Business.BusinessVerification.Commands;
-using RateRelay.Application.Exceptions;
+using RateRelay.Domain.Constants.ErrorCodes;
 using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Infrastructure.Services;
 
-namespace RateRelay.Application.Features.Business.Commands.InitiateBusinessVerification;
+namespace RateRelay.Application.Features.User.Business.Commands.InitiateBusinessVerification;
 
 public class InitiateBusinessVerificationCommandHandler(
     CurrentUserContext currentUserContext,
@@ -23,19 +24,13 @@ public class InitiateBusinessVerificationCommandHandler(
         );
 
         if (!verificationResult.IsSuccess)
-        {
-            throw new AppException(
-                verificationResult.ErrorMessage, 
-                verificationResult.ErrorCode,
+            throw new DomainException(verificationResult.ErrorMessage, verificationResult.ErrorCode,
                 verificationResult.Metadata);
-        }
 
         if (verificationResult.Verification is null)
-        {
-            throw new NotFoundException("Verification not found.");
-        }
+            throw new DomainException("Verification not found", BusinessVerificationErrorCodes.VerificationNotFound,
+                StatusCodes.Status404NotFound);
 
-        var businessVerificationOutputDto = mapper.Map<BusinessVerificationOutputDto>(verificationResult.Verification);
-        return businessVerificationOutputDto;
+        return mapper.Map<BusinessVerificationOutputDto>(verificationResult.Verification);
     }
 }

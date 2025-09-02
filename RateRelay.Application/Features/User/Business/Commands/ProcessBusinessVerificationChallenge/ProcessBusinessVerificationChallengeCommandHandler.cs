@@ -23,7 +23,7 @@ public class ProcessBusinessVerificationChallengeCommandHandler(
 
         if (!verificationResult.IsSuccess)
         {
-            throw new AppException(
+            throw new DomainException(
                 verificationResult.ErrorMessage,
                 verificationResult.ErrorCode,
                 verificationResult.Metadata

@@ -22,7 +22,7 @@ public class CloseTicketCommandHandler(
 
         if (ticket.Status != Domain.Enums.TicketStatus.Open)
         {
-            throw new AppException($"Ticket with ID {request.TicketId} is not open and cannot be closed.", "TicketAlreadyClosed");
+            throw new DomainException($"Ticket with ID {request.TicketId} is not open and cannot be closed.", "TicketAlreadyClosed");
         }
         
         return await ticketService.UpdateTicketStatusAsync(

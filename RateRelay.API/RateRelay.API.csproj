@@ -25,6 +25,9 @@
         <None Include=".env.local" CopyToOutputDirectory="PreserveNewest" Condition="Exists('.env.local')" />
         <None Include=".env.Development" CopyToOutputDirectory="PreserveNewest" Condition="Exists('.env.Development')" />
         <None Include=".env.Production" CopyToOutputDirectory="PreserveNewest" Condition="Exists('.env.Production')" />
+        <None Update=".env">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
 </Project>

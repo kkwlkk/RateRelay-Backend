@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using RateRelay.Application.DTOs.ReviewableBusiness.Queries;
+using RateRelay.Domain.Constants.ErrorCodes;
 using RateRelay.Domain.Exceptions;
 using RateRelay.Domain.Interfaces;
 using RateRelay.Infrastructure.Services;
@@ -28,23 +29,23 @@ public class GetNextBusinessForReviewQueryHandler(
 
         if (businessToReview is null)
         {
-            throw new AppException("No business available for review. Please try again later.",
-                "ERR_NO_BUSINESS_FOR_REVIEW");
+            throw new DomainException("No business available for review. Please try again later.",
+                ReviewableBusinessQueueErrorCodes.NoBusinessForReview);
         }
 
-        var businessLockTtl = await businessQueueService.GetAssignedBusinessLockTtlByUserAsync(
+        var businessLock = await businessQueueService.GetAssignedBusinessLockTtlByUserAsync(
             currentUserContext.AccountId, cancellationToken: cancellationToken);
 
-        if (businessLockTtl is null)
+        if (businessLock is null)
         {
-            throw new AppException("No business available for review. Please try again later.",
-                "ERR_NO_BUSINESS_FOR_REVIEW");
+            throw new DomainException("No business available for review. Please try again later.",
+                ReviewableBusinessQueueErrorCodes.NoBusinessForReview);
         }
 
         var businessToReviewDto = mapper.Map<GetNextBusinessForReviewOutputDto>(businessToReview);
-        businessToReviewDto.InitialReviewTimeInSeconds = (int)TimeSpan.FromMinutes(
-            Domain.Constants.BusinessQueueConstants.BusinessLockTimeoutInMinutes).TotalSeconds;
-        businessToReviewDto.RemainingReviewTimeInSeconds = (int)businessLockTtl.Value.TotalSeconds;
+        businessToReviewDto.InitialReviewTimeInSeconds = (int)TimeSpan
+            .FromMinutes(Domain.Constants.BusinessQueueConstants.BusinessLockTimeoutInMinutes).TotalSeconds;
+        businessToReviewDto.RemainingReviewTimeInSeconds = (int)businessLock.Value.TotalSeconds;
         businessToReviewDto.MapUrl = googleMapsService.GenerateMapUrlFromCid(businessToReview.Cid);
 
         return businessToReviewDto;

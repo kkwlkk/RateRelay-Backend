@@ -31,7 +31,7 @@ public class GoogleAuthCommandHandler(
 
             if (googleUserInfo is null)
             {
-                throw new AppException("Invalid OAuth token.", AuthErrorCodes.InvalidToken);
+                throw new DomainException("Invalid OAuth token.", AuthErrorCodes.InvalidToken);
             }
 
             var accountExistsDeleted = accountRepository.GetBaseQueryable(true)
@@ -40,7 +40,7 @@ public class GoogleAuthCommandHandler(
 
             if (accountExistsDeleted.Any())
             {
-                throw new AppException(
+                throw new DomainException(
                     "An account with this Google ID or email already exists, but is deleted. Please contact support to restore your account.",
                     AuthErrorCodes.AccountDeleted);
             }
@@ -55,28 +55,28 @@ public class GoogleAuthCommandHandler(
 
                 if (existingEmailAccount is not null)
                 {
-                    throw new AppException(
+                    throw new DomainException(
                         "Account with this email already exists.",
                         AuthErrorCodes.AccountExists);
                 }
 
                 if (string.IsNullOrEmpty(googleUserInfo.Name))
                 {
-                    throw new AppException(
+                    throw new DomainException(
                         "Google account name is required.",
                         AuthErrorCodes.MissingGoogleData);
                 }
 
                 if (string.IsNullOrEmpty(googleUserInfo.GoogleId))
                 {
-                    throw new AppException(
+                    throw new DomainException(
                         "Google account ID is required.",
                         AuthErrorCodes.MissingGoogleData);
                 }
 
                 if (string.IsNullOrEmpty(googleUserInfo.Email))
                 {
-                    throw new AppException(
+                    throw new DomainException(
                         "Google account email is required.",
                         AuthErrorCodes.MissingGoogleData);
                 }
@@ -124,14 +124,14 @@ public class GoogleAuthCommandHandler(
 
             return response;
         }
-        catch (AppException)
+        catch (DomainException)
         {
             throw;
         }
         catch (Exception ex)
         {
             logger.Error(ex, "Error during Google authentication");
-            throw new AppException("An error occurred during Google authentication.", AuthErrorCodes.UnknownError);
+            throw new DomainException("An error occurred during Google authentication.", AuthErrorCodes.UnknownError);
         }
     }
 }

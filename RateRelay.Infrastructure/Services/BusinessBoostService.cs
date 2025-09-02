@@ -33,7 +33,7 @@ public class BusinessBoostService(
 
         if (existingBoost is not null)
         {
-            throw new AppException($"Business with ID {businessId} is already boosted.");
+            throw new DomainException($"Business with ID {businessId} is already boosted.");
         }
 
         var currentReviews = await reviewRepository.CountAsync(
@@ -104,7 +104,7 @@ public class BusinessBoostService(
 
         if (activeBoost is null)
         {
-            throw new AppException($"Business with ID {businessId} is not currently boosted.");
+            throw new DomainException($"Business with ID {businessId} is not currently boosted.");
         }
 
         var latestHistoryEntry = await historyRepository.GetBaseQueryable()

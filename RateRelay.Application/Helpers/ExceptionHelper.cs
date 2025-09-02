@@ -14,7 +14,7 @@ public static class ExceptionHelper
             or ValidationException
             or InvalidJwtException
             or NotFoundException
-            or AppException
+            or DomainException
             or ForbiddenException;
     }
 }

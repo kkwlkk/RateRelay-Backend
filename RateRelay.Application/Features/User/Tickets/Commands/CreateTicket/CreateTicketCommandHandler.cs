@@ -22,7 +22,7 @@ public class CreateTicketCommandHandler(
             await ticketService.IsUserOnTicketCooldownAsync(currentUserId, request.Type, cancellationToken);
 
         if (isUserOnTicketCooldown)
-            throw new AppException("User is on cooldown for creating tickets of this type.", "TicketCooldown");
+            throw new DomainException("User is on cooldown for creating tickets of this type.", "TicketCooldown");
 
         var ticket = await ticketService.CreateTicketAsync(
             request.Type, request.Title, request.Description, currentUserId,

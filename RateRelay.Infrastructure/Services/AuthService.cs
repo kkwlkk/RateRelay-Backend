@@ -115,6 +115,8 @@ public class AuthService(
         {
             Audience = [clientId]
         };
+        
+        Log.Debug("Validating Google OAuth token for client ID: {ClientId}", clientId);
 
         try
         {

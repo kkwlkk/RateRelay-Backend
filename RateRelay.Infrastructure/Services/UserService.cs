@@ -25,7 +25,7 @@ public class UserService(
 
             if (account is null)
             {
-                throw new AppException($"Account with ID {accountId} not found.", "AccountNotFound");
+                throw new DomainException($"Account with ID {accountId} not found.", "AccountNotFound");
             }
 
             return account;
@@ -33,7 +33,7 @@ public class UserService(
         catch (Exception ex)
         {
             Log.Error(ex, "Error occurred while retrieving account with ID {AccountId}", accountId);
-            throw new AppException("An error occurred while retrieving the account.");
+            throw new DomainException("An error occurred while retrieving the account.");
         }
     }
 
@@ -64,7 +64,7 @@ public class UserService(
 
             if (existingBan is not null)
             {
-                throw new AppException($"Account with ID {accountId} already has an active ban.",
+                throw new DomainException($"Account with ID {accountId} already has an active ban.",
                     "AccountAlreadyBanned");
             }
 
@@ -81,7 +81,7 @@ public class UserService(
         catch (Exception ex)
         {
             Log.Error(ex, "Error occurred while banning account with ID {AccountId}", accountId);
-            throw new AppException("An error occurred while banning the account.");
+            throw new DomainException("An error occurred while banning the account.");
         }
     }
 }

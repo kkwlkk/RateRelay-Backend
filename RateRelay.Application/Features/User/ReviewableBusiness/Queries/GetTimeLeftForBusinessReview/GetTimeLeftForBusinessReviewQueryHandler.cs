@@ -20,7 +20,7 @@ public class GetTimeLeftForBusinessReviewQueryHandler(
 
         if (businessLockTtl is null)
         {
-            throw new AppException(
+            throw new DomainException(
                 "You are not assigned to any business for review. Please check your account or contact support.");
         }
 

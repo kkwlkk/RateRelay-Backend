@@ -1,4 +1,5 @@
 using FluentValidation;
+using RateRelay.Application.Features.User.Business.Commands.InitiateBusinessVerification;
 
 namespace RateRelay.Application.Features.Business.Commands.InitiateBusinessVerification;
 

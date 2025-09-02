@@ -19,7 +19,7 @@ public class LinkReferralCommandHandler(
 
         if (referrerAccount is null)
         {
-            throw new AppException(
+            throw new DomainException(
                 "Invalid referral code. Please check the code and try again.",
                 "ReferralCodeInvalid");
         }
@@ -31,7 +31,7 @@ public class LinkReferralCommandHandler(
 
         if (!success)
         {
-            throw new AppException("Unable to link referral. You may already have a referrer or the code is invalid.",
+            throw new DomainException("Unable to link referral. You may already have a referrer or the code is invalid.",
                 "ReferralLinkFailed");
         }
 

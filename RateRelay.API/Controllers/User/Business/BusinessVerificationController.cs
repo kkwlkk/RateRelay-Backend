@@ -9,6 +9,7 @@ using RateRelay.Application.Features.Business.Commands.InitiateBusinessVerificat
 using RateRelay.Application.Features.Business.Commands.ProcessBusinessVerificationChallenge;
 using RateRelay.Application.Features.Business.Queries.GetBusinessVerificationChallenge;
 using RateRelay.Application.Features.Business.Queries.GetBusinessVerificationStatus;
+using RateRelay.Application.Features.User.Business.Commands.InitiateBusinessVerification;
 
 namespace RateRelay.API.Controllers.User.Business;
 
@@ -24,9 +25,9 @@ public class BusinessVerificationController(
     [HttpPost("initiate")]
     [ProducesResponseType(typeof(BusinessVerificationOutputDto), StatusCodes.Status200OK)]
     [RateLimit(5, 60)]
-    public async Task<IActionResult> InitiateVerification([FromBody] InitiateBusinessVerificationInputDto dto)
+    public async Task<IActionResult> InitiateVerification([FromBody] InitiateBusinessVerificationInputDto input)
     {
-        var command = mapper.Map<InitiateBusinessVerificationCommand>(dto);
+        var command = mapper.Map<InitiateBusinessVerificationCommand>(input);
         var response = await mediator.Send(command);
         return Success(response);
     }

@@ -31,35 +31,35 @@ public class ReportBusinessReviewCommandHandler(
 
         if (review.ReviewerId == currentUserContext.AccountId)
         {
-            throw new AppException(
+            throw new DomainException(
                 $"You cannot report your own review with ID {request.ReviewId}.",
                 "BusinessReviewCannotReportOwn");
         }
 
         if (review.Business.OwnerAccountId != currentUserContext.AccountId)
         {
-            throw new AppException(
+            throw new DomainException(
                 "You do not have permission to report this review.",
                 "BusinessReviewNoPermissionToReport");
         }
 
         if (review.BusinessId != request.BusinessId)
         {
-            throw new AppException(
+            throw new DomainException(
                 $"Business review with ID {request.ReviewId} does not belong to business with ID {request.BusinessId}.",
                 "BusinessReviewDoesNotBelongToBusiness");
         }
 
         if (review.Status is BusinessReviewStatus.UnderDispute)
         {
-            throw new AppException(
+            throw new DomainException(
                 $"Business review with ID {request.ReviewId} is already under dispute.",
                 "BusinessReviewAlreadyUnderDispute");
         }
 
         if (review.Status is not BusinessReviewStatus.Pending and not BusinessReviewStatus.Accepted)
         {
-            throw new AppException(
+            throw new DomainException(
                 $"Business review with ID {request.ReviewId} cannot be reported.",
                 "BusinessReviewCannotBeReported");
         }

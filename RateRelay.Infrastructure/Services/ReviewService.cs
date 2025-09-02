@@ -30,7 +30,7 @@ public class ReviewService(
 
         if (business is null)
         {
-            throw new AppException(
+            throw new DomainException(
                 $"Business with ID {businessId} not found.", "BUSINESS_NOT_FOUND");
         }
 
@@ -128,13 +128,13 @@ public class ReviewService(
 
         if (review.Status == BusinessReviewStatus.Accepted)
         {
-            throw new AppException(
+            throw new DomainException(
                 $"Review with ID {reviewId} has already been accepted.", "REVIEW_ALREADY_ACCEPTED");
         }
 
         if (review.Status == BusinessReviewStatus.Rejected)
         {
-            throw new AppException(
+            throw new DomainException(
                 $"Review with ID {reviewId} has already been rejected.", "REVIEW_ALREADY_REJECTED");
         }
 
@@ -192,19 +192,19 @@ public class ReviewService(
 
         if (review is null)
         {
-            throw new AppException(
+            throw new DomainException(
                 $"Review with ID {reviewId} not found.", "REVIEW_NOT_FOUND");
         }
 
         if (review.Status == BusinessReviewStatus.Rejected)
         {
-            throw new AppException(
+            throw new DomainException(
                 $"Review with ID {reviewId} has already been rejected.", "REVIEW_ALREADY_REJECTED");
         }
 
         if (review.Status == BusinessReviewStatus.Accepted)
         {
-            throw new AppException(
+            throw new DomainException(
                 $"Review with ID {reviewId} has already been accepted.", "REVIEW_ALREADY_ACCEPTED");
         }
 
@@ -249,7 +249,7 @@ public class ReviewService(
 
         if (review.Status == status)
         {
-            throw new AppException(
+            throw new DomainException(
                 $"Review with ID {reviewId} is already in status {status}.", "ReviewAlreadyInStatus");
         }
 

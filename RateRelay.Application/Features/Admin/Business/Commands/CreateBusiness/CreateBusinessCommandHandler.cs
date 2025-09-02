@@ -22,7 +22,7 @@ public class CreateBusinessCommandHandler(IUnitOfWorkFactory unitOfWorkFactory, 
         
         if (existingBusiness is not null) 
         {
-            throw new AppException($"Business with Place ID {request.PlaceId} already exists.", "BusinessAlreadyExists");
+            throw new DomainException($"Business with Place ID {request.PlaceId} already exists.", "BusinessAlreadyExists");
         }
         
         var ownerAccount = await accountRepository.GetByIdAsync(request.OwnerId, cancellationToken);
@@ -36,7 +36,7 @@ public class CreateBusinessCommandHandler(IUnitOfWorkFactory unitOfWorkFactory, 
 
         if (googleBusinessData is null)
         {
-            throw new AppException($"Google Places data for Place ID {request.PlaceId} not found.", "GoogleDataNotFound");
+            throw new DomainException($"Google Places data for Place ID {request.PlaceId} not found.", "GoogleDataNotFound");
         }
         
         var newBusiness = new BusinessEntity

@@ -23,7 +23,7 @@ public class SubmitBusinessReviewCommandHandler(
 
         if (assignedBusiness is null)
         {
-            throw new AppException(
+            throw new DomainException(
                 "You are not assigned to any business for review. Please check your account or contact support.");
         }
 
@@ -32,7 +32,7 @@ public class SubmitBusinessReviewCommandHandler(
 
         if (review is { IsRejected: false, IsPending: false })
         {
-            throw new AppException("You have already submitted a review for this business.");
+            throw new DomainException("You have already submitted a review for this business.");
         }
 
         var isReviewAdded = await reviewService.AddUserReviewAsync(
@@ -46,7 +46,7 @@ public class SubmitBusinessReviewCommandHandler(
 
         if (!isReviewAdded)
         {
-            throw new AppException("Failed to submit your review. Please try again later.");
+            throw new DomainException("Failed to submit your review. Please try again later.");
         }
 
         var addedReview = await reviewService.GetUserReviewByBusinessIdAsync(

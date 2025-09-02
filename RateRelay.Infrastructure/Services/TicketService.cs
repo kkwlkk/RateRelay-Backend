@@ -22,11 +22,11 @@ public class TicketService(
         TicketSubjects? subjects = null, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(title) || title.Length > typeof(TicketEntity).GetMaxLength(nameof(TicketEntity.Title)))
-            throw new AppException("Title cannot be empty or exceed maximum length.", nameof(title));
+            throw new DomainException("Title cannot be empty or exceed maximum length.", nameof(title));
 
         if (string.IsNullOrEmpty(description) ||
             description.Length > typeof(TicketEntity).GetMaxLength(nameof(TicketEntity.Description)))
-            throw new AppException("Description cannot be empty or exceed maximum length.", nameof(description));
+            throw new DomainException("Description cannot be empty or exceed maximum length.", nameof(description));
 
         if (!string.IsNullOrEmpty(internalNotes))
         {
@@ -61,7 +61,7 @@ public class TicketService(
         CancellationToken cancellationToken = default)
     {
         if (newStatus == TicketStatus.Obsolete)
-            throw new AppException(
+            throw new DomainException(
                 "Cannot update ticket status to Obsolete. Use the appropriate method to mark a ticket as obsolete.",
                 "TicketCannotSetObsolete");
 
@@ -126,7 +126,7 @@ public class TicketService(
         {
             var assignedUser = await userService.GetByIdAsync(newAssignedToId.Value, cancellationToken);
             if (!assignedUser.HasPermission(Permission.HandleAssignedTickets))
-                throw new AppException(
+                throw new DomainException(
                     "User cannot be assigned tickets as they do not have permission to handle them.");
         }
 
@@ -230,7 +230,7 @@ public class TicketService(
     {
         if (string.IsNullOrEmpty(content) ||
             content.Length > typeof(TicketCommentEntity).GetMaxLength(nameof(TicketCommentEntity.Content)))
-            throw new AppException("Content cannot be empty or exceed maximum length.", nameof(content));
+            throw new DomainException("Content cannot be empty or exceed maximum length.", nameof(content));
 
         await using var uow = await unitOfWorkFactory.CreateAsync();
         var ticketRepository = uow.GetRepository<TicketEntity>();
@@ -238,7 +238,7 @@ public class TicketService(
 
         var ticket = await ticketRepository.GetByIdAsync(ticketId, cancellationToken);
         if (ticket == null)
-            throw new AppException("Ticket not found.", nameof(ticketId));
+            throw new DomainException("Ticket not found.", nameof(ticketId));
 
         var user = await userService.GetByIdAsync(authorId, cancellationToken);
 
@@ -360,7 +360,7 @@ public class TicketService(
             throw new ForbiddenException("User does not have permission to mark tickets as obsolete.");
 
         if (string.IsNullOrWhiteSpace(reason))
-            throw new AppException("Reason is required when marking a ticket as obsolete.", nameof(reason));
+            throw new DomainException("Reason is required when marking a ticket as obsolete.", nameof(reason));
 
         await using var uow = await unitOfWorkFactory.CreateAsync();
         var ticketRepository = uow.GetRepository<TicketEntity>();
@@ -371,7 +371,7 @@ public class TicketService(
             return false;
 
         if (ticket.IsObsolete)
-            throw new AppException("Ticket is already marked as obsolete.", "TicketAlreadyObsolete");
+            throw new DomainException("Ticket is already marked as obsolete.", "TicketAlreadyObsolete");
 
         var statusHistory = new TicketStatusHistoryEntity
         {

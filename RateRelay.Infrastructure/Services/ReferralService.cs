@@ -51,7 +51,7 @@ public class ReferralService(
 
         if (!isUnique)
         {
-            throw new AppException("Unable to generate unique referral code. Please try again.");
+            throw new DomainException("Unable to generate unique referral code. Please try again.");
         }
 
         accountRepository.Update(account);

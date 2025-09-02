@@ -44,7 +44,7 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
         UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
         NotFoundException => StatusCodes.Status404NotFound,
         UnauthorizedException => StatusCodes.Status401Unauthorized,
-        AppException appEx => appEx.StatusCode ?? StatusCodes.Status400BadRequest,
+        DomainException appEx => appEx.StatusCode ?? StatusCodes.Status400BadRequest,
         InvalidOperationException => StatusCodes.Status400BadRequest,
         AppOkException => StatusCodes.Status200OK,
         ForbiddenException => StatusCodes.Status403Forbidden,
@@ -76,7 +76,7 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
                     statusCode: statusCode);
             }
 
-            case AppException appException:
+            case DomainException appException:
                 return ApiResponse<object>.Create(
                     false,
                     errorMessage: appException.Message,

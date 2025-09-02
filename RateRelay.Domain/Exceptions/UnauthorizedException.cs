@@ -1,6 +1,6 @@
 namespace RateRelay.Domain.Exceptions;
 
-public class UnauthorizedException : AppException
+public class UnauthorizedException : DomainException
 {
     private const string DefaultErrorCode = "UNAUTHORIZED";
     private const string DefaultMessage = "Access denied. You are not authorized to perform this action.";

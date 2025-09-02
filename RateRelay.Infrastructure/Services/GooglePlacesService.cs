@@ -48,7 +48,7 @@ public class GooglePlacesService(
         catch (HttpRequestException ex)
         {
             logger.LogError(ex, "Error fetching place details for place ID {PlaceId}", placeId);
-            throw new AppException(
+            throw new DomainException(
                 "Error while trying to fetch place details from Google Places API",
                 "ERR_PLACE_DETAILS_FETCH");
         }

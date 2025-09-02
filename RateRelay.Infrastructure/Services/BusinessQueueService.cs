@@ -18,51 +18,43 @@ public class BusinessQueueService(
     ILogger logger
 ) : IBusinessQueueService
 {
-    public async Task<BusinessEntity?> GetNextAvailableBusinessForUserAsync(
-        long accountId,
-        int maxAttempts = 10,
+    public async Task<BusinessEntity?> GetNextAvailableBusinessForUserAsync(long accountId, int maxAttempts = 10,
         CancellationToken cancellationToken = default)
     {
-        try
+        await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
+        var businessRepository = unitOfWork.GetRepository<BusinessEntity>();
+        var businessReviewRepository = unitOfWork.GetRepository<BusinessReviewEntity>();
+
+        var existingAssignment = await GetUserAssignedBusinessAsync(accountId, cancellationToken);
+        if (existingAssignment is not null)
         {
-            await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
-            var businessRepository = unitOfWork.GetRepository<BusinessEntity>();
-            var businessReviewRepository = unitOfWork.GetRepository<BusinessReviewEntity>();
+            var shouldKeepAssignment = await ValidateExistingAssignmentAsync(existingAssignment, accountId,
+                businessReviewRepository, cancellationToken);
 
-            var existingAssignment = await GetUserAssignedBusinessAsync(accountId, cancellationToken);
-            if (existingAssignment is not null)
-            {
-                var shouldKeepAssignment = await ValidateExistingAssignmentAsync(
-                    existingAssignment, accountId, businessReviewRepository, cancellationToken);
-                
-                if (shouldKeepAssignment)
-                {
-                    return existingAssignment;
-                }
-            }
-
-            var excludedBusinessIds = await GetExcludedBusinessIdsAsync(
-                accountId, businessReviewRepository, cancellationToken);
-
-            var skippedBusinesses = await GetSkippedBusinessesForUserAsync(accountId, cancellationToken);
-            excludedBusinessIds.AddRange(skippedBusinesses);
-
-            var baseQuery = BuildBaseBusinessQuery(businessRepository, accountId, excludedBusinessIds);
-
-            if (!await baseQuery.AnyAsync(cancellationToken))
-            {
-                logger.Information("No businesses available matching criteria for user {AccountId}", accountId);
-                return null;
-            }
-
-            return await FindAndAssignAvailableBusinessAsync(
-                baseQuery, accountId, maxAttempts, cancellationToken);
+            if (shouldKeepAssignment)
+                return existingAssignment;
         }
-        catch (Exception ex)
+
+        var excludedBusinessIds = await GetAllExcludedBusinessIdsAsync(accountId, cancellationToken);
+        var baseQuery = BuildBaseBusinessQuery(businessRepository, accountId, excludedBusinessIds);
+
+        if (!await baseQuery.AnyAsync(cancellationToken))
         {
-            logger.Error(ex, "Error finding available business for user {AccountId}", accountId);
-            throw;
+            logger.Information("No businesses available matching criteria for user {AccountId}", accountId);
+            return null;
         }
+
+        return await FindAndAssignAvailableBusinessAsync(baseQuery, accountId, maxAttempts, cancellationToken);
+    }
+
+    private async Task<List<long>> GetAllExcludedBusinessIdsAsync(long accountId, CancellationToken cancellationToken)
+    {
+        await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
+        var businessReviewRepository = unitOfWork.GetRepository<BusinessReviewEntity>();
+        var excludedIds = await GetExcludedBusinessIdsAsync(accountId, businessReviewRepository, cancellationToken);
+        var skippedIds = await GetSkippedBusinessesForUserAsync(accountId, cancellationToken);
+        excludedIds.AddRange(skippedIds);
+        return excludedIds;
     }
 
     private async Task<bool> ValidateExistingAssignmentAsync(
@@ -75,9 +67,11 @@ public class BusinessQueueService(
         {
             if (ApplicationEnvironment.Current().IsDevelopment)
             {
-                logger.Debug("User {AccountId} was assigned to their own business {BusinessId}. Finding a new business.",
+                logger.Debug(
+                    "User {AccountId} was assigned to their own business {BusinessId}. Finding a new business.",
                     accountId, existingAssignment.Id);
             }
+
             await UnassignBusinessFromUserAsync(existingAssignment.Id, accountId);
             return false;
         }
@@ -92,7 +86,8 @@ public class BusinessQueueService(
 
         if (hasActiveReview)
         {
-            logger.Information("User {AccountId} was assigned to business {BusinessId} they already reviewed. Finding a new business.",
+            logger.Information(
+                "User {AccountId} was assigned to business {BusinessId} they already reviewed. Finding a new business.",
                 accountId, existingAssignment.Id);
             await UnassignBusinessFromUserAsync(existingAssignment.Id, accountId);
             return false;
@@ -133,7 +128,8 @@ public class BusinessQueueService(
 
         if (ApplicationEnvironment.Current().IsDevelopment)
         {
-            logger.Debug("Found {ActiveCount} businesses with active reviews and {RejectedCount} businesses with 3+ rejections for user {AccountId}",
+            logger.Debug(
+                "Found {ActiveCount} businesses with active reviews and {RejectedCount} businesses with 3+ rejections for user {AccountId}",
                 businessesWithActiveReviews.Count, businessesWithThreeRejections.Count, accountId);
         }
 
@@ -172,7 +168,8 @@ public class BusinessQueueService(
 
             if (businesses.Count == 0)
             {
-                logger.Information("No more businesses available after checking {Attempts} batches for user {AccountId}",
+                logger.Information(
+                    "No more businesses available after checking {Attempts} batches for user {AccountId}",
                     attempt, accountId);
                 return null;
             }
@@ -209,6 +206,7 @@ public class BusinessQueueService(
                 logger.Debug("Skipping business {BusinessId} as it's owned by user {AccountId}",
                     business.Id, accountId);
             }
+
             return false;
         }
 
@@ -219,6 +217,7 @@ public class BusinessQueueService(
                 logger.Debug("Skipping business {BusinessId} as owner has insufficient points for visibility",
                     business.Id);
             }
+
             return false;
         }
 
@@ -360,32 +359,34 @@ public class BusinessQueueService(
         return ttl;
     }
 
-    public async Task<bool> AssignBusinessToUserAsync(
-        long businessId,
-        long accountId)
+    public async Task<bool> AssignBusinessToUserAsync(long businessId, long accountId)
     {
-        var lockAcquired = await distributedLockProvider.TryAcquirePersistentLockAsync(
-            DistributedLockCategory.BusinessQueue,
-            businessId.ToString(),
-            TimeSpan.FromMinutes(BusinessQueueConstants.BusinessLockTimeoutInMinutes)
-        );
-
-        if (!lockAcquired)
+        try
         {
-            logger.Information("Business {BusinessId} is already assigned to user {AccountId}", businessId, accountId);
+            var lockAcquired = await distributedLockProvider.TryAcquirePersistentLockAsync(
+                DistributedLockCategory.BusinessQueue,
+                businessId.ToString(),
+                TimeSpan.FromMinutes(BusinessQueueConstants.BusinessLockTimeoutInMinutes)
+            );
+
+            if (!lockAcquired)
+                return false;
+
+            await redisCacheProvider.SetAsync(
+                CacheEntryCategory.QueuedBusinessForUser,
+                accountId.ToString(),
+                businessId,
+                TimeSpan.FromMinutes(BusinessQueueConstants.BusinessLockTimeoutInMinutes)
+            );
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger.Error(ex, "Error assigning business {BusinessId} to user {AccountId}",
+                businessId, accountId);
             return false;
         }
-
-        await redisCacheProvider.SetAsync(
-            CacheEntryCategory.QueuedBusinessForUser,
-            accountId.ToString(),
-            businessId,
-            TimeSpan.FromMinutes(BusinessQueueConstants.BusinessLockTimeoutInMinutes)
-        );
-
-        logger.Information("Assigned business {BusinessId} to user {AccountId}", businessId, accountId);
-
-        return true;
     }
 
     public async Task<bool> UnassignBusinessFromUserAsync(
@@ -419,11 +420,12 @@ public class BusinessQueueService(
         return true;
     }
 
-    public async Task<bool> IsBusinessEligibleForQueueAsync(long businessId, CancellationToken cancellationToken = default)
+    public async Task<bool> IsBusinessEligibleForQueueAsync(long businessId,
+        CancellationToken cancellationToken = default)
     {
         await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
         var businessRepository = unitOfWork.GetRepository<BusinessEntity>();
-        
+
         var business = await businessRepository.GetBaseQueryable()
             .Where(b => b.Id == businessId)
             .Include(b => b.OwnerAccount)
@@ -434,8 +436,8 @@ public class BusinessQueueService(
             logger.Information("Business {BusinessId} not found", businessId);
             return false;
         }
-        
-        if (!business.IsVerified) 
+
+        if (!business.IsVerified)
         {
             if (ApplicationEnvironment.Current().IsDevelopment)
             {
@@ -454,7 +456,7 @@ public class BusinessQueueService(
 
             return false;
         }
-        
+
         return true;
     }
 

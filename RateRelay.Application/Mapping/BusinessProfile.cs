@@ -8,6 +8,7 @@ using RateRelay.Application.DTOs.User.Business.UserBusiness.Queries;
 using RateRelay.Application.Features.Business.Commands.AcceptPendingBusinessReview;
 using RateRelay.Application.Features.Business.Commands.InitiateBusinessVerification;
 using RateRelay.Application.Features.User.Business.Commands.AcceptPendingBusinessReview;
+using RateRelay.Application.Features.User.Business.Commands.InitiateBusinessVerification;
 using RateRelay.Application.Features.User.Business.Commands.ReportBusinessReview;
 using RateRelay.Application.Features.User.Business.Queries.GetAllUserBusinesses;
 using RateRelay.Application.Features.User.Business.Queries.GetBusinessReviews;

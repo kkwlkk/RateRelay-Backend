@@ -21,15 +21,12 @@ public class BusinessVerificationService(
     public async Task<BusinessVerificationResult> InitiateVerificationAsync(string placeId, long accountId)
     {
         await using var unitOfWork = await unitOfWorkFactory.CreateAsync();
-
         var existingBusiness = await GetUserBusinessAsync(unitOfWork, accountId);
-
         var validationResult =
             await ValidateBusinessVerificationRequest(unitOfWork, existingBusiness, placeId, accountId);
+
         if (!validationResult.IsValid)
-        {
             return validationResult.Result;
-        }
 
         var place = await googlePlacesService.GetPlaceDetailsAsync(placeId);
         if (place is null)
@@ -43,12 +40,10 @@ public class BusinessVerificationService(
 
         var activeVerification = await GetActiveVerificationAsync(unitOfWork, business.Id);
 
-        if (activeVerification != null)
+        if (activeVerification is not null)
         {
             if (activeVerification.IsVerificationExpired)
-            {
                 await ResetExpiredVerificationAsync(unitOfWork, activeVerification);
-            }
 
             return BusinessVerificationResult.Success(business, false, activeVerification);
         }
@@ -119,7 +114,7 @@ public class BusinessVerificationService(
             {
                 { "placeId", business.PlaceId }
             };
-            throw new AppException("Business is already verified", "ERR_ALREADY_VERIFIED", metadata);
+            throw new DomainException("Business is already verified", "ERR_ALREADY_VERIFIED", metadata);
         }
 
         var verification = business.Verification;
@@ -335,18 +330,17 @@ public class BusinessVerificationService(
             logger.Warning("Failed to retrieve place details for place ID {PlaceId}", business.PlaceId);
             return false;
         }
-
-        if (!place.CurrentOpeningHours.BusinessHoursByDay.TryGetValue(verification.VerificationDay,
-                out var placeBusinessHours)
-            || placeBusinessHours == null)
+    
+        var hoursByDay = place.CurrentOpeningHours.BusinessHoursByDay;
+        if (!hoursByDay.TryGetValue(verification.VerificationDay, out var dayHours))
         {
             logger.Warning("No business hours found for day {DayOfWeek} for place ID {PlaceId}",
                 verification.VerificationDay, business.PlaceId);
             return false;
         }
 
-        return placeBusinessHours.OpenTime == verification.VerificationOpeningTime &&
-               placeBusinessHours.CloseTime == verification.VerificationClosingTime;
+        return dayHours.OpenTime == verification.VerificationOpeningTime &&
+               dayHours.CloseTime == verification.VerificationClosingTime;
     }
 
     private static (TimeSpan opening, TimeSpan closing) GenerateRandomBusinessHours()

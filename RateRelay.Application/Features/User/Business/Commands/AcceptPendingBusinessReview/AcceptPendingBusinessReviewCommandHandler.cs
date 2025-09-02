@@ -49,12 +49,12 @@ public class AcceptPendingBusinessReviewCommandHandler(
 
         if (business.OwnerAccountId != currentUserContext.AccountId)
         {
-            throw new AppException("You do not have permission to reject this review.");
+            throw new DomainException("You do not have permission to reject this review.");
         }
 
         if (businessReview.Status != BusinessReviewStatus.Pending)
         {
-            throw new AppException("This review is already accepted or rejected.");
+            throw new DomainException("This review is already accepted or rejected.");
         }
 
         var isAccepted = await reviewService.AcceptUserReviewAsync(
@@ -64,7 +64,7 @@ public class AcceptPendingBusinessReviewCommandHandler(
 
         if (!isAccepted)
         {
-            throw new AppException("Failed to accept the review.");
+            throw new DomainException("Failed to accept the review.");
         }
 
         var outputDto = new AcceptPendingBusinessReviewOutputDto
