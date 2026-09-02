@@ -13,7 +13,7 @@ Business owners earn reviews by reviewing others, in a points-based, queue-drive
 
 ### 🌐 Language / Język
 
-**🇬🇧 English** &nbsp;·&nbsp; [🇵🇱 Polski](README.pl.md)
+**🇬🇧 English** &nbsp;·&nbsp; [🇵🇱 Polski](readme.pl.md)
 
 </div>
 
