@@ -13,7 +13,7 @@ Właściciele firm zdobywają opinie, wystawiając opinie innym, w oparciu o sys
 
 ### 🌐 Language / Język
 
-[🇬🇧 English](README.md) &nbsp;·&nbsp; **🇵🇱 Polski**
+[🇬🇧 English](readme.md) &nbsp;·&nbsp; **🇵🇱 Polski**
 
 </div>
 
