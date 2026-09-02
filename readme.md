@@ -11,9 +11,9 @@ Business owners earn reviews by reviewing others, in a points-based, queue-drive
 [![Hangfire](https://img.shields.io/badge/Hangfire-1.8-blue)](https://www.hangfire.io/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
 
-### ð Language / JÄzyk
+### 🌐 Language / Język
 
-**ð¬ð§ English** &nbsp;Â·&nbsp; [ðµð± Polski](README.pl.md)
+**🇬🇧 English** &nbsp;·&nbsp; [🇵🇱 Polski](README.pl.md)
 
 </div>
 
@@ -55,33 +55,33 @@ recurring background work.
 
 ```
  1. Sign in with Google
-        â
-        â¼
+        │
+        ▼
  2. Onboarding: claim your business (Google Place ID)
-        â
-        â¼
+        │
+        ▼
  3. Verification challenge
     The API generates a random day + opening/closing hours.
     You set exactly those hours on your Google Business Profile,
     the API re-reads them through the Google Places API and confirms ownership.
-        â
-        â¼
+        │
+        ▼
  4. Review queue
     GET /api/user/reviewable-businesses/next assigns you a business
     (locked in Redis for 10 minutes so nobody else gets the same one).
-        â
-        â¼
+        │
+        ▼
  5. Submit a review (rating + comment, optionally a public Google Maps review)
     Points are locked on the reviewed owner's balance.
-        â
-        â¼
+        │
+        ▼
  6. The owner accepts or rejects the review
-    Accepted  â the reviewer receives the points
-    Rejected  â the points return to the owner
-    No action within 7 days â auto-accepted by a nightly job
-        â
-        â¼
- 7. Your own balance â¥ 2 points â your business appears in other users' queues
+    Accepted  → the reviewer receives the points
+    Rejected  → the points return to the owner
+    No action within 7 days → auto-accepted by a nightly job
+        │
+        ▼
+ 7. Your own balance ≥ 2 points → your business appears in other users' queues
 ```
 
 **Priority and boosts.** Every business carries a `Priority` byte; admins can boost a business so
@@ -95,22 +95,22 @@ a business rejected three times by a user is excluded from that user's queue ent
 Clean Architecture across four projects, with a strictly inward dependency flow:
 
 ```
-RateRelay.API             â Controllers, middleware, filters, attributes, Swagger
-        â
-RateRelay.Application     â CQRS (MediatR commands/queries/handlers), DTOs,
-        â                   FluentValidation, AutoMapper profiles, Hangfire jobs
-RateRelay.Infrastructure  â EF Core + Pomelo/MySQL, repositories, Unit of Work,
-        â                   Redis, services, e-mail, dbup migrations, Serilog
-RateRelay.Domain          â Entities, enums, constants, interfaces, exceptions
+RateRelay.API             ← Controllers, middleware, filters, attributes, Swagger
+        │
+RateRelay.Application     ← CQRS (MediatR commands/queries/handlers), DTOs,
+        │                   FluentValidation, AutoMapper profiles, Hangfire jobs
+RateRelay.Infrastructure  ← EF Core + Pomelo/MySQL, repositories, Unit of Work,
+        │                   Redis, services, e-mail, dbup migrations, Serilog
+RateRelay.Domain          ← Entities, enums, constants, interfaces, exceptions
 ```
 
 Key patterns in use:
 
 | Pattern | Where |
 | --- | --- |
-| **CQRS** | `Features/{Area}/{Commands,Queries}/â¦` (one folder per use case) |
+| **CQRS** | `Features/{Area}/{Commands,Queries}/…` (one folder per use case) |
 | **MediatR pipeline behaviors** | `LoggingBehavior`, `ValidationBehavior`, banned-account guard |
-| **Repository + Unit of Work** | `IUnitOfWorkFactory` â `IRepository<T>` / `IExtendedRepository<T>` |
+| **Repository + Unit of Work** | `IUnitOfWorkFactory` → `IRepository<T>` / `IExtendedRepository<T>` |
 | **Envelope responses** | Every endpoint returns `ApiResponse<T>` / `PagedApiResponse<T>` |
 | **Distributed locking** | `IRedisDistributedLockProvider` guards queue assignments |
 | **Field-level encryption** | `[Encrypted]` attribute + EF value converter (e.g. account e-mail) |
@@ -149,7 +149,7 @@ Key patterns in use:
 - E-mail addresses are encrypted at rest.
 
 ### Onboarding
-A three-step flow (`BusinessVerification â Welcome â Completed`) enforced server-side by
+A three-step flow (`BusinessVerification → Welcome → Completed`) enforced server-side by
 `[RequireOnboardingStep]`, so a user cannot skip ahead.
 
 ### Business verification
@@ -165,7 +165,7 @@ Places API and compares. Challenges expire after 7 days; attempts are counted.
 - Boosted businesses are served with higher priority.
 
 ### Reviews and disputes
-Statuses: `Pending â Accepted / Rejected / UnderDispute`. Owners can accept or report a review;
+Statuses: `Pending → Accepted / Rejected / UnderDispute`. Owners can accept or report a review;
 anything left pending for 7 days is auto-accepted.
 
 ### Referral program
@@ -204,7 +204,7 @@ git clone https://github.com/kkwlkk/RateRelay-Backend.git
 ```
 
 > **Windows note:** paths in this repository are deep. If checkout fails with
-> *"Filename too long"*, clone with `git -c core.longpaths=true clone â¦`.
+> *"Filename too long"*, clone with `git -c core.longpaths=true clone …`.
 
 ### 2. Start the infrastructure
 
@@ -273,7 +273,7 @@ environment variables, `.env` files and command-line arguments (in that order of
 | `Email` / `EmailLinks` / `Company` | SMTP settings and branding used by e-mail templates |
 | `AppLogger` | Log directory, rolling interval, console/file toggles |
 
-> â ï¸ The `Jwt:Secret` and `Encryption:Key` values shipped in `appsettings.json` are placeholders.
+> ⚠️ The `Jwt:Secret` and `Encryption:Key` values shipped in `appsettings.json` are placeholders.
 > Replace them before any real deployment.
 
 ---
@@ -285,8 +285,8 @@ Every response is wrapped in an envelope:
 ```jsonc
 {
   "success": true,
-  "data": { /* â¦ */ },
-  "error": { "message": "â¦", "code": "â¦", "validationErrors": [] },
+  "data": { /* … */ },
+  "error": { "message": "…", "code": "…", "validationErrors": [] },
   "metadata": { /* paging, extra context */ }
 }
 ```
@@ -405,35 +405,35 @@ Permissions are `ulong` bit flags on the account, checked with `[RequirePermissi
 
 ```
 RateRelay-Backend/
-âââ RateRelay.API/                  # HTTP layer
-â   âââ Controllers/                # Auth, User/*, Admin/*, Health, Maintenance
-â   âââ Attributes/                 # RequireAdmin, RequirePermission, RateLimit, â¦
-â   âââ Middleware/                 # Exception handling, rate limiting, IP logging
-â   âââ Filters/                    # Maintenance mode, Swagger security
-â   âââ Program.cs / Startup.cs
-â   âââ appsettings.json
-âââ RateRelay.Application/          # Use cases
-â   âââ Features/{Admin,User,Auth,Shared}/â¦   # CQRS handlers and validators
-â   âââ DTOs/                       # Input/output contracts
-â   âââ BackgroundJobs/             # Hangfire recurring jobs
-â   âââ MediatR/Behaviors/          # Logging, validation
-â   âââ Mapping/                    # AutoMapper profiles
-âââ RateRelay.Infrastructure/       # Technical implementations
-â   âââ DataAccess/                 # DbContext, repositories, UoW, Redis, migrations
-â   âââ Services/                   # Auth, queue, reviews, points, referrals, Google, e-mail
-â   âââ Configuration/              # Strongly-typed options classes
-â   âââ EmailTemplates/             # .liquid templates
-â   âââ Hangfire/ Â· Logging/ Â· Authorization/
-âââ RateRelay.Domain/               # Entities, enums, constants, interfaces
-âââ docker-compose.yml              # MariaDB + Redis
-âââ Dockerfile                      # Multi-stage build of the API
+├── RateRelay.API/                  # HTTP layer
+│   ├── Controllers/                # Auth, User/*, Admin/*, Health, Maintenance
+│   ├── Attributes/                 # RequireAdmin, RequirePermission, RateLimit, …
+│   ├── Middleware/                 # Exception handling, rate limiting, IP logging
+│   ├── Filters/                    # Maintenance mode, Swagger security
+│   ├── Program.cs / Startup.cs
+│   └── appsettings.json
+├── RateRelay.Application/          # Use cases
+│   ├── Features/{Admin,User,Auth,Shared}/…   # CQRS handlers and validators
+│   ├── DTOs/                       # Input/output contracts
+│   ├── BackgroundJobs/             # Hangfire recurring jobs
+│   ├── MediatR/Behaviors/          # Logging, validation
+│   └── Mapping/                    # AutoMapper profiles
+├── RateRelay.Infrastructure/       # Technical implementations
+│   ├── DataAccess/                 # DbContext, repositories, UoW, Redis, migrations
+│   ├── Services/                   # Auth, queue, reviews, points, referrals, Google, e-mail
+│   ├── Configuration/              # Strongly-typed options classes
+│   ├── EmailTemplates/             # .liquid templates
+│   └── Hangfire/ · Logging/ · Authorization/
+├── RateRelay.Domain/               # Entities, enums, constants, interfaces
+├── docker-compose.yml              # MariaDB + Redis
+└── Dockerfile                      # Multi-stage build of the API
 ```
 
 ---
 
 ## Deployment
 
-- **Container**: multi-stage `Dockerfile` (SDK build â `aspnet:8.0` runtime), exposing port
+- **Container**: multi-stage `Dockerfile` (SDK build → `aspnet:8.0` runtime), exposing port
   `5000` and starting `dotnet RateRelay.API.dll`.
 - **CI/CD**: `.github/workflows/deploy.yml` triggers on every push to `master`, runs on a
   self-hosted runner, syncs the working tree into the deployment directory, and rebuilds the
