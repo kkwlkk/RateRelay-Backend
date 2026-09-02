@@ -13,7 +13,7 @@ Właściciele firm zdobywają opinie, wystawiając opinie innym, w oparciu o sys
 
 ### 🌐 Language / Język
 
-[🇬🇧 English](readme.md) &nbsp;·&nbsp; **🇵🇱 Polski**
+[🇬🇧 English](README.md) &nbsp;·&nbsp; **🇵🇱 Polski**
 
 </div>
 
@@ -442,3 +442,16 @@ RateRelay-Backend/
   usługi compose `backend` oraz `nginx`.
 - **Migracje**: stosowane automatycznie przy starcie; jeśli dbup zawiedzie, host nie wystartuje.
 - **HTTPS/HSTS**: przekierowanie na HTTPS i HSTS są włączone w środowisku `Production`.
+
+---
+
+## Znane ograniczenia
+
+Wypisane wprost, bo to pierwsze pytania, jakie nasuwają się przy tym kodzie.
+
+- **Usługa nie działa już na żywo.** Była wdrożona produkcyjnie od kwietnia do października
+  2025 i od tego czasu jest wyłączona. Repozytorium zostaje jako implementacja referencyjna,
+  więc nie ma publicznej instancji do sprawdzenia.
+- **Nie ma testów automatycznych.** Solucja składa się z czterech projektów i żaden z nich nie
+  jest projektem testowym. Przy tej domenie najbardziej brakuje ich wokół księgi punktów,
+  reguł wykluczeń w kolejce i okien weryfikacji, i od tego zacząłbym pisanie testów.
