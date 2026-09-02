@@ -13,7 +13,7 @@ Business owners earn reviews by reviewing others, in a points-based, queue-drive
 
 ### 🌐 Language / Język
 
-**🇬🇧 English** &nbsp;·&nbsp; [🇵🇱 Polski](readme.pl.md)
+**🇬🇧 English** &nbsp;·&nbsp; [🇵🇱 Polski](README.pl.md)
 
 </div>
 
@@ -440,3 +440,16 @@ RateRelay-Backend/
   `backend` and `nginx` compose services.
 - **Migrations**: applied automatically at startup; if dbup fails, the host refuses to start.
 - **HTTPS/HSTS**: HTTPS redirection and HSTS are enabled in the `Production` environment.
+
+---
+
+## Known limitations
+
+Listed openly, because these are the first questions the code raises.
+
+- **The service is no longer live.** It ran in production from April to October 2025 and has
+  been shut down since. The repository is kept as a reference implementation, so there is no
+  public instance to try out.
+- **There is no automated test suite.** The solution has four projects and none of them is a
+  test project. Given the domain, the points ledger, the queue exclusion rules and the
+  verification windows are where that hurts most, and that is where testing would start.
